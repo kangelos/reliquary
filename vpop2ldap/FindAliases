@@ -1,0 +1,90 @@
+#!/bin/bash
+
+grep dir: doms.txt |\
+awk '{ print $2}' | while read dir
+do
+	domain=`basename $dir`
+	qmails=`ls $dir/.qmail* | grep -v qmailadmin | grep -v owner | grep -v default `
+	for mailalter in $qmails
+	do
+		cat $mailalter | grep -v ^\| | while read dotq 
+		do
+			mailalternateaddress=`echo $mailalter | sed -e 's/^.*\.qmail-//g' | sed -e 's/\:/\./g' `
+			test=`echo $dotq | grep '^/'`
+			if [ $? -eq 0 ]
+			then
+				oldaddress=`echo $dotq	| sed -e 's/\/Maildir.*//g'`
+				oldaddress=`basename $oldaddress`
+
+echo "
+dn: uid=$oldaddress,ou=$domain,ou=domains,o=top
+uid: $oldaddress
+sn: $$domain
+objectClass: top
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: qmailUser
+objectClass: PureFTPdUser
+mailAlternateAddress: ${mailalternateaddress}@${domain}
+
+"
+			fi
+			test=`echo $dotq | grep '^\&'`
+			if [ $? -eq 0 ]
+			then
+				foraddress=`echo $dotq	| sed -e 's/^\&//g'`
+
+
+homedir="/home/domains/$domain/lists/$mailalternateaddress"
+
+echo "
+dn: uid=${mailalternateaddress},ou=$domain,ou=domains,o=top
+mailForwardingAddress: ${foraddress}
+uid: $mailalternateaddress
+mail: $mailalternateaddress@$domain
+cn: $mailalternateaddress forw
+sn: $domain
+objectClass: top
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: qmailUser
+objectClass: PureFTPdUser
+userPassword: none
+homeDirectory: $homedir
+mailMessageStore: $homedir/Maildir/
+mailQuota: 10000000S
+accountStatus: created
+
+
+"
+			fi
+			test=`echo $dotq | grep '^[a-zA-Z0-9]'`
+			if [ $? -eq 0 ]
+			then
+				foraddress=`echo $dotq	| sed -e 's/^\&//g'`
+echo "
+dn: uid=${mailalternateaddress},ou=$domain,ou=domains,o=top
+mailForwardingAddress: ${foraddress}
+uid: $mailalternateaddress
+mail: $mailalternateaddress@$domain
+cn: $mailalternateaddress forw
+sn: $domain
+objectClass: top
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: qmailUser
+objectClass: PureFTPdUser
+userPassword: none
+homeDirectory: $homedir
+mailMessageStore: $homedir/Maildir/
+mailQuota: 10000000S
+accountStatus: created
+
+"
+			fi
+
+		done
+	done
+done
+
+#find /disk2/vpopmail/domains -name .qmail\* -print  > /tmp/dotqmailFiles

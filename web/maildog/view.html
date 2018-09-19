@@ -1,0 +1,37 @@
+<?
+include('defaults.php3');
+if ( empty($server) || empty($account) || empty($password) ) {
+        Header("Location: $MAILDOG");
+        exit;
+}
+
+
+
+
+
+
+$temp=implode($argv," ");
+$numparts=explode(",",$temp);
+$msg_number	=$numparts[0];
+$msg_part	=$numparts[1];
+$type		=$numparts[2];
+$encoding	=$numparts[3];
+$realname	=$numparts[4];
+
+$mbox = imap_open("{$server:143}INBOX",$account,$password,OP_READONLY);
+
+$status=imap_check($mbox);
+$num_msg=$status->Nmsgs;
+
+
+
+Header("Content-type: image/$type");
+Header("Content-Disposition: attachment; filename=$realname");
+
+$body=imap_fetchbody($mbox,$msg_number,$msg_part);
+if ($encoding==3){
+	$body   =imap_base64($body);
+}
+echo $body;
+
+?>

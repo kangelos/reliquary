@@ -1,0 +1,15 @@
+#!/usr/bin/perl5
+
+$filename=$ENV{'QUERY_STRING'};
+
+
+print "Content-Type: image/gif\r\n\r\n";
+
+open(FILE,"<$filename") || die "No can do";
+foreach(<FILE>){
+	print $_;
+}
+close(FILE);
+unlink  $filename  ;
+
+exit(0);

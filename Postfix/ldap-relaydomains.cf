@@ -1,0 +1,8 @@
+bind=no
+server_host = ldap://ldap01:389 ldap://ldap02:389
+search_base = ou=domains,o=top
+query_filter = (&(ou=%s)(objectclass=organizationalunit)(objectClass=qmailUser)(!(mailtransport=maildrop:)))
+result_attribute = ou
+scope = sub
+version = 3
+

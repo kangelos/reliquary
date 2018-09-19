@@ -1,0 +1,528 @@
+-----------------------------------------------------------------
+DESCRIPTION
+-----------------------------------------------------------------
+voice          Suite  of  programs  to drive voice modems, it in­
+               cludes a full-featured answering  machine.   Ready
+               to  go for Rockwell voice commands.  Developed and
+               tested under Linux, free software distributed  un­
+               der GNU General Public License.
+
+Version:       0.6       Sep 8 1997
+
+Author:        Niccolo Rigacci <fd131@cleveland.freenet.edu>
+
+
+-----------------------------------------------------------------
+QUICK INTRODUCTION
+-----------------------------------------------------------------
+I think that the simplest way to drive a modem is through a shell
+script and a simple program like "chat" that allow interaction of
+the type: "send string" - "wait string".
+For  voice  operation we must add some functionalities because it
+is not possible to give a stream of digitized voice on  the  com­
+mand line and we must capture the incoming voice to a file too.
+Beside  that we have to handle the "escaped chars" that the modem
+embed in the voice stream when we receive voice  (to  signal  si­
+lence,  DTMF tones, etc.), and those we send to the modem when we
+send voice.
+Voice Modem Control Porgram (vmcp) addresses all the problems:
+
+ - send to the modem a string specified on the command line
+ - send to the modem a binary file
+ - capture data from the modem to a file, stripping escaped chars
+ - capture escaped chars from the modem to a second file
+ - exit on receiving a string from the modem
+ - exit on receiving a given escaped char from the modem
+ - exit on timeout or keypress
+
+All  these  functions  can be enabled or disabled, see vmcp.8 man
+page for command line options (you can read a  man  page  without
+installing it with the command "man ./vmcp.8").
+If  you  want  fully understand how a voice modem works, read the
+Rockwell voice commands guide, or the US-Robotics one.   Relative
+URLs are in the Credits section below.
+As a working example of how vmcp can be used, you can find ans, a
+bash script that emulates a full-featured answering machine.   It
+includes discrimination of incoming voice, fax or data calls, re­
+mote password protected retrieving of messages, changing of pass­
+word and greeting message.
+Any  feedback  on  this  work  will  be greatly appreciated; send
+notes, suggestions and bug reports directly to the author.
+
+
+-----------------------------------------------------------------
+WHAT YOU HAVE (ARCHIVE CONTENTS)
+-----------------------------------------------------------------
+COPYING        GNU General Public License
+Makefile       Script for compiling and installing everything
+README         This file
+README.src     Source file for README
+VOICE_FAQ      Answers to some frequently asked questions
+ans            Bash script to emulate an answering machine
+ans.8          Man page for ans
+passwd         Contains the secret code for ans remote access
+vmcp.8         Man page for vmcp
+vmcp.c         Source code of the communication utility
+voice.lsm      Linux Software Map entry for this package
+vplay          Bash script to play voice files
+vrec           Bash script to record a voice file
+
+
+-----------------------------------------------------------------
+WHAT YOU NEED
+-----------------------------------------------------------------
+-  A voice modem. The scripts "ans", "vplay" and "vrec" are  cus­
+   tomized to work with Rockwell voice commands, they should work
+   with US-Robotics modems and many others. I think  however  you
+   can edit them and adapt to any voice modem.
+-  You must know which serial line your modem is connected to and
+   you must have read-write rights on this  device.  The  scripts
+   are  ready  for a modem on the first serial line (/dev/ttyS0),
+   but you can easily edit them.
+-  The modem must have a full-wired serial cable because programs
+   use RTS, CTS, DTR and CD signals to work properly. No problems
+   with internal modems.
+-  If you want to handle incoming faxes, you must get a fax  pro­
+   gram,  I suggest efax (see Credits section); the ans script is
+   already configured for it.
+-  You must to know a little about how modems work: some AT  com­
+   mands, etc.
+-  You must be able to edit bash scripts :-).
+
+
+-----------------------------------------------------------------
+GETTING NEW VERSIONS
+-----------------------------------------------------------------
+I  don't  have  access  to  an ftp server on the Internet to dis­
+tribute my work (see Discredits section below), so if you want to
+get  the latest version of this package hope that sunsite.unc.edu
+is carrying it. I submitted version 0.6 on 8 September 1997, look
+in the directory
+/pub/Linux/apps/serialcomm/modem or
+/pub/Linux/Incoming.
+You  can also try the mini-mail-robot I launched at the Universi­
+ty: send a mail to rigacci@math.unifi.it and  put  the  lowercase
+words  "get voice.tgz"  in  the  subject field.  If everything is
+still alive, within five minutes you will  receive  by  mail  the
+uuencoded file.
+In  the  same way you can retrieve voicecmd.zip, a complete guide
+to voice commands for Rockwell modems (MS-Word 6 format).
+
+
+-----------------------------------------------------------------
+COMPILING AND INSTALLING FILES
+-----------------------------------------------------------------
+To compile vmcp.c simply switch to the directory  where  you  un­
+packed the archive and issue the command:
+
+     make
+
+Hopefully  no  editing to the source is needed. To create the re­
+quired directories and to copy the files in their  subdirectories
+with appropriate rights, you must be root and execute:
+
+     make install
+
+If  you  want  to know what directories are needed and to preview
+where files are scattered across your system, have a look at  the
+Makefile.  It  is quite simple. You can also use the -n switch of
+make to have a preview of install operations.  Directories struc­
+ture, name and location of files are File System Standard compli­
+ant (see Linux Filesystem Structure, Release 1.2).
+The installing procedure checks for the presence of  many  binary
+files on which the ans script relies: if one of them is not found
+the installation fails.
+
+
+-----------------------------------------------------------------
+QUICK TEST
+-----------------------------------------------------------------
+Edit vrec and vplay scripts adjusting the "TTYS=ttySn" to reflect
+your  modem's  serial line. Also adjust the $VMCP path if needed.
+If you are unable to understand these scripts go away,  read  the
+man bash and come back within a week :-)
+
+vrec testfile       Start  recording to a file. Speak through the
+                    microphone connected to the modem  after  the
+                    beep  and stop the recording pressing the ESC
+                    key.
+
+vplay testfile      Playback the message through the modem speak­
+                    er.
+
+If  this  does not work, don't go any further! You must take your
+modem manual and check every command sent to the  modem  via  the
+vrec  script.  In  the  Output Samples section below you find the
+output you should get from the above test.   Exit  status  should
+help  to understand what is not working (see vmcp man page for an
+exit status table).
+
+
+-----------------------------------------------------------------
+SCRIPTS CUSTOMIZATION
+-----------------------------------------------------------------
+Three files (ans, vplay and vrec) are bash scripts and  may  need
+some  editing to reflect your system peculiarities.  Hopefully no
+changes are needed if you follow FSSTND directives  and  you  are
+using a Rockwell compatible voice modem on /dev/ttyS0.  Check the
+begin of the three files for user configurable  items.   All  the
+scripts  are configured to use the modem on the first serial line
+(ttyS0), change the "TTYS=ttyS0" statement if your modem is on  a
+different device.
+The ans script need a bit more attention. It relies on many bina­
+ries which should to be standard on every Unix-like system, check
+yours  for  the presence and location of such binaries (listed at
+the begin of the script too).
+Ans script also relies on efax  program,  not  included  in  this
+archive. Efax is called when an incoming fax is detected.  If you
+want incoming faxes handling, you must get efax running and  then
+you  *MUST* check the line beginning with $EFAX in the ans script
+and edit it (at least to remove my phone number as the fax  ID!).
+You  see  also many modem commands in the scripts, they all works
+well on my internal modem (UMC chipset). Hopefully again no edit­
+ing needed for Rockwell chipset based modems. If you have another
+modem you must find equivalent commands, see Credits section  for
+a pointer to Rockwell voice modems commands list.
+
+
+-----------------------------------------------------------------
+ABOUT THE SERIAL PORT
+-----------------------------------------------------------------
+On  Linux  systems,  serial  ports are addressed via /dev/cua* or
+/dev/ttyS* devices. Both refer to the same hardware but /dev/cua*
+is  for  outgoing  calls  and /dev/ttyS* is for incoming ones.  I
+suggest to use /dev/ttyS* in the scripts, because ans is intended
+to  answer incoming calls. See Linux Serial HOWTO for some hints.
+Device rights are not a problem, because I run all the scripts as
+root. By the way this is my configuration:
+
+crw-rw----   1 root    tty      4,  64 Aug 22 10:35 /dev/ttyS0
+crw-rw----   1 root    tty      4,  65 Aug 22 10:35 /dev/ttyS1
+ ...
+crw-rw----   1 root    uucp     5,  64 Aug 22 10:34 /dev/cua0
+crw-rw----   1 root    uucp     5,  65 Aug 22 10:34 /dev/cua1
+ ...
+
+
+-----------------------------------------------------------------
+RECORDING DEFAULT MESSAGES
+-----------------------------------------------------------------
+Before  using the ans script you *MUST* record some messages. You
+can use the script vrec with a command like:
+
+     vrec greeting.msg
+
+The messages must go in the appropriate directory.  I  think  the
+best  choice is /usr/local/lib/ans, see the LIBDIR setting in the
+ans script.  Those are the messages needed  and  their  contents.
+Append  to  the name the extension ".msg" (as declared in the ans
+script).
+
+ask_passwd.msg      Please enter your password and  terminate  it
+                    with #.
+ch_greeting.msg     Record the new greeting after the beep, press
+                    # to confirm, 9 to cancel.
+get_msgs_mnu.msg    Press 4 to rewind, 6 to forward, 9 to  delete
+                    message, # to stop.
+greeting.msg        This  is the (phone #), leave a message after
+                    the beep.
+msg_deleted.msg     Message deleted.
+passwd_ch.msg       Password changed successfully.
+passwd_not_ch.msg   Password not changed.
+remote_menu.msg     Press 1 to listen the messages, 2  to  listen
+                    the  greeting, 3 to change it and 4 to change
+                    the password.
+wrong_passwd.msg    Wrong password.
+
+
+-----------------------------------------------------------------
+RUNNING ans
+-----------------------------------------------------------------
+You can start ans from the command line, log  messages  are  dis­
+played  to the screen. You can redirect standard output and stan­
+dard error messages to a file and put the process running in  the
+background with the command:
+
+     ans >> /var/log/ans 2>&1 &
+
+If  you  want  init to start ans every time the system is booted,
+add a line to /etc/inittab like this:
+
+     d1:12456:respawn:/usr/local/bin/ans >> /var/log/ans 2>&1
+
+This instructs init to start ans whenever it enters runlevels  1,
+2,  4, 5 or 6. Default runlevel is 5 on my system.  The "respawn"
+keyword means that if ans is terminated  (after  a  call  is  an­
+swered,  due  an error, because you killed it), init restarts the
+script again. The label "d1" identify the line in the file, so it
+must  be  different  from  the existing ones.  You can choose two
+characters you prefere.  See init(8) and inittab(5) man pages.
+Once ans is running, you can issue the  following  commands  (see
+ans man page for more details):
+
+     ans play       play received messages
+     ans delete     delete received messages
+     ans now        force  the  running  ans  process to answer a
+                    call immediately
+     ans stop       prevent the running ans process from  answer­
+                    ing the phone
+     ans start      resume  the running ans process answering the
+                    phone
+
+To terminate a running ans process you must:
+-  issue an "ans stop" command: it creates a stop file and  kills
+   the vmcp process which is waiting for the RING,
+-  kill the running ans process,
+-  issue an "ans start" command to remove the stop file.
+If  ans  is  respawned  by init you must first change inittab and
+restart init, of course!
+
+If you want to use the vplay or vrec scripts while ans is waiting
+for a call, you must first release the ttySn device with the "ans
+stop" command.
+Remember that if you issued an "ans stop" command, a stop file is
+created  and  ans will never answer a call again untill you issue
+an "ans start" command. The stop file remains even  if  you  kill
+and restart the ans process.
+
+
+-----------------------------------------------------------------
+RECEIVING FAXES AND REMOTE LOGIN
+-----------------------------------------------------------------
+Ans  is able to discriminate incoming faxes or data calls, but it
+relies on auxiliary programs to handle them.
+To receive incoming faxes you must have  /usr/bin/efax  installed
+(I  use  version 0.7a of efax avaliable from Sunsite, see Credits
+section),  check  the  command  line  that  starts  efax  in  the
+fax_call() function of the ans script.
+To handle incoming data calls (remote logins) I use agetty. It is
+standard on my Linux box (Slackware).  See  data_call()  function
+in the ans script for the command that starts agetty.
+After  the user has logged in, he/she can also switch the line to
+SLIP or PPP.
+
+
+-----------------------------------------------------------------
+OUTPUT SAMPLES
+-----------------------------------------------------------------
+
+Message record/playback with vrec/vplay
+---------------------------------------
+prompt# vrec greeting.msg
+
+Resetting the serial line     (3 seconds pause)
+Sending AT&F1 0x0d
+Exit code 0
+Sending AT#CLS=8 0x0d
+Exit code 0
+Sending AT#VBS=4 0x0d
+Exit code 0
+Sending ATS30=60 0x0d
+Exit code 0
+Sending AT#BDR=16 0x0d
+Exit code 0
+Sending AT#VSP=20 0x0d
+Exit code 0
+Sending AT#VSS=2 0x0d
+Exit code 0
+Sending AT#VSD=1 0x0d
+Exit code 0
+Sending AT#VLS=2 0x0d
+Exit code 0
+Sending AT#VBT=5#VTS=# 0x0d   (Play a beep from the speaker)
+Exit code 0
+Sending AT#VLS=3 0x0d
+Exit code 0
+Sending AT#VRX 0x0d           (Start talking in the microphone)
+Exit code 1                   (Exit on silence or ESC keypress)
+Sending  0x0a
+Exit code 0
+Sending ATH 0x0d
+Exit code 0
+
+prompt# vplay greeting.msg
+
+Resetting the serial line     (3 seconds pause)
+Sending AT&F1 0x0d
+Exit code 0
+Sending AT#CLS=8 0x0d
+Exit code 0
+Sending AT#VBS=4 0x0d
+Exit code 0
+Sending AT#BDR=16 0x0d
+Exit code 0
+Sending AT#VSD=1 0x0d
+Exit code 0
+Sending AT#VLS=2 0x0d
+Exit code 0
+Sending AT#VTX 0x0d
+Exit code 0
+Playing greeting.msg...       (Start playing through the speaker)
+Exit code 0
+Sending  0x10 0x03
+Exit code 0
+Sending ATH 0x0d
+Exit code 0
+
+prompt#
+
+
+-----------------------------------------------------------------
+CREDITS
+-----------------------------------------------------------------
+Wolfgang Henke <wolfgang@whnet.com>
+     He made available an invaluable guide to voice commands  for
+     Rockwell chipset modem.
+     ftp://ftp.whnet.com/rockwell/voice.commands
+     See also http://www.nb.rockwell.com/ref/reference.html (?)
+
+Kenneth J. Hendrickson <kjh@usc.edu, kjh@seas.smu.edu>
+     For  its  modem-stats 0.9, a simple program to send commands
+     to a modem. It was the starting point for this work.
+     ftp://sunsite.unc.edu/pub/Linux/apps/comm/modem-stats.tar.gz
+     (?)
+
+Daniel Chouinard <danny@limestone.kosone.com>
+     For  its  dcon 0.9, a scripting language interpreter for es­
+     tablishing communications on serial  lines.   Here  I  found
+     some hints for programming the modem device.
+     ftp://sunsite.unc.edu/pub/Linux/system/serial/dcon0.91.tgz
+
+Vernon C. Hoxie <vern@zebra.alphacdc.com>
+     For  detailed  information  about  termios and serial device
+     locking. Many hints are included in his
+     ftp://scicom.alphacdc.com/pub/linux/serial_suite.tgz
+
+Ed Casas <edc@cce.com>
+     For efax version 0.7a, a program to send and  receive  faxes
+     using any Class 1 or Class 2 fax modem. I use his program to
+     handle incoming faxes and I found many hints in his code.
+     ftp://sunsite.unc.edu/pub/Linux/apps/serial­
+     comm/fax/efax08a.tar.gz
+
+Daniel Quinlan <Daniel.Quinlan@linux.org>
+     For  version 1.2 of the Linux Filesystem Structure (FSSTND).
+     It is - AFAIK - the unique attempt to define a standard  for
+     directories structure and files location for a Linux system.
+     ftp://sunsite.unc.edu/pub/Linux/docs/fsstnd/
+
+U.S. Robotics PCD Applications Engineering
+     For the Technical Reference page they made available on  the
+     Internet.
+     http://ae.pcd.usr.com/
+
+Robert de Bath <robert@mayday.cix.co.uk>
+     For  contributing many ideas and code, enhancing vmcp. He is
+     developing a more enhanced version of vmcp,  with  many  new
+     options. Check his web page at http://www.cix.co.uk/~mayday.
+
+
+-----------------------------------------------------------------
+DISCREDITS
+-----------------------------------------------------------------
+Paolo Blasi <blasi@unifi.it>
+     (Magnifico Rettore dell'Universita' degli Studi di Firenze -
+     Italy)
+Carlo Casolo <casolo@math.unifi.it>
+     (Direttore   del   Dipartimento   di  Matematica  "U.  Dini"
+     dell'Universita' degli Studi di Firenze - Italy)
+
+     For denying Internet access to undergraduated students:
+     - no access to WWW browser or ftp clients
+     - no ftp space to share our works
+     - no WWW space to publish our thought
+     They say that those are not in our rights.  I  simply  think
+     it's a shame.
+     I'm student from 1993, till now I only got a temporary mail­
+     box on a Linux PC. Because the  PC  is  firewalled  I  can't
+     check the mail from home, so my preferred mailbox is held at
+     Cleveland Ohio, thanks to Case  Western  Reserve  University
+     and its Freenet.
+
+
+-----------------------------------------------------------------
+HISTORY
+-----------------------------------------------------------------
+8 Sep 1997: voice-0.6.tar.gz
+     Vmcp:  fixed  a  bug causing an ioctl(2) error when vmcp was
+     run from inittab or in  the  background  (thanks  to  Robert
+     Hawkins  <robert@waltz.demon.co.uk>).   Added  -W  option to
+     work with US-Robotics modems. Added -z option  to  use  only
+     one  program to do everything, eliminating linres. Added es­
+     caped chars conversion on -c, -w and -W strings  (thanks  to
+     Robert de Bath <robert@mayday.cix.co.uk>).
+
+4 Jan 1997: voice-0.5.tar.gz
+     Option  "now"  added  to the ans script: it forces a running
+     ans process to answer a call immediately.
+
+23 Oct 1996: voice-0.4.tar.gz
+     Bug fixed for modems that do not assert CD during voice  op­
+     eration.  Some improvement to the ans script.
+
+31 Aug 1996: voice-0.3.tar.gz
+     First public release.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,373 @@
+#!/opt/perl-5.005/bin/perl
+
+#
+# do not potificate , ldificate vpopmail into ldap , ankar Jun 9 2004
+#
+
+use strict;
+
+#
+# Very odd perl script to convert vpopmail accounts to qmail-ldap
+# it assumes that ALL domains are under the MASTER subdir
+#
+#
+
+my $MASTER="/export/users/domains";
+my $OTHERMASTER="/opt/vpopmail/domains";
+my $VMAILHOME="/export/home/vmail/";
+my $TOPROCESS=shift;
+
+if ( ! defined ($TOPROCESS) ) {
+	print "Tell me a domain bucko\n";
+	exit 1;
+}
+
+
+my $LDAPBASE=10000000;	# 10 m for base uid
+my $QUOTA=10000;	# 10 K no quota really 
+
+my %DOMAINALIASES={};
+my %ALIASES={};
+my %VPASSWD={};
+my %MODES={};
+my %FORWARDS={};
+my @DOMAINS=();
+
+sub xldprint;
+sub xldprintlist;
+my @MEMBERS=();
+my @LINES=();
+
+
+######################################################################
+sub fetchlines {
+	my $filename=shift;
+	my $line=undef;
+
+	@LINES=();
+	open(FILE, "<$filename" ) || die "Cannot open file";
+	while(<FILE>){
+		$line=$_;
+		chomp($line);
+		push(@LINES,$line);
+	}
+	close FILE;
+}
+
+######################################################################
+sub linkprocess{
+	my ($subdir,$file,$domain,$uidnum)=@_;
+
+
+	my $tolink=readlink  "$subdir/$file" ;
+	$tolink =~ s/\/editor//;
+	open(PIPE, "/opt/ezmlm-0.53/bin/ezmlm-list $tolink|") || die "cannot pipe";
+	@MEMBERS=();
+	while(<PIPE>){
+		chomp($_);
+		push(@MEMBERS,$_);
+	}
+	close(PIPE);
+
+        my $mode="nolocal";
+        my $email=$file;
+	$email=~ s/^.qmail-//;
+        my $name="$email list";
+        my $quota=$QUOTA;
+        my $files=int($quota/1000);
+        my $pass="nopass";
+
+	my $forward="";
+	xldprintlist($email,$domain,$name,$quota, $files,$pass,$uidnum,$mode,$forward);
+}
+
+
+######################################################################
+sub ldifydir{
+my ($subdir,$domain,$base)=@_;
+my  ($forward, $mode, @mparts, $email, $name, $quota, $files, $pass);
+
+opendir THISDOM,$subdir  || die "Cannot opendir";
+my $filenum=0;
+while (my $file=readdir(THISDOM) ) {
+	next if ($file !~ "^\.qmail\-");	# uninteresting stuff
+	next if ($file =~ "^\.qmail.*\-owner");	# no mailing list management
+	next if ( ($file =~ /\-default/) && ($file ne ".qmail-default")) ;	# no default files
+
+	my $iscatchall=0;
+	if ($file eq ".qmail-default" ){
+		$iscatchall=1;
+	}
+	
+	$filenum++;
+	my $uidnum=$LDAPBASE+$base+$filenum;
+
+	if ( -l  "$subdir/$file" ) {	# a link , i.e. mailing list
+		linkprocess("$subdir","$file",$domain,$uidnum);
+		next;
+	}
+
+	# end of link processing 
+	# normal file	
+	fetchlines("$subdir/$file");
+
+# defaults
+        $email=$file; $email=~ s/^.qmail-//;
+	$name="Unknown";
+	$quota=$QUOTA;
+	$files=int($quota/1000);
+	$pass="nopass";
+
+	$MODES{$email}="noforward";
+	foreach my $line (@LINES){
+		if ( $line =~ /vdelivermail/ ) {
+			my @mparts=split(' ',$line);
+			my $mbox=$mparts[$#mparts];	# lastelement
+
+			my $alias=$mbox;
+			$alias =~ s/\/Maildir[\/]//;
+			$alias =~ s/^.*\///;
+			if ( $iscatchall==1) { $email='catchall'; }
+			if ( defined $VPASSWD{$alias} ) {
+				$ALIASES{$alias}.=",".$email;	#reverse logic
+			} else {
+				print STDERR "* ERROR vdelivermail not to remote\n";
+			}
+			$MODES{$email}="normal";
+			next;
+		}
+		if ( $line =~ /^[ ]*\&/ ) {
+			$forward=$line;
+			$forward =~ s/^&//;
+			if ( ! $VPASSWD{$email} ) {
+				$mode="nolocal";
+				xldprint($email,$domain,$name,$quota, $files,$pass,$uidnum,$mode,$forward);
+				next;
+			}
+			$MODES{$email}="normal";
+			$FORWARDS{$email} .="," . $forward;
+			next;
+		}
+	
+		if ( ( $line =~ /^[ ]*\./ ) || ( $line =~ /^[ ]*\// )) {
+			my $alias=$line;
+			$alias =~ s/\/Maildir[\/]//;
+			$alias =~ s/^.*\///;
+			if ( !  defined $VPASSWD{$alias} ) {
+				$ALIASES{$alias}.=",".$email;	#reverse logic
+			}
+			$MODES{$email}="normal";
+			next;
+		}
+	
+		if ( $line =~ /autorespond/ ) {
+			$line =~ s/^[ ]*|[ ]*//;
+			print STDERR "Autoresponder for $email not supported\n";
+			next;
+		}
+  	}#end lines in .qmail
+} # end while
+
+
+closedir THISDOM;
+}
+
+
+
+######################################################################
+sub readvpasswd{
+	my ($subdir)=@_;
+
+	my $id=0;
+
+	open(VPWD,"<$subdir/vpasswd") || die "Cannot read $subdir/vpasswd";
+	while(<VPWD>) {
+		$id++;
+		chomp($_);
+		my ($email,$pass,$uid,$gid,$name,$homedir,$quota)=split(':',$_);
+		$MODES{$email}="noforward";
+		$VPASSWD{$email}=$_;
+	}
+	close VPWD;
+}
+
+
+######################################################################
+sub ldifyvpasswd{
+	my ($subdir,$domain,$base)=@_;
+
+	my $id=1; #$id zero is reserved for postmaster
+
+	foreach my $entry (sort(keys %VPASSWD)) {
+		my ($email,$pass,$uid,$gid,$name,$homedir,$quota)=split(':',$VPASSWD{$entry});
+		my $uidnum=$LDAPBASE+$base+$id;
+		next if ( $email eq "" );
+		if ( $email =~ /postmaster/i) {
+			$quota=$QUOTA;
+			my $uidnum=$LDAPBASE+$base;	# start of entries
+		}
+		my $mode=$MODES{$email};
+		my $files=int($quota/1000);
+
+		$name=~tr/ÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÓÔÕÖ×ØÙ/ABGDEZHUIKLMNJOPRSTYFXCV/;
+		$name=~tr/áâãäåæçèéêëìíîïðñóôõö÷øù/abgdezhuiklmnjoprstyfxcv/;
+		$name=~tr/ÜÝÞýßüþ/aehyiow/;
+		my $fname=$name;
+		my $sname=$name;
+		my $forward="";
+		xldprint($email,$domain,$name,$quota,$files,$pass,$uidnum,$mode,$forward);
+	}
+}
+
+
+
+
+
+# first pass read all the dirs
+opendir DOMDIR,"$MASTER"  || die "Cannot opendir domains";
+	while (my $subdir=readdir(DOMDIR) ) {
+	next if ($subdir eq ".") ||  ($subdir eq "..") ;
+	my $domain=$subdir;
+	$domain =~ s:$MASTER/::;
+	$domain =~ s:$OTHERMASTER/::;
+	if ( -l  "$MASTER/$subdir" ) {
+		my $tolink=readlink  "$MASTER/$subdir" ;
+		$tolink =~ s:$MASTER/::;
+		$tolink =~ s:$OTHERMASTER/::;
+		$DOMAINALIASES{$tolink} .= "," . $domain;
+		next;
+	} 
+	push(@DOMAINS,$domain);
+}
+closedir DOMDIR;
+
+
+
+#
+# Main loop
+# 
+my $dirnum=0;
+foreach my $domain (sort(@DOMAINS)) {
+	$dirnum++;
+	next if ($domain eq "");
+	if ( $domain eq  $TOPROCESS ) {
+		print "#\n# Domain $domain\n#\n\n";
+		%ALIASES={};	# per domain user aliases
+		%VPASSWD={};
+		%MODES={};
+		%FORWARDS={};
+		next if ( ! -f "$MASTER/$domain/vpasswd" );
+		readvpasswd("$MASTER/$domain");
+		ldifydir("$MASTER/$domain",$domain,$dirnum+1000);
+		ldifyvpasswd("$MASTER/$domain",$domain,$dirnum);
+	}
+}
+
+1;
+
+
+#########################################
+#
+#
+
+sub commonprint{
+my ($email,$domain,$name, $quota, $files,$pass,$uidnum,$mode,$forward)=@_;
+
+print "
+dn: uid=$email\@$domain,ou=vmail,o=top
+cn: $name
+sn: $name
+objectClass: top
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: qmailUser
+objectClass: posixAccount
+objectClass: shadowAccount
+ou: vmail
+mail: $email\@$domain
+mailHost: mail
+mailQuotaSize: $quota
+mailQuotaCount: $files
+uid: $email\@$domain
+userPassword: {crypt}$pass
+qmailUID: $uidnum
+uidNumber: $uidnum
+qmailGID: 1000
+gidNumber: 1000
+homeDirectory: $VMAILHOME/$domain/$email/
+mailMessageStore: $VMAILHOME/$domain/$email/Maildir/
+loginShell: /opt/comnet/bin/nologin
+deliveryMode: $mode
+";
+#mailReplyText: $autoreply
+
+}
+
+
+
+#########################################
+#
+#
+
+sub xldprint{
+my ($email,$domain,$name, $quota, $files,$pass,$uidnum,$mode,$forward)=@_;
+
+	commonprint($email,$domain,$name, $quota, $files,$pass,$uidnum,$mode,$forward);
+	
+	print "mailForwardingAddress: $forward\n" if ( $forward ne "" ) ;
+	my @fparts=split(',',$FORWARDS{$email});
+	foreach my $forw (sort($forward,@fparts)) {
+		next if ( ( $forw eq "" ) || ( $forw eq $forward ) );
+		print "mailForwardingAddress: $forw\n";
+	}	
+
+#
+# Plain , wrong
+#	my @dparts=split(',',$DOMAINALIASES{$domain});
+#	foreach $dpart (@dparts) {
+#		next if ( $dpart eq "" ) ;
+#		print "mailAlternateAdress:	$email\@$dpart\n";
+#	}	
+#
+#
+#	my @aparts=split(',',$ALIASES{$email});
+#	foreach $apart (@aparts) {
+#		next if ( $apart eq "" ) ;
+#		print "mailAlternateAdress:	$apart\@$domain\n";
+#	}	
+
+
+
+#complicated but right
+	my @dparts=split(',',$DOMAINALIASES{$domain});
+	my @aparts=split(',',$ALIASES{$email});
+	foreach my $apart (sort($email,@aparts)) {
+		next if ( $apart eq "" ) ;
+		foreach my $dpart (sort($domain,@dparts)) {
+			next if ( $dpart eq "" ) ;
+			next if ("$apart\@$dpart" eq "$email\@$domain");	# already in UID=....
+			print "mailAlternateAdress:	$apart\@$dpart\n";
+		}	
+	}
+	print "\n\n";
+}
+
+
+
+#########################################
+#
+#
+
+sub xldprintlist{
+my ($email,$domain,$name, $quota, $files,$pass,$uidnum,$mode,$forward)=@_;
+
+	commonprint($email,$domain,$name, $quota, $files,$pass,$uidnum,$mode,$forward);
+	foreach $forward (@MEMBERS) {
+		print "mailForwardingAddress: $forward\n";
+	}	
+	print "\n\n";
+}
+
+
+
+

@@ -1,0 +1,29 @@
+ From: Angelos Karageorgiou (angelos@davinci.netaxis.com)
+ Subject: Re: Filtering email from a particular domain. 
+ Newsgroups: comp.mail.sendmail
+ Date: 1996/05/14 
+
+
+In article <4mtr50$dtp@ren.cei.net>, John Coy <jcoy@cei.net> wrote:
+>I'm using Linux 1.2.13 and the Sendmail program.  I'd like to know
+>if there is a way to filter out (ie: not deliver) all mail from a
+>particular domain.
+>
+
+from the big-mail list
+
+
+in ruleset 0 plug in
+
+R$* < @$*$=K . > $*     $#error $@ 5.1.4 $: "This domain is banned." 
+
+make sure you define class K to include all the domains that you want to ban
+
+
+Warning , Use sparingly and only for domains that are known spammers.
+
+-- 
+
+
+***************************************************************************
+On the Internet, nothing works all the time             angelos@netaxis.com

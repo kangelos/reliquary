@@ -1,0 +1,49 @@
+
+                             INSTRUCTIONS
+                               ON HOW
+
+To install the soft fonts on the HP printer you have to do the following.
+
+The batch files should do this for you automagically, but if nothing works
+    then do the following; carefully.
+
+        Start the VLJ program, move the highlight over the file named
+"alpha.sfp" and press ALT-D . Press return for whatever the program prompts
+you for so that the defaults will take effect.
+        You will see the printer lights flashing and the font will be
+downloaded. At that point press the Escape button a couple of times
+to quit VLJ and do the following to enable the font ON the printer now.
+
+        A) Take the printer off-line by pressing the ON-LINE button.
+        B) Press the menu key until "FONT SOURCE=I*" appears on the
+           printer's display.
+        C) Press the '+' until the display says "FONT SOURCE=S",
+           at that point press the ENTER key. The display changes
+           to "FONT SOURCE=S*".
+
+        The star at the end designates a successfull choice.
+
+        If you have more than one soft fonts loaded, then you have to select
+which on of them will be the default.Follow these instructions
+        A) Take the printer off-line by pressing the ON-LINE button.
+        B) Press the menu key until "FONT NUMBER=?*" appears on the
+           printer's display.The question mark stands for any number
+           displayed at the time
+        C) Press the '+' until the display says "FONT NUMBER=X",
+           at that point press the ENTER key.
+           The display changes to "FONT NUMBER=X*".Again the "X" stands for
+           the number you selected. This number has to be tha same as the one
+           you gave to the VLJ program when it prompted you for one.
+
+
+        After downloading and enabling the font, most of the PC software
+should work fine. In rare cases that it does not, it means that your
+software takes over control of the printer. For example certain word processors
+download their own soft fonts to the printer. To avoid that you will have to
+dig into both the printer and software manuals. You have to look for how
+to use SOFT FONTS on the laser printer. The situation varies so wildly that
+practically every procedure is unique.
+
+        To get a hard-copy of these instructions type "copy read.me prn:"
+
+

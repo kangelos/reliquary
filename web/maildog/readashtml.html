@@ -1,0 +1,118 @@
+<?
+include('defaults.php3');
+
+if ( empty($server) || empty($account) || empty($password) ) {
+        Header("Location: $MAILDOG");
+        exit;
+}
+?>
+<html>
+<head>
+<meta charset="iso-8859-7">
+</head>
+
+<body bgcolor=white>
+<font face=arial>
+<?
+
+	$msg_number=implode($argv," ");
+
+require("decode.php3");
+
+
+$mbox = imap_open("{$server:143}INBOX",$account,$password);
+
+$status=imap_check($mbox);
+$num_msg=$status->Nmsgs;
+
+array ($headers);
+$headers=@imap_headers($mbox);
+$smallheaders=trim(substr($headers[$msg_number-1],0,6));
+if ( ereg("D",$smallheaders) ) {
+                $deleted="<font color=red face=arial>Deleted</font>";
+} 	else {
+		$deleted="&nbsp;";
+}
+
+
+include('header.html');
+
+
+$header=imap_header($mbox,$msg_number,1);
+if ( empty($header) ) {
+	echo("<br><br>
+		<center><font color=red size=+1>
+		<h3>No Message # $msg_number / Δεν υπάρχει μήνυμα # $msg_number</h3>
+		</center>
+	");
+	exit;
+}
+
+$structure=imap_fetchstructure($mbox,$msg_number);
+#$c=count($structure->parts);
+#for ($i=0; $i<$c; $i++) {
+#$part0=$structure->parts[$i];
+#print  "<h1>$c $part0</h1>\n";
+#}
+
+
+
+$body	=imap_fetchbody($mbox,$msg_number,1);
+if ( strlen($body) <= 0 ) { $body= "Empty Message body"; }
+
+$xbody=imap_qprint($body);
+$mylen=strlen($xbody);
+if ( $mylen > 10 ) {
+        $body=$xbody;
+}
+
+$structure=imap_fetchstructure($mbox,$msg_number);
+$extrabody="";
+
+if ( eregi("MIXED",$structure->subtype) ) {
+$extrabody="<br><hr><center> <br>[ MIME encoded parts are not shown ] </center>
+<center> [ Tμήματα τύπου MIME δεν εμφανίζονται σε αυτήν τη σελίδα ] </center>";
+}
+
+
+$htmlbody	=$body;
+
+$from           =$header->fromaddress;
+$subject        =$header->subject;
+$to             =$header->toaddress;
+$replyto        =$header->reply_toaddress;
+$cc             =$header->ccaddress;
+
+$htmlfrom       =htmlspecialchars(decode_mime_string($header->fromaddress));
+$htmlsubject    =htmlspecialchars(decode_mime_string($subject));
+$htmlto         =htmlspecialchars(decode_mime_string($to));
+$htmlto         =ereg_replace(",",",\n          ",$htmlto);
+$htmlreplyto    =htmlspecialchars(decode_mime_string($replyto));
+$htmlcc         =htmlspecialchars(decode_mime_string($cc));
+$htmlcc         =ereg_replace(",",",\n          ",$htmlcc);
+
+echo ("
+<br>
+<font face=terminal color=\"#006699\">
+<pre>
+    From: <b>$htmlfrom</b>
+ Subject: <b>$htmlsubject</b>
+    Date: <b>$header->Date</b>
+      To: $htmlto
+Reply-To: $htmlreplyto
+      cc: $htmlcc
+</pre>
+</font>
+<br>
+<br>
+$htmlbody
+$extrabody
+");
+
+
+imap_close($mbox);
+?>
+
+</body>
+</html>
+<br><br>

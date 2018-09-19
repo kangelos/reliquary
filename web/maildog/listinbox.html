@@ -1,0 +1,275 @@
+<?
+include('defaults.php3');
+
+if ( empty($server) || empty($account) || empty($password) ) {
+	Header("Location: $MAILDOG");
+        exit;
+}
+#$DEBUG=1;
+$deleted=0;
+?>
+
+
+<html>
+<title> Inbox Listing</title>
+<head>
+<meta charset="iso-8859-7">
+<style type="text/css">
+<!--
+A:link, A:visited { text-decoration: none; color: red  }
+A:hover { text-decoration: underline; color: red }
+-->
+</style>
+</head>
+
+<body bgcolor=white>
+<center>
+<table width="100%" border=0 cellspacing=0 cellpadding=10 bgcolor="#006699">
+<tr>
+<td align=center>
+<font face=verdana size=+1 color=white>
+Your Mailbox / Το ταχυδρομείο σας
+</font>
+</td>
+</tr>
+</table>
+<br><br>
+
+
+
+
+<?
+
+include("decode.php3");
+
+Function mychop($thistring,$length) {
+$result="";
+$mystring=trim($thistring);
+
+   if (strlen($mystring)>$length){
+                $result=substr($mystring,0,$length);
+   }else {
+                $result=$mystring;
+        }
+
+return($result);
+}
+
+
+
+$mbox = @imap_open("{$server:143}INBOX",$account,$password,OP_READONLY);
+$mboxstatus=@imap_check($mbox);
+$num_msg=$mboxstatus->Nmsgs;
+
+
+
+for($i=1;$i<=$num_msg+1;$i++){
+	$sortlist[$i]=$i;
+}
+
+$message="Sorted by arrival / Ταξινομημένα κατά παραλαβή";
+
+#
+# sorting constants taken from /usr/local/imap/include/mail.h
+#
+
+$sortorder=implode($argv," ");
+if ( ! empty($sortorder) ) {
+	if ($sortorder=="S") {
+		$sortlist=imap_sort($mbox,6,0,0);
+		$message="Sorted by size / Ταξινομημένα κατα Μέγεθος";
+	}
+	if ($sortorder=="F") {
+		$sortlist=imap_sort($mbox,2,0,0);
+		$message="Sorted by From Address / Ταξινομημένα κατα Αποστολέα";
+	}
+	if ($sortorder=="T") {
+		$sortlist=imap_sort($mbox,3,0,SE_NOPREFETCH);
+		$message="Sorted by Subject / Ταξινομημένα κατα Θέμα";
+	}
+}
+
+if ( $num_msg <= 0 ) {
+	print "<br><br><br> <font color=\"#000088\" size=+2>
+		No Mail / Δεν έχετε ταχυδρομείο
+		</font></body></html>\n";
+	exit;
+}
+
+
+
+
+array ($headers);
+$headers=@imap_headers($mbox);
+?>
+
+
+
+<font face=arial size=-1><? print "$message"; ?></font>
+
+
+<p>
+<font face=arial size=-1 color="#006699">
+To read a message click on its subject<br>
+Για να διαβάσετε ένα μήνυμα κάντε click στο θέμα του
+<p>
+Click on the column headers to sort by that header<br>
+Κάντε click πάνω στην κατηγορία μιας στήλης για να ταξινομηθούν τα μηνύματα κατα αυτήν την στήλη
+<p>
+
+
+<?
+if ( $DEBUG ) {
+	print "</center><font face=terminal><pre>\n";
+	for ($i=0; $i<$num_msg; $i++) { 
+		$this=ereg_replace(" ","-",$headers[$i]);
+		print "$this\n";
+	}
+	print "</pre>\n";
+}
+?>
+
+
+
+<form name="compress" action=compress.html method=post>
+<table bgcolor=white cellspacing=0 cellpadding=6 width="100%" border=0>
+<tr bgcolor="#0088bb">
+	<th bgcolor=white align=right>
+		<font face=arial size=+1>&nbsp;
+	</th>
+	<th align=left>
+		<font face=arial size=+1> # </font>
+	</th>
+	<th align=left>
+		<font face=arial size=+1>
+		<a href=\"listinbox.html?S\">Size</a>
+		</font>
+	</th>
+	<th align=left>
+		<font face=arial size=+1>
+			<a href="listinbox.html">Date</a>
+		</font>
+	</th>
+	<th align=left>
+		<font face=arial size=+1>
+			<a href="listinbox.html?F">From / Απο</a>
+		</font>
+	</th>
+	<th align=left>
+		<font face=arial>
+			<a href="listinbox.html?T">Subject / Θέμα</a>
+		</font>
+	</th>
+</tr>
+
+
+<?
+for ($i=1; $i<=$num_msg; $i++) { 
+	$counter=$i;
+	$j=$sortlist[$i]-1;
+
+
+#
+#      Unsorted lists
+#	
+#	$smallheaders=trim(substr($headers[$i-1],0,5));
+#	$smallcounter=trim(substr($headers[$i-1],6,4));
+#	$smalldate=trim(substr($headers[$i-1],11,6));
+#	$smallfrom=trim(substr($headers[$i-1],18,20));
+
+#
+#   Sorted lists
+#
+	$smallheaders=trim(substr($headers[$j],0,5));
+	$smallcounter=trim(substr($headers[$j],6,4));
+	$smalldate=trim(substr($headers[$j],11,6));
+	$smallfrom=trim(substr($headers[$j],18,20));
+
+	$status="&nbsp;";
+
+
+
+	if ( ereg("U",$smallheaders) ) {
+		$status="<font color=blue size=-1>Unread</font>";
+	}
+	if ( ereg("N",$smallheaders) ) {
+		$status="<font color=green size=-1>New</font>"; 	
+	}
+	if ( ereg("D",$smallheaders) ) {
+		$status="<font color=red size=-1>Deleted</font>"; 	
+		$deleted++;
+	}
+	
+	$size=$headers[$j];
+	$size=ereg_replace(".*\(","",$size);
+	$size=ereg_replace(" .*$"," ",$size);
+	$htmlsize=ceil($size/1024). "K";
+
+	$myheaders=@imap_header($mbox,$i);
+	if (! $myheaders) {
+		next;
+	}
+
+ 	$today=ereg_replace(" ","&nbsp;", date("d M Y",$myheaders->udate));
+
+	$myfrom=ereg_replace("<.*>"," ",$myheaders->fromaddress);
+	$myfrom		=mychop($myfrom,30);
+	$myfrom		=htmlspecialchars($myfrom);
+	$htmlfrom	=htmlspecialchars(decode_mime_string($myheaders->fromaddress));
+
+	$mysubject	= decode_mime_string($myheaders->subject);
+
+	$mysubject	= htmlspecialchars($mysubject);
+	$mysubject	=mychop($mysubject,50);
+	if ( strlen($mysubject) <= 0 ) {
+		$mysubject="Empty Subject / Ανευ Θέματος";
+	}
+	$myno		=trim($myheaders->Msgno);
+
+	if ( ($counter % 2 ) != 0 ) {
+		print "<tr>";
+	} else {
+		print "<tr bgcolor=\"#eeeeee\">";
+	}
+#
+# This block belongs on the next print statement, to enable global deletes
+#
+#<!--
+#	<td align=center>
+#		<font face=arial size=-1>
+#");
+#	if ( ereg("D",$smallheaders) ) {
+#		print "&nbsp;";
+#	} else {
+#		print "<input type=checkbox name=\"del_$myno\">";
+#	}
+#echo("
+#		</font>
+#	</td>
+#-->
+
+echo("
+	<td align=right bgcolor=white> $status </td>
+	<td align=right> $counter </td>
+	<td align=right> $htmlsize </td>
+	<td> $today </td>
+	<td> $smallfrom </td>
+	<td> <a href=\"read.html?$myno\" target=\"$FRAME\">$mysubject</a> </td>
+</tr>
+</tr>
+\n");
+}
+
+
+
+@imap_close($mbox);
+?>
+
+</table>
+<br>
+<? if ( $deleted > 0 ) {
+	print "<input type=\"Submit\" value=\"Compress Mailbox\">";
+}
+?>
+</form>
+<br>

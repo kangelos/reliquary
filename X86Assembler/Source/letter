@@ -1,0 +1,11 @@
+The name of the whole package is "VGAGREEK".
+it consists of
+a) "KEYGR" the keyboard driver and either
+b) "VGABLOCK" the VGA (tm) screen driver
+	      OR
+c) "EGABLOCK" tha EGA (tm) screen driver
+
+
+All pertain to IBM PC (tm) type of computers
+
+EGA,VGA,PC are trademarks of International Business Machines

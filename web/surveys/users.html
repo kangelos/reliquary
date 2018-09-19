@@ -1,0 +1,139 @@
+<head><title> Survey</title></head>
+<body bgcolor=white>
+<meta charset="iso-8859-7" keywords="Online surveys, surveys, web surveys">
+<!-- START-SURVEY -->
+<center> <h3> Survey </h3></center>
+<form action="/cgi-bin/simpleform" method=post>
+
+
+
+
+The Internet is a brand new phenomenon across the Earth. Its problems are
+unique and specific to each country that goes online
+<p>
+We would ask you then to please fill in this survey so we can serve you
+better.
+
+<br>
+
+<b>  What is your mail email address? </b><BR>
+<INPUT TYPE="text" NAME="QT1" SIZE="40" MAXLENGTH="75" onblur="checkemail(QT1)"> 
+</center>
+
+<!-- START-GROUP 1 -->
+<b>1</b>
+What type of a computer do you have ?
+<pre>
+<input type="radio" Name="pc" value="386" onclick="proceed()">386
+<input type="radio" Name="pc" value="486" onclick="proceed()">486
+<input type="radio" Name="pc" value="Pentium" onclick="proceed()">Pentium
+<input type="radio" Name="pc" value="Mac" onclick="proceed()">Mac
+<input type="radio" Name="pc" value="other" onclick="proceed()">Other:<input type=text name="pc-other" onchange="setvar('pc','other');setvar('pc','other')">
+</pre>
+<P>
+<!-- END-GROUP 1 -->
+
+<!-- START-GROUP 2 -->
+<b>2</b>
+What is your connection speed?<p>
+<pre>
+<input type="radio" Name="modem-speed" value="2400" onclick="proceed()">2400
+<input type="radio" Name="modem-speed" value="9600" onclick="proceed()">9600
+<input type="radio" Name="modem-speed" value="14400" onclick="proceed()">14400 
+<input type="radio" Name="modem-speed" value="28800" onclick="proceed()">28800 
+<input type="radio" Name="modem-speed" value="33600" onclick="proceed()">33600 
+<input type="radio" Name="modem-speed" value="56000" onclick="proceed()">56000
+<input type="radio" Name="modem-speed" value="other" onclick="proceed()">Other:<input type=text name="modem-speed-other" onchange="setvar('modem-speed','other')">
+</pre>
+<!-- END-GROUP 2 -->
+
+<!-- START-GROUP 3 -->
+<b>3</b>
+
+Which browser do you use most?<br><p>
+<input type="radio" Name="browser" value="Netscape Navigator" onclick="proceed()">Netscape Navigator<br>
+<input type="radio" Name="browser" value="Netscape Communicator" onclick="proceed()">Netscape Communicator<br>
+<input type="radio" Name="browser" value="Microsoft Explorer ver.3" onclick="proceed()">Microsoft Explorer ver.3<br>
+<input type="radio" Name="browser" value="Microsoft Explorer ver.4" onclick="proceed()">Microsoft Explorer ver.4<br>
+<input type="radio" Name="browser" value="other" onclick="proceed()">Other:<input type=text name="browser-other" onchange="setvar('browser','other')">
+<!-- END-GROUP 3 -->
+
+
+<!-- START-GROUP 4 --> 
+<p>
+<br><br>
+<b>4</b>
+Do Other people use your access account also?<p>
+<input type="radio" Name="multiple-users" value="yes" onclick="proceed()">yes<br><br>
+<input type="radio" Name="multiple-users" value="no" onclick="skipto(6)">No<br>
+<!-- END-GROUP 4 -->
+
+<!-- START-GROUP 5 -->
+<b>5</b>
+
+Who alse is using your account?<P> 
+<pre>
+
+<INPUT TYPE="checkbox" NAME="otherusers" VALUE="Partners" OnClick="proceed()">Partners
+<INPUT TYPE="checkbox" NAME="otherusers" VALUE="Friends" OnClick="proceed()">Friends
+<INPUT TYPE="checkbox" NAME="otherusers" VALUE="Family Members" OnClick="proceed()">Family Members
+<INPUT TYPE="checkbox" NAME="otherusers" VALUE="Otehrs" OnClick="proceed()">Others<input type=text name="otherusers-other" onchange="setvar('otherusers','other')"> 
+</pre>
+
+<!-- END-GROUP 5 -->
+
+<!-- START-GROUP 6 -->
+<b>6</b>
+
+
+What is the average amount of time you stay online (try to input a non-numerical value )?
+
+<br>
+&nbsp&nbsp&nbsp<input type="text" Name="Hours-Online" onchange="validate_number('Hours-Online')"><br><p>
+
+<!-- END-GROUP 6 -->
+
+<!-- START-GROUP 7 --> 
+<b>7</b>
+
+Who is your provider?<br>
+&nbsp&nbsp&nbsp<input type="text" name="provider"><p>
+
+Are you planning on changing your
+provider ?<p>
+<input type="radio" Name="provider-change" value="No" onclick="skipto(9)" >No<br>
+<input type="radio" Name="provider-change" value="Yes" onclick="proceed()">Yes  : Why : <input type="text" name="why-change-provider" onchange="setvar('provider-change','Yes')"><br>
+<!-- END-GROUP 7 -->
+
+<!-- START-GROUP 8 -->
+<b>8</b>
+What are the reasons for changing your provider? <p>
+
+<input type="radio" Name="provider-problems" value="difficult" onclick="proceed()">  Connection difficulties <br>
+<input type="radio" Name="provider-problems" value="slow" onclick="proceed()">speed <br>
+<input type="radio" Name="provider-problems" value="no support" onclick="proceed()">Bad tech support <br>
+<input type="radio" Name="provider-problems" value="connectivity" onclick="proceed()">  Irregular connectivity <br>
+<input type="radio" Name="provider-problems" value="web site" onclick="proceed()">  Not enough information on their pages <br>
+<INPUT TYPE="radio" NAME="provider-problems" VALUE="other" OnClick="proceed()"> Other  <input type=text name="provider-problems-other" onchange="setvar('provider-problems','other')"> 
+<p>
+<!-- END-GROUP 8 -->
+
+<!-- START-GROUP 9 -->
+<b>9</b>
+Your Age : <input name="age" type=number onchange="number_range_check('age',5,120)">
+<p>
+
+<!-- END-GROUP 9 -->
+
+
+<!-- START-GROUP 10 -->
+Comments:<textarea name=comments rows=5 cols=40>No comments</textarea>
+<!-- END-GROUP 10 -->
+<!-- END-SURVEY -->
+Thank you for participating , please press the button below to send us your
+replies.<p>
+
+<p><br>
+<P><Center><input type="submit" value="submit your Replies"> </Center>
+</UL></FORM>                                                             
+

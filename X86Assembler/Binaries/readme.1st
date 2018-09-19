@@ -1,0 +1,238 @@
+
+			Generic information on VGAGREEK
+
+	    This is the GREEK language support system totally handcrafted
+    and home-baked by Angelos Karageorgiou. It supports not only the latest
+    ELOT standards on keyboards and ASCII character definitions, but a whole
+    range of VGA systems.
+
+	  After the keyboard and screen driver have been loaded one can have
+    standard 25 lines, or 28,50,55 or 65 lines of text on a standard VGA screen.
+    The programs are called respectively VGA28,VGA50,VGA55 and VGA65.These programs
+    have also been tested on VESA VGA boards with even greater screen sizes using
+    the specific board drivers.
+
+	The reason the screen driver and the keyboard driver are separate are
+    historical. The original PCs from Greece had the character set in ROM, that
+    meant that one only needed the keyboard driver.Since those are bloody
+    expensive to import, one needs the screen driver also.
+
+	 These programs do NOT work under windows.The windows system is different
+    from plain vanilla DOS. But if you have loaded them before starting windows
+    then whenever you start a DOS session they will be there waiting for you.
+
+	      If you have already ran the programs then the following lines
+    should be in greek.
+
+	   Í§ £ß¶®úÂ´ú §ò õ†òô·©ú´ú ò¨´„ ´û ö®ò££„ ´Ê´ú °·´† °·§ò´ú ©‡©´·.
+    í¶ ß¢„°´®¶ ö†ò ´Ê§¶¨™ úÂ§ò† ´¶ ";" , ö†ò õ†ò¢¨´†°· ´¶ ":" .
+
+				HOW TO USE
+
+	Simplicity itself. To switch between GREEK and ENGLISH , press and hold
+    the CONTROL key down and press the minus "-" key. Careful not the minus on the
+    numeric keypad but the one over the "{" key. The stress (´Ê§¶™) appears after a
+    two key combination. First press the ";" key and then the letter you want to
+    be stressed , the letter will appear stressed. Dialysis (õ†ò¢¨´†°·) work the
+    same way, only the start key is now ":" which is the shifted version of ";".
+
+	 If you want the ":" , or ";" to appear instead of stressing a letter just
+    tap them twice, or tap a consonant ( ©Á£≠‡§¶ ) .
+
+	If after exiting some application you try to type some GREEK but instead
+    you get gibberish, then exit to DOS and issue the "SANE" command. That should
+    reset the computer to bilingual operation.
+
+			      WORD OF WARNING
+
+	This is a SOFTWARE only product. This means that I had to patch MS/DOS which
+    in turn means that not all applications will work with the GREEK characters.
+       Well behaved applications that do not access the computer directly but go
+    through DOS  should have no problems, other weird applications who knows.
+
+    The lasejet font is called ALPHA.SFP load it on the printer using
+    HPGREEK.BAT
+
+	Beware some applications load completely new fonts each time you do
+    something. Make sure you follow the documentation of each particular application
+    pertaining to SOFT FONTS.Before buying this package make sure your
+    COMPUTER/APPLICATION/PRINTER combination works with this GREEK.
+
+			      ATTENTION èêéëéïÜ
+	The proportional fonts will work for everything , but if you want
+    nicely formatted tables, use SPACES instead of TABS.TABS try to adjust
+    everything just to fine, and as a result they mangle up.
+
+	The PANASONIC fonts have not been tested , so please if you find
+    any problems contact me and I will somehow fix them.
+
+	Lastly none of the greek printer fonts have the IBM block characters
+    defined. Since I was time strained I put no effort in them. If I decide to
+    define them in some future release , then there will be no update charges
+    from me. If your local salesman demands some money talk straight to me.
+
+	 A reminder : to use any or all of the above commands first CD into
+    the subdirectory where the fonts reside , which is by default C:\VGAGREEK.
+
+			   KEYBOARD EQUIVALENCES
+	    CAPITALS				       SMALL CASE
+	  ENGLISH GREEK 			     ENGLISH GREEK
+	     A	    Ä					a      ò
+	     B	    Å					b      ô
+	     C	    ñ					c      Ø
+	     D	    É					d      õ
+	     E	    E					e      ú
+	     F	    î					f      ≠
+	     G	    Ç					g      ö
+	     H	    Ü					h      û
+	     I	    à					i      †
+	     J	    ç					j      •
+	     K	    â					k      °
+	     L	    ä					l      ¢
+	     M	    ã					m      £
+	     N	    å					n      §
+	     O	    é					o      ¶
+	     P	    è					p      ß
+	     Q	    <					Q      <
+	     R	    R					r      ®
+	     S	    ë					s      ©
+	     T	    í					t      ´
+	     U	    á					u      ü
+	     V	    ó					v      ‡
+	     W	    S					w      ™
+	     X	    ï					x      Æ
+	     Y	    ì					y      ¨
+	     Z	    Ö					z      ù
+
+				    MANIFEST
+			    âò´·¢¶ö¶™ ß®¶ö®ò££·´‡§
+
+    greek.doc	     Instructions				    éõûöÂú™
+    readme.hp	     General Instructions for HP , can ignore
+
+    after
+    before	    Special Printer Control Files
+    last
+
+    gr8x6.fnt	     8x6  screen font
+    gr8x7.fnt	     8x7  screen font
+    gr8x8.fnt	     8x8  screen font		  ïò®ò°´„®ú™ ö†ò ´û§ ¶üÊ§û
+    gr8x14.fnt	     8x14 screen font
+    gr8x16.fnt	     8x16 screen font
+
+    grdraft.lqc      Panasonic Font.		  ïò®ò°´„®ú™ ö†ò Panasonic
+    alpha.sfp	     Portrait Font.		  ïò®ò°´„®ú™ ö†ò è¶®´®òÂ´¶
+
+
+    greek.bat	     EGA Start-up command		Ä®Æ†°„ Ñ§´¶¢„ ö†ò ¶üÊ§ú™ VGA
+    vgagreek.bat     VGA Start-up command		Ä®Æ†°„ Ñ§´¶¢„ ö†ò ¶üÊ§ú™ VGA
+    egagreek.bat     EGA Start-up command		Ä®Æ†°„ Ñ§´¶¢„ ö†ò ¶üÊ§ú™ EGA
+    hpgreek.bat      HP default font downloader 	Ä®Æ†°„ Ñ§´¶¢„ ö†ò LASER
+    hprop.bat	     HP proportional font downloader	Ä®Æ†°„ Ñ§´¶¢„ ö†ò LASER
+    install.bat      Installation commnad		Ñ§´¶¢„ úö°ò´·©´ò©û™
+    land.bat	     Landscape font to printer
+    landprop.bat     Proporional Landscape font to printer
+    pangreek.bat     Panasonic font to printer
+    prop.bat	     Proportional font to printer
+    prop2.bat	     Second Proportianl font to printer
+    fixed.bat	     Fixed font to printer
+    fixed2.bat	     Second Fixed font to printer
+
+    normal.com	      Reset screen to bilingual mode
+		      á‚´ú† ´û§ ¶üÊ§û ©ú õÂö¢‡©©û ¢ú†´¶¨®öÂò
+    cursor.com	      Reappers the cursor.    Ä§òõû£†¶¨®öúÂ ´¶§ õ®¶£‚ò
+
+    vga25.com	      25 line VGA mode	 25 Ç®ò££‚™ ö†· ´†™ ¶üÊ§ú™ VGA (normal mode)
+    vga28.com	      28 line VGA mode	 28 Ç®ò££‚™ ö†· ´†™ ¶üÊ§ú™ VGA
+    vga50.com	      50 line VGA mode	 50 Ç®ò££‚™ ö†· ´†™ ¶üÊ§ú™ VGA
+    vga57.com	      57 line VGA mode	 57 Ç®ò££‚™ ö†· ´†™ ¶üÊ§ú™ VGA
+    vga66.com	      66 line VGA mode	 66 Ç®ò££‚™ ö†· ´†™ ¶üÊ§ú™ VGA
+
+
+    ega25.com	25 line EGA mode   25 Ç®ò££‚™ ö†· ´†™ ¶üÊ§ú™ EGA (normal mode)
+    ega43.com	43 line EGA mode   43 Ç®ò££‚™ ö†· ´†™ ¶üÊ§ú™ EGA
+    ega50.com	50 line EGA mode   50 Ç®ò££‚™ ö†· ´†™ ¶üÊ§ú™ EGA
+    ega58.com	58 line EGA mode   58 Ç®ò££‚™ ö†· ´†™ ¶üÊ§ú™ EGA
+
+    vgablock.com       The VGA driver	    Åò©†°Ê ß®Êö®ò££ò ¶üÊ§û™ VGA
+    egablock.com       The EGA driver	    Åò©†°Ê ß®Êö®ò££ò ¶üÊ§û™ EGA
+    keygr.com	       The keyboard driver  Åò©†°Ê ß®Êö®ò££ò ß¢û°´®¶¢¶öÂ¶¨
+
+		       VGA special goodies  Ñ†õ†°‚™ ú§´¶¢‚™ VGA
+
+    vga80col.com       Resets VGA from 90 to 80 column mode (normal mode )
+    vga80X25.BAT       Resets the VGA board to normal operation
+    vga80X28.BAT       80 columns by 28 lines on VGA
+    vga80X50.BAT       80 columns by 50 lines on VGA
+    vga80X57.BAT       80 columns by 57 lines on VGA
+    vga80x66.BAT       80 columns by 66 lines on VGA
+
+
+    vga90col.com       90 columns on VGA    90 ë´„¢ú™ ©ú ¶üÊ§û VGA
+    vga90x25.bat       90 columns by 25 lines on VGA
+    vga90x28.bat       90 columns by 28 lines on VGA
+    vga90x50.bat       90 columns by 50 lines on VGA
+    vga90x57.bat       90 columns by 57 lines on VGA
+    vga90x66.bat       90 columns by 66 lines on VGA
+
+
+
+
+    Last words .
+
+       Do NOT use ANSI.SYS. It is stupid it will NOT work for more than
+       25 lines or 80 columns.
+
+       If you need 132 column support for greek character sets please contact
+       me personally.
+
+
+			       DISCLAIMER
+
+
+    Copyright (c) Jul 1992  Angelos Karageorgiou all rights reserved
+
+
+	 This program is distributed WITHOUT ANY WARRANTY; without even
+	 the implied warranty of merchantability or fitness for a partic-
+	 ular purpose.
+	 THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM
+	 IS WITH YOU. SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME THE
+	 COST OF ALL NECESSARY SERVICING, REPAIR OR CORRECTION.
+
+	 This program may be freely distributed on a non profit basis,
+	 but you must include all files from the original distribution,
+	 and my name since fame is all I am getting out of it !
+
+
+    REGISTRATION
+	 Not necessary! If you find this program useful, please send a
+	 donation of $10 - or more - or less ,or just a letter or email,
+	 since I'd like to know much people will use this program.
+
+	 Of course you can use it as you wish as long as it is not
+	 included in any commaercial package in any form whatsoever.
+	 In other words If you are gonna sell it , I want _NEED_ a cut.
+	 Any reasonable offer , will not be denied. But knowing the
+	 Hellenic Psyche I think I am in for a run-around.
+
+
+				    ìöúÂò§ °ò† Ñ¨´¨ÆÂò§
+For the non-greek speeking:	    Live long and Prosper
+
+				"It is not Vulcan it is Pontiakon."
+
+
+				     USnail
+                                Angelos karageorgiou
+                                   21 Locust St.
+                                 E. Norwalk CT 06855
+
+                         job Phone:(212) 962-1937 ext 327
+                                  INTERNET Email
+                                 karage@insci.com
+                             karage@scus1.ctstateu.edu
+
+
+
+

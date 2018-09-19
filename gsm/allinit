@@ -1,0 +1,7 @@
+#!/bin/bash
+
+
+PIN=2211
+CENTER=094219000
+/etc/gsm/initperl /dev/ttyS0 $PIN $CENTER
+date

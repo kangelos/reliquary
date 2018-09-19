@@ -1,0 +1,87 @@
+#!/bin/sh
+#
+# Playback a messages list through the modem.
+#
+
+
+TTYS=$1
+shift
+PHONE=$1
+shift
+VMCP="/etc/gsm/vmcp -g -d$TTYS"
+
+check()
+{
+
+	if [  $1 -ne 0 ] 
+	then
+		$VMCP -c"ATH" -wOK
+		exit $1 
+	fi
+}
+
+# Reset the serial line to raw, the modem to factory defaults.
+$VMCP -z38400 -t8 -c"ATH" -wOK
+#check $?
+
+
+# If needed, set some values:
+#  - CD on remote carrier
+#  - Hangup and return to command mode on DTR switch
+#  - Set RTS/CTS hardware flow control
+#$VMCP -c"AT&C1&D2&K3" -wOK
+
+# Select voice mode.
+$VMCP -c"AT#CLS=8" -wOK
+#check $?
+
+
+# Bits per sample.
+$VMCP -c"AT#VBS=4" -wOK
+#check $?
+
+# Slect baud rate (n*2400).
+$VMCP -c"AT#BDR=16" -wOK
+#check $?
+
+# Call originate  value
+#$VMCP -c"AT#VRA=0" -wOK
+#$VMCP -c"AT#VRN=0" -wOK
+#check $?
+
+## Enable silence deletion.
+#$VMCP -c"AT#VSD=1" -wOK
+##check $?
+
+# Voice line select: generally 1 is handset, 2 is speaker.
+$VMCP -c"AT#VLS=1" -wVCON
+#check $?
+
+
+
+$VMCP -c"ATx3D$PHONE" -t15 -wVCON
+check $?
+
+sleep 3
+# Set beep timer (5/10 of s) and beep a tone.
+$VMCP -c"AT#VBT=5#VTS=#" -wOK
+
+for FILE in $*; do
+   if [ -f $FILE ]; then
+
+      # Voice transmit.
+      $VMCP -c"AT#VTX" -wCONNECT
+
+      # Send voice data.
+      echo Playing $FILE...
+      $VMCP -k -e -q -t120 -i$FILE
+	#check $?
+
+      # Send end of data mark: <DLE><ETX> chars.
+      $VMCP -c"\c\020\003" -wVCON
+
+   fi
+done
+
+# Hang-up.
+$VMCP -c"ATH" -wOK

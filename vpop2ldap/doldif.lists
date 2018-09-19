@@ -1,0 +1,7 @@
+#!/bin/sh
+
+# mailing lists
+FindLists > /tmp/lists.ldif
+FindAliases >> /tmp/lists.ldif
+FindCatchall >> /tmp/lists.ldif
+

@@ -1,0 +1,38 @@
+
+     364 file00.scanned
+     809 file01.scanned
+    1118 file02.scanned
+     967 file03.scanned
+     750 file04.scanned
+    2013 file05.scanned
+    2425 file06.scanned
+    2425 file07.scanned
+    2425 file08.scanned
+    2425 file09.scanned
+    2425 file10.scanned
+    2425 file11.scanned
+    2425 file12.scanned
+    2425 file13.scanned
+    2425 file14.scanned
+    2425 file15.scanned
+    2425 file16.scanned
+    1947 file17.scanned
+    1439 file18.scanned
+    1476 file19.scanned
+    1446 file20.scanned
+    1454 file21.scanned
+    1468 file22.scanned
+    1419 file23.scanned
+    1274 file24.scanned
+     836 file25.scanned
+    2425 file26.scanned
+    1643 file27.scanned
+     839 file28.scanned
+    1428 file29.scanned
+     855 file30.scanned
+     992 file31.scanned
+   53637 Total
+Difference 101 with previous run
+Rate:7.76923076923077 domains/sec
+Done:69.1385555369366% (53637 out of 77579)
+

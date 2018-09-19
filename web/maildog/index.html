@@ -1,0 +1,95 @@
+<?
+	include("defaults.php3");   
+?>
+
+<meta charset="iso-8859-7">
+<head>
+<title>MailDog,  Web Email Client (IMAP)
+</title>
+<body bgcolor=white link=maroon vlink=maroon>
+
+<style type="text/css">
+
+<!--
+
+A:link, A:visited { text-decoration: none }
+
+A:hover { text-decoration: underline; color: none }
+
+-->
+
+</style>
+
+
+<script>
+function xgoto(xlocation) {
+    mylocation=xlocation;
+    top.window.frames['inbox'].location=mylocation;
+}
+
+
+function xgoto_top(xlocation) {
+    mylocation=xlocation;
+    top.window.location=mylocation;
+}
+</script>
+</head>
+
+<img src="bigdogs.gif" border=0 align=left>
+<center>
+
+<br>
+<form action=login.html method=post target="main">
+
+<table border=1 cellpadding=10 cellspacing=0 width=70% bgcolor=white>
+<tr bgcolor=gray>
+	<th colspan=2 align=center><font face=arial size=+1>
+		Log in
+	</th>
+</tr>
+
+<tr>
+	<td align=right><font face=arial>
+		Imap Server:
+	</td>
+	<td align=left>
+<?	print "		<input name=server value=\"$server\" size=30>"; ?>
+&nbsp;&nbsp;<i><font size=2>(mail.iqs.gr)</i>
+	</td>
+</tr>
+
+
+<tr>
+	<td align=right>
+		<font face=arial>
+		Account:
+	</td>
+	<td align=left>
+<? print "		<input name=account value=\"$account\" size=30>"; ?>
+	&nbsp;&nbsp;<i><font size=2>(guest)</i>
+	</td>
+</tr>
+<tr>
+	<td align=right><font face=arial>
+		Password:
+	</td>
+	<td align=left>
+<? print "		<input name=password type=password value=\"$password\" size=30>"; ?>
+	&nbsp;&nbsp;<i><font size=2>(guest)</i>
+	</td>
+</tr>
+</table>
+<br>
+
+	<input type=button value="Clean Up" onclick="xgoto_top('nocookies.html')">	
+        <input type=submit value="Log in">
+
+</form>
+
+<br>
+
+
+	<b>MailDog</b> is a web email client for  Imap Servers written by Angelos Karageorgiou<p>
+	</td>
+</tr>
+</table>

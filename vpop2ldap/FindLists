@@ -1,0 +1,51 @@
+#!/bin/bash
+
+grep dir: doms.txt |\
+awk '{ print $2}' | while read dir
+do
+#	ls $dir
+	users=`ls $dir| grep -v vpasswd`
+	for mail in $users
+	do
+		acts=`/usr/local/bin/ezmlm-list $dir/$mail | wc -l `
+		if [ $acts -gt 1 ]
+		then
+			domain=`basename $dir`
+#			echo " ============ $dir $mail @" `basename $dir`
+
+
+homedir="/home/domains/$domain/lists/$mail"
+echo "
+#
+# $domain
+#
+
+dn: uid=$mail,ou=$domain,ou=domains,o=top
+uid: $mail
+mail: $mail@$domain
+cn: $mail list
+sn: $domain 
+objectClass: top
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: qmailUser
+objectClass: PureFTPdUser
+userPassword: none
+homeDirectory: $homedir
+mailMessageStore: $homedir/Maildir/
+mailQuota: 10000000S
+accountStatus: created"
+
+
+			/usr/local/bin/ezmlm-list $dir/$mail | while read other
+			do
+				echo "mailForwardingAddress: $other"
+			done
+
+echo "
+
+"
+		fi
+	done
+done
+

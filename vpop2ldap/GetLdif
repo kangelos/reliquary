@@ -1,0 +1,63 @@
+#!/bin/bash
+
+
+#
+# To be run on the ldap server for fixing up mailing lists
+#
+#
+
+if [ -f /tmp/Getldif.running ]
+then
+        echo "GetLdif still running with process id"
+        cat /tmp/Getldif.running
+        exit 1
+fi
+
+trap "/bin/rm -f /tmp/Getldif.running" KILL INT EXIT
+
+echo $$ > /tmp/Getldif.running
+
+# fetch and decrypr rhe ldif file
+curl  -s http://omail.mydomain.gr/ldif/lists.ldif.crypt -o /tmp/lists.ldif.crypt
+openssl enc -d -bf -k 123321 -in /tmp/lists.ldif.crypt -out /tmp/lists.ldif
+if [ $? -ne 0 ]
+then
+        echo "Lists Decryption failed / partial file"
+        exit 1
+fi
+
+curl -s  http://omail.mydomain.gr/ldif/ldif.crypt -o /tmp/ldif.crypt
+openssl enc -d -bf -k 123321 -in /tmp/ldif.crypt -out /tmp/all.ldif
+if [ $? -ne 0 ]
+then
+        echo "Users Decryption failed / partial file"
+        exit 1
+fi
+
+# save a copy
+cp  /tmp/all.ldif /tmp/all.ldif.save
+cp  /tmp/mods.ldif /tmp/mods.ldif.save
+
+        ldapadd -x -c  -h localhost \
+                -w rootpass -D "cn=root,o=top" \
+                -f /tmp/all.ldif  >&/dev/null
+
+
+
+grep  '^dn: uid=\|^userPassword:\|^mailForwardingAddress:\|^$' /tmp/all.ldif  > /tmp/mods.ldif
+
+        ldapmodify  -x -c -h localhost \
+                -w rootpass -D "cn=root,o=top" \
+                -f /tmp/mods.ldif
+
+
+#force the lists down the systems throat
+ldapadd -x -c  -h localhost  -w rootpass -D "cn=root,o=top"  -f /tmp/lists.ldif
+ldapmodify -x -c  -h localhost  -w rootpass -D "cn=root,o=top"  -f /tmp/lists.ldif
+
+grep -B 8 mailAlter /tmp/lists.ldif | sed -e 's/--//g' |\
+         sed -e 's/mailAlternateAddress/changetype: modify\nadd: mailAlternateAddress\nmailAlternateAddress/g' |\
+        grep -v ^obj  | grep -v ^uid | grep -v ^sn |\
+ldapmodify -x -c  -h localhost  -w rootpass -D "cn=root,o=top"
+
+

@@ -1,0 +1,4 @@
+#!/bin/bash
+
+
+/etc/gsm/linecheck /dev/gsm 

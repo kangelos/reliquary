@@ -1,0 +1,7 @@
+server_host = ldap://ldap01:389 ldap://ldap02:389
+bind=no
+search_base = ou=domains,o=top
+query_filter = (&(ou=%s)(objectClass=organizationalUnit)(objectClass=qmailUser))
+result_attribute = mailTransport
+scope = one
+version = 3

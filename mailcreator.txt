@@ -1,0 +1,85 @@
+#!/bin/bash
+
+
+LDAPMODIFY="ldapmodify -x -h ldapserver -D cn=mailadmin,ou=admins,o=top -w adminpass"
+
+if [ -f /tmp/Creator.running ]
+then
+        echo "Creator still running with process id"
+        cat /tmp/Creator.running
+        exit 1
+fi
+
+trap "/bin/rm -f /tmp/Creator.running" KILL INT EXIT
+
+echo $$ > /tmp/Creator.running
+
+
+ldapsearch  -LLLL -x -h ldapserver accountStatus=created \
+        homeDirectory mailMessageStore mailQuota accountStatus > /tmp/created.$$
+
+echo "" >>  /tmp/created.$$
+
+lines=`cat /tmp/created.$$ | wc -l`
+if [ $lines -lt 3 ]
+then
+        /bin/rm -f /tmp/created.$$
+        /bin/rm -f /tmp/Creator.running
+        exit 1
+fi
+
+cat /tmp/created.$$ | while read line
+do
+
+        LINE=`echo $line | grep ^dn:`
+        if [ $? -eq 0 ]
+        then
+                DN=$LINE
+                continue
+        fi
+        LINE=`echo $line | grep ^homeDirectory:`
+        if [ $? -eq 0 ]
+        then
+                HOMEDIR=`echo $LINE | awk '{print $2}'`
+                continue
+        fi
+
+        LINE=`echo $line | grep ^mailMessageStore:`
+        if [ $? -eq 0 ]
+        then
+                MAILDIR=`echo $LINE | awk '{print $2}'`
+                continue
+        fi
+
+        LINE=`echo $line | grep ^mailQuota:`
+        if [ $? -eq 0 ]
+        then
+                QUOTA=`echo $LINE | awk '{print $2}'`
+                continue
+        fi
+
+
+        LINE=`echo $line | grep "^$"`
+        if [ $? -eq 0 ]
+        then
+                if [ ! -d $HOMEDIR ]
+                then
+                        echo Creating $DN
+                        mkdir -p $HOMEDIR
+                        maildirmake $MAILDIR
+                        maildirmake -q $QUOTA $MAILDIR
+                        chown -R nobody  $HOMEDIR
+                        chgrp -R nobody  $HOMEDIR
+                        chmod -R 755  $HOMEDIR
+                else
+                        echo Skipping $DN
+                fi
+                echo $DN > /tmp/active.$$
+                echo "accountStatus: active" >> /tmp/active.$$
+                echo "" >> /tmp/active.$$
+                $LDAPMODIFY <  /tmp/active.$$ >& /dev/null
+                /bin/rm -f /tmp/active.$$
+        fi
+done
+/bin/rm -f /tmp/created.$$
+

@@ -1,0 +1,90 @@
+#!/usr/bin/perl
+
+
+$SPEED="9600";
+$timeout=15;
+$SIG{__DIE__} = sub { chat::close(); lock::unlock($lockdev); die "$0: $_[0]"; };
+# Possible result codes in general
+@ex_args = (
+	    '\nOK'        =>      '($&,$`)',
+            'TIMEOUT'   =>      '($&,$S)',
+            'EOF'       =>      '($&)',
+            '\n.*ERROR.*\n' =>  '($&,$`)'
+);    
+
+
+require "/etc/gsm/chat3.pl";
+
+
+
+$ld=shift;
+
+if (
+	( $ld =~ /^$/ )
+  ) {
+	print "Usage: linecheck <device>\n";
+	exit -1;
+}
+
+require '/etc/gsm/lock.pl';
+
+# make a lockfile
+$tempdev=$ld;
+$tempdev =~ s/\/dev\///gi;
+
+
+$lockdev = "/tmp/LCK..$tempdev";
+
+
+for ($i=1; ; $i++) {
+        $retval = lock::lock($lockdev,'V2');
+        last if $retval;
+        defined $retval or die "Error while locking serial port";
+        last unless $i<10;
+        sleep($i);                      # wait more
+}
+die "Cannot make lock file $lockdev" unless $retval;          
+
+
+print "
+           Checking GSM modem: $ld\n";
+
+print "=" x 70;
+print "\n\n";
+
+#if ( ( $ld =~ /^$/ ) || ( $pin =~ /^$/ ) || ($STATION =~ /^$/ ) ) {
+#	printf("\n\nUsage: gsminit device PIN CenterNum\n\n\n");
+#	exit(1);
+#}
+
+$device=$ld;
+
+chat::open_tty($device,$SPEED) || die "$progname: $!";
+
+talk("AT",		"chat timed out ");
+talk("AT",		"chat timed out ");
+talk("ATZ",		"chat timed out ");
+talk("AT+CPIN?",	"Bad Pin Number or PIN already installed");
+talk("ATI",		"No Manufacturer ID");
+
+
+chat::close_tty();
+lock::unlock($lockdev);  
+
+0;
+
+sub talk{
+	my ($cmd,$message) = @_;
+	my (@R,$r);
+	@R={};
+	$debug=1;
+	
+	chat::print("$cmd\r");
+	@R = chat::expect($timeout, @ex_args);
+	if ( $debug ) {
+        	foreach $r (reverse(@R)) { print "$r"; }
+	}
+	($R[0] =~ /OK/ ) or die "$message";	# die and signal the booter
+	if ( $debug ) { print "\n"; }
+}        
+

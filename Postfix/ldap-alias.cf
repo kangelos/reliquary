@@ -1,0 +1,8 @@
+bind=no
+domain=hash:/etc/postfix/domains.hash
+server_host = ldap://ldap01:389 ldap://ldap02:389
+search_base = ou=%d,ou=domains,o=top
+query_filter = (mailalternateaddress=%s)
+result_attribute = mail
+scope = sub
+version = 3

@@ -1,0 +1,8 @@
+#!/bin/sh
+
+filename=$QUERY_STRING;
+
+echo "Content-Type: image/jpeg";
+echo "";
+/bin/cat $filename;
+/bin/rm $filename;

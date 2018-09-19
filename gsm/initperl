@@ -1,0 +1,108 @@
+#!/usr/bin/perl
+
+
+$SPEED="9600";
+$timeout=30;
+# Possible result codes in general
+@ex_args = ('OK'        =>      '($&,$`)',
+            'TIMEOUT'   =>      '($&,$S)',
+            'EOF'       =>      '($&)',
+            '\n.*ERROR.*\n' =>  '($&,$`)'
+);    
+
+
+push(@INC,"/etc/gsm"); 
+#require 'lock.pl'; 
+#$lockdir="/tmp";
+
+
+
+
+
+$device=shift;
+$pin=shift;
+$center=shift;
+
+$SIG{__DIE__} = sub { chat::close(); lock::unlock($lockdev); die "$0: $_[0]"; };
+
+
+
+require '/etc/gsm/lock.pl';
+
+# make a lockfile
+$tempdev=$device;
+$tempdev =~ s/\/dev\///gi;
+
+
+$lockdev = "/tmp/LCK..$tempdev";
+
+
+for ($i=1; ; $i++) {
+        $retval = lock::lock($lockdev,'V2');
+        last if $retval;
+        defined $retval or die "Error while locking serial port";
+        last unless $i<10;
+        sleep($i);                      # wait more
+}
+die "Cannot make lock file $lockdev" unless $retval;
+         
+
+
+
+
+
+
+print "
+
+
+
+Initalizing GSM modem: $device
+             with pin: $pin 
+               center: $center\n";
+print "\n\n";
+print "=" x 79;
+print "\n\n";
+
+
+require "/etc/gsm/chat3.pl";
+chat::open_tty($device,$SPEED) || die "$progname: $!";
+
+
+#talk("AT",		"chat timed out ");
+talk("ATE0Q0",		"chat timed out ");
+talk("AT",		"chat timed out ");
+talk("ATZ",		"chat timed out ");
+talk("AT+CPIN=$pin",	"Bad Pin Number or PIN already installed");
+talk("AT+CMEE=1",	"Error message format not defined");
+talk("AT+CGMI",		"No Manufacturer ID");
+talk("AT+CGMM",		"No Model ID");
+talk("AT+CGMR",		"No Revision ID");
+talk("AT+CGSN",		"No Serial Number");
+talk("AT+CREG=1",	"Cannot Register"); 
+talk("AT+COPS=0",	"Cannot Find Automatic Operator");
+#talk("AT+CNMI=2,1",	"BAD CNMI"); 
+talk("AT+CSQ",		"No signal quality output" ); 
+talk("AT+CMGF=0",	"Cannot set message format"); 
+talk("AT+CSCA=\"+3$center\",145","Service Center bad" ); 
+
+
+chat::close_tty();
+lock::unlock($lockdev);  
+
+0;
+
+sub talk{
+	my ($cmd,$message) = @_;
+	my (@R,$r);
+	@R={};
+	$debug=1;
+	
+	chat::print("$cmd\r");
+	@R = chat::expect($timeout, @ex_args);
+	if ( $debug ) {
+        	foreach $r (reverse(@R)) {   print "$r"; }
+	}
+	($R[0] =~ /OK/ ) or warn "$message";   # warn instead of dying
+	if ( $debug ) { print "\n"; }
+}               
+

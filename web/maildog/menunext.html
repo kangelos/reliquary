@@ -1,0 +1,85 @@
+<html>
+<head>
+<meta charset="iso-8859-7">
+<style type="text/css">
+<!--
+A:link, A:visited { text-decoration: none; color: blue  }
+A:hover { text-decoration: underline; color: red }
+-->
+</style>
+
+<script>
+<!--
+
+function xgoto(xlocation) {
+    mylocation=xlocation;
+    top.window.frames['inbox'].location=mylocation;
+}
+
+function xgoto_top(xlocation) {
+    mylocation=xlocation;
+    top.window.location=mylocation;
+}
+
+function mclose(mylocation) {
+    top.window.frames['inbox'].newWin.close();
+    top.window.location=mylocation;
+}
+
+function instructions(){
+confirm(
+"Click on a subject to Read the message\n"+
+"Καντε click σε ένα θέμα για να διαβάσετε το μήνυμα\n"+
+"\n"+
+"\n"+
+"Expunge:\n"+
+"           Removes all messages marked as Deleted\n"+
+"           Διαγράφει όλα τα μηνύματα που είναι μαρκαρισμένα ως Deleted\n"+
+"\n"+
+"Refresh List:\n"+
+"           Reloads a list of your mailbox\n"+
+"           Απαναφορτώνει τη λίστα των μηνυμάτων σας\n"+
+"\n"+
+"Write:\n"+
+"           Allows you to compose a new message\n"+
+"           Σας επιτρέπει να αποστείλετε ένα νέο μήνυμα\n"+
+"\n"+
+"Logout:\n"+
+"           Logs you out, remembers your Domain name and account\n"+
+"           Σας βγάζει απο το σύστημα, κρατάει τα  Domain name and account\n"+
+"\n"+
+"Amnesia:\n"+
+"           Logs you out, remembers nothing\n"+
+"           Σας βγάζει απο το σύστημα, δεν κρατάει τίποτα στη μνήμη\n"+
+"\n"
+);
+}
+// -->
+</script>
+</head>
+
+<body bgcolor=darkgray>
+<br>
+<br>
+<br>
+<br>
+<br>
+<form>
+        <td align=center valign=top><font face=arial>
+
+	 <input type=button value="Expunge" onclick="xgoto('expunge')">
+<p>
+	 <input type=button value="Refresh List" onclick="xgoto('listinbox')">
+<p>
+	 <input type=button value="Write" onclick="xgoto('compose')">
+<p>
+	 <input type=button value="Logout" onclick="xgoto_top('logout')">
+<p>
+	 <input type=button value="Amnesia" onclick="xgoto_top('amnesia')">
+<p>
+	 <input type=button value="Instructions" onclick="instructions()">
+<p>
+	 <input type=button value="Οδηγίες" onclick="instructions()">
+</form>
+</body>
+</html>

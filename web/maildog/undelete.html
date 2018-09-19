@@ -1,0 +1,17 @@
+<?
+if ( empty($server) || empty($account) || empty($password) ) {
+        Header("Location: $MAILDOG");
+        exit;
+}
+
+include('defaults.php3');
+
+	$msg_number=implode($argv," ");
+$mbox = imap_open("{$server:143}INBOX",$account,$password);
+#$status=imap_check($mbox);
+#$num_msg=$status->Nmsgs;
+
+$deleted=imap_undelete($mbox,$msg_number,'1');
+imap_close($mbox);
+Header("Location: $MAILDOG/readmessage.html?$msg_number");
+?>

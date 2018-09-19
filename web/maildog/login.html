@@ -1,0 +1,73 @@
+<?
+
+include("defaults.php3");
+
+
+	$hour=60*60;
+	$day=24 * $hour;
+	$month= 30*day;
+
+
+Function myheader(){
+echo ("
+	<head>
+		<title> MailDog Login</title>
+	</head>
+		<meta charset=iso-8859-7>
+		<body bgcolor=white>
+");
+}
+
+Function mylog($xstring){
+	openlog("MailDog",LOG_CONS|LOG_NDELAY,LOG_AUTHPRIV);
+	syslog(LOG_CRIT,$xstring);
+	closelog();
+}
+
+Function goback(){
+	$referer=getenv('HTTP_REFERER');
+	print "<br><br>";
+	print "<p align=right valign=bottom><a href=\"$referer\">Back / Επιστροφή</a>";
+	exit();
+}
+
+
+
+if ( ( $account == "root" ) ) {
+     myheader();
+     print "<br><br><Center><font color=red face=arial>";
+     print "<h2>Email reading of the <b>root</b> account is not allowed<br>";
+     print "Δεν επιτρέπεται η ανάγνωση του email για το account <b>root</b><br>\n";
+     print "<br>This attempts has been logged / Η προσπάθειά σας έχει εγγραφεί</h2>";
+     print "<br><br>";
+     $errorx="Root account probe from " . getenv('REMOTE_ADDR') ."," . getenv('REMOTE_HOST');
+     mylog($errorx);
+     goback();
+}
+
+
+
+$mbox = @imap_open("{$server:143}INBOX",$account,$password,OP_READONLY);
+
+
+if ( $mbox ) {
+	imap_close($mbox);
+     	$errorx="Successful login account=$account from " . getenv('REMOTE_ADDR') ."," . getenv('REMOTE_HOST');
+     	mylog($errorx);
+	SetCookie("server",	"$server",	time()+2592000);
+	SetCookie("account",	"$account",	time()+2592000);
+	SetCookie("password",	"$password"); # expire at the exit of the program
+
+	Header("Location: $MAILDOG/inbox.html");
+	exit;
+} else {
+	myheader();
+	print "<br><br><Center><font color=red face=arial>";
+	print "<h2>The Login Info you provided is wrong<br>";
+	print "Τα στοιχεία που δώσατε δεν είναι σωστά</h2> ";
+	print "<br><br><h3>$result</h3> ";
+     	$errorx="Failed authentication $account@$server";
+     	mylog($errorx);
+	goback();
+}
+?>

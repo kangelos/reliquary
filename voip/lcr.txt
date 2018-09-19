@@ -1,0 +1,92 @@
+#!/usr/bin/perl
+
+
+#use strict;
+my $DEBUG=1;
+
+# mysql table used
+# select * from lcr limit 10;
+#+--------+------------+
+#| prefix | providers  |
+#+--------+------------+
+#| 1      | GC,MCI,ALG |
+#| 1064   | GC,MCI,ALG |
+#| 1150   | GC,MCI,ALG |
+#| 1170   | GC,MCI,ALG |
+#| 1172   | GC,MCI,ALG |
+#| 1173   | GC,MCI,ALG |
+#| 1177   | GC,MCI,ALG |
+#| 1178   | GC,MCI,ALG |
+#| 1186   | GC,MCI,ALG |
+#| 1201   | GC,MCI,ALG |
+#+--------+------------+
+
+
+#######################################################################
+#
+#       Create the regex to match the LCR
+# 2(3(1(0)?)?)?)? ....
+#######################################################################
+
+sub makeqnum{
+my ($lnum)=@_;
+
+        my $qnum="^";
+        my $i=0;
+        for ($i=0;$i<length($lnum)-1; $i++){
+                $qnum .= substr($lnum,$i,1) ."(" ;
+        }
+        $qnum .= substr($lnum,$i,1);    # at the middle
+        for ($i=0;$i<length($lnum)-1; $i++){
+                $qnum .=  ")?" ;
+        }
+        $qnum .= "\$" ;
+return $qnum;
+}
+
+
+######################################################################
+#
+# Find the Least Cost Route
+#
+######################################################################
+
+sub findlcr{
+my $number=shift;
+my $LOG=shift;
+my $uniq=shift;
+my $dbh=shift;
+
+
+$number=~ s/^69/3069/g;	# numbers in greece
+$number=~ s/^2/302/g;	# numbers in greece
+$number=~ s/^00//g;	# international
+$number=~ s/^+//g;	# international
+
+
+my $pat=makeqnum($number);
+
+
+my $foundkey="";
+
+my $query = "select * from lcr where prefix regexp '$pat' order by length(prefix) desc limit 1 ";
+
+print LOG " $query \n" if ( $SQLDEBUG);
+
+my $sth  = $dbh->prepare($query);
+my $affectedrows=$sth->execute || print LOG "Couldn't exec sth! $query";
+my @values =  $sth->fetchrow;
+$sth->finish;
+
+my $mypre=$values[0];
+my $myprov=$values[1];
+
+
+        print $LOG "$uniq:Mysql LCR Selected $mypre $myprov\n";
+
+        if ( defined ($myprov) ) {
+                return($myprov,$mypre);
+        }
+
+return undef;
+}

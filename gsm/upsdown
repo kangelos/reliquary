@@ -1,0 +1,36 @@
+#!/usr/bin/perl
+
+# Angelos Karageorgiou   angelos@unix.gr
+#
+# APC upses can send email when the power goes off, here is the script
+# to get them on a gsm phone
+#
+
+
+$finish=0;
+foreach (<STDIN>) {
+	if ( $_ =~ /^\n$/gi ) {
+		$finish=1;
+	}
+
+	if ( ( $finish ) || ($_ =! /From\:/gi ) ) {
+
+		$text .= $_ ;
+	}
+}
+
+
+$command="/etc/gsm/sendsms /dev/ttyS0 $PHONE \"$text\"";
+
+
+
+
+
+system($command);
+
+
+#$filename="/tmp/ups.$$";
+#
+#open(OUT,"> $filename") || die "Cannot create temp file";
+#printf(OUT "%s", $text);
+#close(OUT);

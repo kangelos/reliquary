@@ -1,0 +1,23 @@
+<script language="Javascript">
+
+<!-- 
+ function checkemail(email){
+ var datum=email.value; 
+ var atsign=0; 
+ var dotsign=0; 
+ var spacesign=0; 
+ var len=0;
+ atsign=datum.indexOf("@"); 
+ dotsign=datum.indexOf("."); 
+ spacesign=datum.indexOf(" "); 
+ if ( (dotsign<0) || (atsign<0) || (spacesign>0) || (datum=="") ||
+(datum.length) < 10  ) {  
+ alert("This is an invalid e-mail:"+datum); 
+        email.value=""
+        email.focus();
+        return false
+        }
+}
+ // -->
+
+</script>

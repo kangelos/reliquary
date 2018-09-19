@@ -1,0 +1,150 @@
+#!/usr/bin/perl
+#
+#  Perl interface for reading sms messages, (c) Angelos Karageorgiou angelos@unix.gr
+#
+$progname="gsm2email";
+
+# Possible result codes in general
+@ex_args = (
+            'OK'        =>      '($&,$`)',
+            'TIMEOUT'   =>      '($&,$S)',
+            'EOF'       =>      '($&)',
+            '\n.*ERROR.*\n' =>  '($&,$`)'
+);
+
+
+$debug=0;
+$device=$ARGV[0];
+
+
+if ( ! $device )  { die "Usage: gsm2mail <device>\n"; }
+
+require '/etc/gsm/lock.pl';
+require '/etc/gsm/sms.pl';
+require '/etc/gsm/chat3.pl';
+
+# make a lockfile
+$tempdev=$device;
+$tempdev =~ s/\/dev\///gi;
+
+
+$lockdev = "/var/lock/LCK..$tempdev";
+
+for ($i=1; ; $i++) {
+        $retval = lock::lock($lockdev,'V2');
+        last if $retval;
+        defined $retval or die "Error while locking serial port";
+        last unless $i<10;
+        sleep($i);                      # wait more
+}
+die "Cannot make lock file $lockdev" unless $retval; 
+
+
+
+
+#
+# Reverse mapping
+#
+$REVERSE{'+30937661087'}="cmanas\@iqs.gr";
+$REVERSE{'+30937792281'}="angelos\@iqs.gr";
+
+############################################################################
+#
+#       The real work to read an SMS message
+#
+############################################################################
+
+$SPEED = "9600";
+$timeout = 15;
+
+$rate=0.3;
+$frate=0.05;
+
+chat::open_tty($device,$SPEED) || die "$progname: $!";
+
+
+chat::print("AT\r");            # miss a few heartbeats but set up line correctly
+@R = chat::expect($timeout, @ex_args);
+($R[0] =~ /OK/ ) or die "$progname: chat timed out $R[0]";
+if ( $debug ) { print "@R"; }
+
+chat::print("AT\r");            # miss a few heartbeats but set up line correctly
+@R = chat::expect($timeout, @ex_args);
+($R[0] =~ /OK/ ) or die "$progname: chat timed out $R[0]";
+if ( $debug ) { print "@R"; }
+
+chat::print("AT+CMGL=4\r");           # List all messages
+@R = chat::expect($timeout, @ex_args);
+if ($R[0] =~ /OK/) {
+        my ($index,$state,$length);
+        @lines = split(/\n/,$R[1]);
+
+        while (@lines) {
+                $_ = shift @lines;
+                if (/\+CMGL:\D*(\d+)\D+(\d+)\D+(\d+)/i) {
+                        $index = $1;
+                        $state = ('New','Old','Unsent','Sent')[$2];
+                        $length = $3;
+                }
+                elsif (/^([\da-f]{26,})/i) {
+                        my ($number,$time,$msg,$pid,$coding,$sca,$hdr) =
+                                sms::decode_pdu($1,$feature{nosca} + $feature{noscalisted});
+		print "$index $msg\n" if ( $debug) ;
+                        push(@messages,
+                                [$index,$state,$number,$time,$msg]);
+
+			#
+			# Now delete the message
+			#
+			chat::print("AT+CMGD=$index\r");  
+			@R = chat::expect($timeout, @ex_args);
+			($R[0] =~ /OK/ ) or print "cannot delete msg #$index";
+			if ( $debug ) { print "@R"; }
+                }
+        }
+}
+else { 
+	die "Unknown error. $lines[0] $R[0]"; } 
+
+chat::close_tty($device,$SPEED);
+lock::unlock($lockdev);      
+#==============================================================================
+
+foreach (sort {$$a[3] cmp $$b[3]} @messages) {  # Sort by time
+    $msg="";
+    ($index,$state,$number,$time,$msg) = @$_;        
+
+
+    foreach $part (@text) { $msg .= $part . ' '; }
+    $PHONE{$idx}=$phone;
+    $MSG{$idx}=$msg;
+    print "Message is $msg\n\n" if ( $debug )  ;
+}
+
+
+foreach $index (sort(keys(%PHONE))) {
+    ($cmd,$email,@rest)=split(' ',$msg);
+    if ( $cmd =~ /[MmÌì]/ ) {
+        $mailmsg="";
+        foreach $part (@rest) {
+            $mailmsg .= $part . ' ';
+        }
+        $PHONE{$idx}=$phone;
+        open(MAIL,"|/usr/lib/sendmail -i $email");
+        print MAIL "From: $REVERSE{$PHONE{$index}}\n";
+        print MAIL "To: $email\n";
+        print MAIL "Subject: Email from mobile\n";
+        print MAIL "\n\n";
+        print MAIL "$mailmsg\n";
+        print MAIL "\n";
+        print MAIL "=" x 79;
+        print MAIL "\n";
+        print MAIL "This is an email from a mobile phone\n";
+        print MAIL "If you respond to this message only the first 160\n";
+        print MAIL " characters of your reply will be sent.\n";
+        close(MAIL);
+        print "\nEmail from $PHONE{$index} to $email '$mailmsg'";
+    } else {
+       print "Unknown Command '$MSG{$index}'";
+    }
+}

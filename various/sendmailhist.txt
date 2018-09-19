@@ -1,0 +1,78 @@
+
+
+ From: Angelos Karageorgiou (angelos@davinci.netaxis.com)
+ Subject: local domain rule 
+ Newsgroups: comp.mail.sendmail
+ Date: 1995/12/12 
+
+
+
+        I have succefully converted to sendmail 8.7.3 configuration files
+and I saw in S0 the rule for the local domains
+R$*<@ $=w .> $*         $#local $:$1 
+
+why not make it
+
+R$*<@ $* . $=w .> $*            $#local $:$1 
+
+in which case you not only receive say 
+thisdomain.com but also www.thisdomain.com , ftp.thisdomain.com etc etc
+,
+it sure works for about 100 or so domains in one setup
+The above scheme also evades wildcarded MX records in DNS so that named
+does not bitch .
+
+        Ideas , flames , introspcetion ?
+
+
+ From: Anne Brink (anneb@svl.tec.army.mil)
+ Subject: Re: local domain rule 
+ Newsgroups: comp.mail.sendmail
+ Date: 1995/12/13 
+
+
+Angelos Karageorgiou (angelos@davinci.netaxis.com) wrote:
+
+:       I have succefully converted to sendmail 8.7.3 configuration files
+: and I saw in S0 the rule for the local domains
+: R$*<@ $=w .> $*               $#local $:$1  
+: why not make it 
+: R$*<@ $* . $=w .> $*          $#local $:$1  
+: in which case you not only receive say 
+: thisdomain.com but also www.thisdomain.com , ftp.thisdomain.com etc etc
+: ,
+: it sure works for about 100 or so domains in one setup
+: The above scheme also evades wildcarded MX records in DNS so that named
+: does not bitch . 
+:       Ideas , flames , introspcetion ?
+
+I can see a potential problem immediately.
+
+Would this not cause the following problem?
+
+The machine tec.army.mil, at our site, would suddenly accept as local
+all mail sent from tec.army.mil addressed to any machine in the domain
+tec.army.mil, including /my/ machines, which all masquerade as 
+svl.tec.army.mil.
+
+Experiments I did with a test sendmail.cf do show that this way I can 
+force mail from tec.army.mil to www.tec.army.mil would be delivered as 
+local.  They're not the same machine.
+
+Given that we all have differing user bases, I would consider this a 
+Bad Thing (TM).
+
+You might consider creating a class that contains all valid prefixes,
+to contain prefixes ftp, www, etc.; however, I say this with the reservation
+that the bookkeeping between there and the Cw enumeration runs a high risk of
+posing consistency problems.  Given that we can now put class w in a file, 
+which can be maintained and checked by perl scripts if they get WAY too complex
+(lord, let's hope not) I think keeping it in class w is the way to go.
+
+
+
+                                        Merry Christmas and all that!
+                                        -Anne Brink
+                                        anneb@svl.tec.army.mil
+
+

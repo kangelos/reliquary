@@ -1,0 +1,103 @@
+#!/usr/bin/perl
+
+require "lcr.pl";
+
+#********************************************************************
+#
+#   The dial plan is here with a bug on purpose
+#
+#********************************************************************
+
+sub dial {
+my ($num,$LOG,$uniqueid,$leftime,$AGI,$callerid,$dbh)=@_;
+my $CALLPOSTFIX="\|65\|C";
+my $ALGONET_CALLERID='2117513120';
+$num=~ s/\s//g;
+
+$number=$num;
+$number =~ s/^69/003069/;       # internationalize greek numbers
+$number =~ s/^2/00302/;
+
+my ($prov_ord,$prefix)=findlcr($num,$LOG,$uniqueid,$dbh);
+@provider_order=split(',',$prov_ord);
+if ($#provider_order < 0 ) { # error !
+        print $LOG "error in LCR matching\n";
+        return (-1,'','',0);
+}
+print $LOG "$uniqueid: Will try to call  $num with providers => $prov_ord prefix=> $prefix\n";
+
+
+my $provider_path= "" ;
+foreach $provider (@provider_order) {
+        my $result=undef;
+        my $dialstring="";
+        $provider_path.= "," . $provider; $provider_path =~ s/^,//;
+
+        if ( $provider eq 'VOIPTALK.ORG') {
+                $dialstring="IAX2/811774\@voiptalk/" . $number;
+        }
+        elsif ( $provider eq 'GC') {
+                my $number=$num;
+                $dialstring="SIP/gcrossing/" . $number;
+        }
+        elsif ( $provider eq 'MCI') {
+                my $number=$num;
+                $dialstring="OH323/h323:" .  $number . "\@MCIGW" ;
+        }
+        elsif ( $provider eq 'ZAP') {
+                $number =~ s/^0030//;   #local provider
+                $dialstring="Zap/g1/" . $number;
+          else {
+                print $LOG "$uniqueid:Unknown provider $provider\n";
+                next;
+        }
+        $dialstring .=  $CALLPOSTFIX;
+
+        print $LOG "$uniqueid:Trying call $num with $provider -> $dialstring\n";
+
+        $AGI->exec('ResetCDR');
+        if ( $leftime > 0 ) {
+                $AGI->exec('AbsoluteTimeout',$leftime;
+        }
+
+        $result=$AGI->exec('Dial', $dialstring); # true work
+
+        my $dstatus= $AGI->get_variable('DIALSTATUS');
+        my $dtime= $AGI->get_variable('DIALEDTIME');
+        my $anstime= $AGI->get_variable('ANSWEREDTIME');
+        $estm_time=$anstime;
+
+
+        print $LOG "$uniqueid:  *** --- *** dialstatus = \"$dstatus\" result=$result DIALEDTIME=$dtime ANSWEREDTIME=$anstime EstTime=$estm_time\n";
+
+  if ( ( $dstatus =~ /CONGESTION/) || ( $dstatus =~ /CHANUNAVAIL/) )  {
+                print $LOG "$uniqueid:Call failed  $num with $provider result=$result dialstatus=$dstatus trying next provider\n";
+                next ; # try next provider
+        }
+
+        $AGI->hangup(); #just in case
+        print $LOG "$uniqueid:Call finished  $num with $provider\n";
+        if (
+                ( $dstatus =~ /NOANSWER/ ) ||
+                ( $dstatus =~ /CANCEL/ ) ||
+                ( $dstatus =~ /BUSY/ )
+         )  {
+                print $LOG "$uniqueid:Call failed  $num with $provider\n";
+                return (-1,$provider,$provider_path,$dstatus,$estm_time);
+
+        }
+        # call success
+        print $LOG "$uniqueid:Call success  $num with $provider\n";
+        return (1,$provider,$provider_path,$dstatus,$estm_time);
+}
+
+$AGI->hangup();
+# we should not reach this point....
+print $LOG "$uniqueid:Call failed alltogether $num $dstatus\n";
+return (-1,'',$provider_path,$dstatus,$estm_time);
+}
+
+
+
+1;
+

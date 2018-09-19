@@ -1,0 +1,127 @@
+#!/usr/bin/perl
+
+
+push(@INC,"/etc/gsm"); 
+#require 'lock.pl'; 
+#$lockdir="/tmp";
+
+print $#;
+
+$ld=shift;
+$pin=shift;
+$center=shift;
+
+if (
+	( $ld =~ /^$/ ) ||
+	( $pin =~ /^$/ ) ||
+	( $center =~ /^$/ )
+  ) {
+	print "Usage: initperl <device>,<PIN>,<Message Center>\n";
+	exit -1;
+}
+
+print "
+
+
+
+Initalizing GSM modem: $ld 
+             with pin: $pin 
+               center: $center\n";
+print "=" x 79;
+print "\n\n";
+
+sleep 1;
+#if ( ( $ld =~ /^$/ ) || ( $pin =~ /^$/ ) || ($STATION =~ /^$/ ) ) {
+#	printf("\n\nUsage: gsminit device PIN CenterNum\n\n\n");
+#	exit(1);
+#}
+
+#$lockdev = "$lockdir/LCK..$ld";
+
+#$retval = lock::lock($lockdev);
+#$retval or die "Cannot lock serial port";
+          
+
+$rate=0.01;
+
+use Expect;
+
+$device=$ld;
+
+# open the device
+open(DEVICE,"+>$device") || die "Couldn't open $device, $!\n";
+
+# Expectize it. note the \* which we do because we didn't use the OO
+# method of opening the device.
+$modem=Expect->exp_init(\*DEVICE);
+# Let's watch the output. Once again, output isn't automatically
+# watched since it was an initialized handlde and not a process.
+$modem->log_stdout(1);
+
+# Put it in raw mode w/ no echoing so it will operate as expected.
+$modem->exp_stty('raw','-echo','9600');
+
+#print "Initializing modem on $device\n";
+$modem->send_slow(0.5,"\r");
+
+$modem->send_slow(0.5,"\r");
+
+$modem->send_slow(0.5,"AT\r");
+$modem->expect(10,'-re','^OK\r?$')|| warn "Never got OK from modem\n";
+
+$modem->send_slow($rate,"AT+CPIN=$pin\r");
+$modem->expect(2,'-re','^OK\r?$') ||  warn "\n\nBad Pin Number or PIN already installed\n";
+
+$modem->send_slow($rate,"ATZ;+CSDH=0;+CMGF=0;\r");
+$modem->expect(10,'-re','^OK\r?$')|| warn "Never got OK from modem\n";
+
+$modem->send_slow($rate,"AT+CMEE=1\r");
+$modem->expect(10,'-re','^OK\r?$')|| warn "Error message format not defined\n";
+
+$modem->send_slow($rate,"AT+CGMI\r");
+$modem->expect(10,'-re','^OK\r?$') ||  warn "No Manufacturer ID\n";
+
+$modem->send_slow($rate,"AT+CGMM\r");
+$modem->expect(10,'-re','^OK\r?$') ||  warn "No Model ID\n";
+
+$modem->send_slow($rate,"AT+CGMR\r");
+$modem->expect(10,'-re','^OK\r?$') ||  warn "No Revision ID\n";
+
+#$modem->send_slow($rate,"AT+CXXCID\r");
+#$modem->expect(10,'-re','^OK\r?$') ||  warn "No card ID\n";
+
+$modem->send_slow($rate,"AT+CGSN\r");
+$modem->expect(10,'-re','^OK\r?$') ||  warn "No Serial Number\n";
+
+
+#$modem->send_slow($rate,"AT+CREG=1\r");
+#$modem->expect(15,'-re','^OK\r?$') ||  warn "Cannot Register \n";
+
+#$modem->send_slow($rate,"AT+COPS=0\r");
+#$modem->expect(15,'-re','^OK\r?$') ||  warn "Cannot Find Automatic Operator \n";
+
+#$modem->send_slow($rate,"AT+CNMI=2,1\r");
+#$modem->expect(10,'-re','^OK\r?$')|| warn "BAD CNMI\n";
+
+$modem->send_slow($rate,"AT+CSQ\r");
+$modem->expect(10,'-re','^OK\r?$')|| warn "No signal quality output\n";
+
+
+$modem->send_slow($rate,"AT+CMGF=0\r");
+$modem->expect(10,'-re','^OK\r?$')|| warn "Cannot set message format\n";
+
+#$modem->send_slow($rate,"AT+CLIP=1\r");
+#$modem->expect(10,'-re','^OK\r?$') ||  warn "Could not Set Calling Line ID\n";
+
+$modem->send_slow($rate,"AT+CSCA=\"+3$center\",145\r");
+$modem->expect(10,'-re','^OK\r?$')|| warn "Service Center bad\n";
+
+$modem->expect(0);
+$modem->hard_close();
+
+#lock::unlock($lockdev);
+
+
+
+print "=" x 79;
+print "\n\n";

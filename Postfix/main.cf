@@ -1,0 +1,37 @@
+###### This is NOT a full main.cf , just the ldap sectrion
+
+virtual_transport=maildrop:
+virtual_uid_maps = static:65535
+virtual_gid_maps = static:65534
+
+virtual_mailbox_domains	= hash:/etc/postfix/domains.hash
+transport_maps		= hash:/etc/postfix/transport
+recipient_canonical_maps = ldap:/etc/postfix/ldap-aliasdomains.cf
+virtual_mailbox_maps	= ldap:/etc/postfix/ldap-virtual.cf
+virtual_alias_maps      =       ldap:/etc/postfix/ldap-virtual-vacation.cf,
+                                ldap:/etc/postfix/ldap-forwarding.cf,
+                                ldap:/etc/postfix/ldap-virtual.cf,
+                                ldap:/etc/postfix/ldap-alias.cf,
+                                ldap:/etc/postfix/ldap-catchall.cf
+
+maildrop_destination_recipient_limit=1
+
+smtpd_helo_required = yes
+disable_vrfy_command = yes
+
+smtpd_recipient_restrictions =
+	    permit_mynetworks,
+	    reject_invalid_hostname,
+	    reject_non_fqdn_hostname,
+	    reject_non_fqdn_sender,
+	    reject_non_fqdn_recipient,
+	    reject_unknown_sender_domain,
+	    reject_unknown_recipient_domain,
+	    reject_unauth_destination,
+	    permit
+
+smtpd_data_restrictions =
+	    reject_unauth_pipelining,
+	    reject_multi_recipient_bounce,
+	    permit
+

@@ -1,0 +1,16 @@
+#!/usr/bin/perl5
+
+$query=$ENV{'QUERY_STRING'};
+
+($type,$mypid)=split(',',$query);
+
+$filename="/tmp/swellfile.$mypid";
+
+print "Content-Type: $type\r\n\r\n";
+
+open(FILE,"< $filename") || die "No can do";
+foreach(<FILE>){
+	print $_;
+}
+close(FILE);
+unlink  $filename  ;

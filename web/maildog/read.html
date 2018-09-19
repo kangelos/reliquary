@@ -1,0 +1,15 @@
+<html>
+<head>
+<title>
+	 MailDog by Angelos Karageorgiou
+</title>
+</head>
+<?  $msg=implode($argv," "); ?>
+
+
+<frameset cols="150,*" border=0 framespacing=0 framepadding=0>
+	<frame name="menu" src="readmenu.html?<? print "$msg"; ?>" scrolling=no marginheight=0 marginwidth=0 noresize>
+	<frame name="message" src="readmessage.html?<? print "$msg"; ?>" marginheight=0 marginwidth=0 scrolling=auto rightmargin=0>
+</frameset>
+
+</html>

@@ -1,0 +1,58 @@
+<?
+include('defaults.php3');
+if ( empty($server) || empty($account) || empty($password) ) {
+        Header("Location: $MAILDOG");
+        exit;
+}
+?>
+<meta charset="iso-8859-7">
+<body bgcolor="#eeeeee">
+<font face=arial>
+<center>
+<table bgcolor="#006699" width=100% border=0 cellpadding=5>
+<tr>
+	<td align=center><font face=arial color="white" size=+1>
+		New Message / Νέο  μηνύμα
+	</td>
+</tr>
+</table>
+<center>
+<form action="sendmail.html" method=post>
+<table border=0 cellpadding=7 cellspacing=7 bgcolor="#eeeeee">
+ <tr>
+        <td align=right><font Face=arial>
+		From:
+	</td>
+	<td> <font Face=arial>
+<? 
+	print "		<input name=\"email\" value=\"$account@$server\" size=60>"; 
+?>
+	</td>
+</tr>
+ <tr>
+        <td align=right>
+		<font Face=arial> To:
+	</td>
+	<td> <font Face=arial>
+		<input name="to" size=60>
+	</td>
+</tr>
+ <tr>
+        <td align=right>
+		<font Face=arial> Subject:
+	</td>
+	<td>  <font Face=arial>
+		<input name="subject" size=60>
+	</td>
+</tr>
+<tr>
+ 	<td valign=top>
+		<font Face=arial>Message:
+	</td> 
+	<td>
+	<textarea name="message" rows=10 cols=78></textarea>
+	</td>
+</tr>
+</table>
+<input type="Submit" value="                Send it                ">
+</form>

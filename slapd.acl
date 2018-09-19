@@ -1,0 +1,20 @@
+
+access to  dn.regex=".*,ou=admins,o=top$"
+        by self write
+        by * auth
+
+access to  dn.regex=".*ou=(.*),ou=domains,o=top$" attrs=userPassword
+        by self write
+        by anonymous auth
+        by dn.exact,expand="uid=postmaster,ou=$1,ou=domains,o=top" write
+        by dn.exact="cn=mailadmin,ou=admins,o=top" write
+        by dn.exact="cn=readonly,ou=admins,o=top" read
+
+access to  dn.regex=".*ou=(.*),ou=domains,o=top$"
+        by self write
+        by dn.exact,expand="uid=postmaster,ou=$1,ou=domains,o=top"  write
+        by dn.exact="cn=mailadmin,ou=admins,o=top"  write
+        by dn.exact="uid=readonly,ou=admins,o=top"  read
+        by peername.IP=127.0.0.1 read
+        by peername.IP=mxserver.ip read
+

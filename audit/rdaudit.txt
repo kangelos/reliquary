@@ -1,0 +1,45 @@
+#!/c:/perl/bin/wperl.exe
+#
+#
+# Zero budget sox compliance for rdesktop users 
+# Angelos Karageorgiou angelos@unix.gr Nov 2007
+# 
+
+$ROOTPATH="C:\\Video"; # or anywhere else you want
+
+use Win32::GUI;
+
+BEGIN{
+    Win32::SetChildShowWindow(0) 
+        if defined &Win32::SetChildShowWindow;
+}
+
+use Win32::Capture;
+
+
+$user=Win32::LoginName();
+$machine=Win32::NodeName();
+$session=$ENV{'SESSIONNAME'};
+
+mkdir $ROOTPATH;
+mkdir $ROOTPATH . "\\" . $user;
+mkdir $ROOTPATH . "\\" . $user . "\\" . $machine;
+mkdir $ROOTPATH . "\\" . $user . "\\" . $machine . "\\" . $session;
+mkdir $ROOTPATH . "\\" . $user . "\\" . $machine . "\\" . $session . "\\" . $$;
+$path=$ROOTPATH . "\\" . $user . "\\" . $machine . "\\" . $session . "\\" . $$;
+
+my $thread=Win32::GetCurrentThreadId();
+my $thr=$thread;
+
+print "$thread \n";
+$i=0;
+while ($thread == $thr) {
+	$image = CaptureScreen();
+	$filename=sprintf("%s\\screenshot_%05d.png" , $path,$i++);
+
+	$image->SaveToFile($filename);
+	$thr=Win32::GetCurrentThreadId();
+	sleep 1;
+} 
+
+

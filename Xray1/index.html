@@ -1,0 +1,1080 @@
+<html xmlns:v="urn:schemas-microsoft-com:vml"
+xmlns:o="urn:schemas-microsoft-com:office:office"
+xmlns:w="urn:schemas-microsoft-com:office:word"
+xmlns="http://www.w3.org/TR/REC-html40">
+
+<head>
+<meta http-equiv=Content-Type content="text/html; charset=windows-1253">
+<meta name=ProgId content=Word.Document>
+<meta name=Generator content="Microsoft Word 9">
+<meta name=Originator content="Microsoft Word 9">
+<link rel=File-List href="filelist.xml">
+<link rel=Edit-Time-Data href="editdata.mso">
+<link rel=OLE-Object-Data href="oledata.mso">
+<!--[if !mso]>
+<style>
+v\:* {behavior:url(#default#VML);}
+o\:* {behavior:url(#default#VML);}
+w\:* {behavior:url(#default#VML);}
+.shape {behavior:url(#default#VML);}
+</style>
+<![endif]-->
+<title>Τεχνικη αναλυση για τη βελτιστοποιηση εφαρμογων internet, και μελετη των
+στατιστικων με το πακετο Xray</title>
+<!--[if gte mso 9]><xml>
+ <o:DocumentProperties>
+  <o:Author>CCC</o:Author>
+  <o:LastAuthor>CCC</o:LastAuthor>
+  <o:Revision>2</o:Revision>
+  <o:TotalTime>118</o:TotalTime>
+  <o:LastPrinted>2001-12-05T10:50:00Z</o:LastPrinted>
+  <o:Created>2001-12-05T14:20:00Z</o:Created>
+  <o:LastSaved>2001-12-05T14:20:00Z</o:LastSaved>
+  <o:Pages>6</o:Pages>
+  <o:Words>2513</o:Words>
+  <o:Characters>14325</o:Characters>
+  <o:Company>invan</o:Company>
+  <o:Lines>119</o:Lines>
+  <o:Paragraphs>28</o:Paragraphs>
+  <o:CharactersWithSpaces>17592</o:CharactersWithSpaces>
+  <o:Version>9.2720</o:Version>
+ </o:DocumentProperties>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <w:WordDocument>
+  <w:DisplayHorizontalDrawingGridEvery>0</w:DisplayHorizontalDrawingGridEvery>
+  <w:DisplayVerticalDrawingGridEvery>0</w:DisplayVerticalDrawingGridEvery>
+  <w:UseMarginsForDrawingGridOrigin/>
+  <w:Compatibility>
+   <w:FootnoteLayoutLikeWW8/>
+   <w:ShapeLayoutLikeWW8/>
+   <w:AlignTablesRowByRow/>
+   <w:ForgetLastTabAlignment/>
+   <w:LayoutRawTableWidth/>
+   <w:LayoutTableRowsApart/>
+  </w:Compatibility>
+ </w:WordDocument>
+</xml><![endif]-->
+<style>
+<!--
+ /* Style Definitions */
+p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{mso-style-parent:"";
+	margin:0cm;
+	margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:10.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";
+	mso-ansi-language:EL;}
+h1
+	{mso-style-next:Normal;
+	margin-top:12.0pt;
+	margin-right:0cm;
+	margin-bottom:3.0pt;
+	margin-left:0cm;
+	mso-pagination:widow-orphan;
+	page-break-after:avoid;
+	mso-outline-level:1;
+	font-size:16.0pt;
+	font-family:Arial;
+	mso-font-kerning:16.0pt;
+	mso-ansi-language:EL;}
+h2
+	{mso-style-next:Normal;
+	margin:0cm;
+	margin-bottom:.0001pt;
+	text-align:right;
+	mso-pagination:widow-orphan;
+	page-break-after:avoid;
+	mso-outline-level:2;
+	font-size:10.0pt;
+	font-family:"Times New Roman";
+	mso-ansi-language:EL;}
+h3
+	{mso-style-next:Normal;
+	margin-top:12.0pt;
+	margin-right:0cm;
+	margin-bottom:3.0pt;
+	margin-left:0cm;
+	mso-pagination:widow-orphan;
+	page-break-after:avoid;
+	mso-outline-level:3;
+	font-size:13.0pt;
+	font-family:Arial;
+	mso-ansi-language:EL;}
+h4
+	{mso-style-next:Normal;
+	margin:0cm;
+	margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	page-break-after:avoid;
+	mso-outline-level:4;
+	font-size:11.0pt;
+	mso-bidi-font-size:10.0pt;
+	font-family:"Times New Roman";
+	mso-ansi-language:EL;}
+h5
+	{mso-style-next:Normal;
+	margin:0cm;
+	margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	page-break-after:avoid;
+	mso-outline-level:5;
+	font-size:10.0pt;
+	font-family:"Times New Roman";
+	mso-ansi-language:EL;}
+a:link, span.MsoHyperlink
+	{color:blue;
+	text-decoration:underline;
+	text-underline:single;}
+a:visited, span.MsoHyperlinkFollowed
+	{color:purple;
+	text-decoration:underline;
+	text-underline:single;}
+@page Section1
+	{size:595.3pt 841.9pt;
+	margin:72.0pt 90.0pt 72.0pt 90.0pt;
+	mso-header-margin:36.0pt;
+	mso-footer-margin:36.0pt;
+	mso-paper-source:0;}
+div.Section1
+	{page:Section1;}
+-->
+</style>
+<!--[if gte mso 9]><xml>
+ <o:shapedefaults v:ext="edit" spidmax="2050"/>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <o:shapelayout v:ext="edit">
+  <o:idmap v:ext="edit" data="1"/>
+ </o:shapelayout></xml><![endif]-->
+</head>
+
+<body lang=EN-GB link=blue vlink=purple style='tab-interval:36.0pt'>
+
+<div class=Section1>
+
+<h3 align=center style='text-align:center'><span lang=EL>Τεχνική ανάλυση για τη
+βελτιστοποίηση εφαρμογών </span><span lang=EN-US style='mso-ansi-language:EN-US'>internet</span><span
+lang=EL>, και μελέτη των στατιστικών με το πακέτο </span><span lang=EN-US
+style='mso-ansi-language:EN-US'>Xray</span><span lang=EL>.</span></h3>
+
+<p class=MsoNormal align=center style='text-align:center'><b><span lang=EL
+style='font-size:12.0pt;mso-bidi-font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></b></p>
+
+<h2><span lang=EL>Άγγελος Καραγεωργίου Νοέμβριος 2001</span></h2>
+
+<h3><span lang=EL>Εισαγωγή:</span></h3>
+
+<p class=MsoNormal><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-align:justify'><span lang=EL><span
+style='mso-tab-count:1'>                </span>Το </span><span lang=EN-US
+style='mso-ansi-language:EN-US'>Internet</span><span lang=EL> έχει πλέον μπει
+για τα καλά στη ζωή μας, αλλά τι ξέρουμε πραγματικά γι΄ αυτό ;</span></p>
+
+<p class=MsoNormal style='text-align:justify'><span lang=EL>Η ύπαρξη μετρήσιμων
+στοιχείων για την εισχώρηση του δικτύου στον επαγγελματικό κύκλο είναι από
+ανύπαρκτη έως εντελώς λανθασμένη. Στην Αμερική υπάρχουν εταιρείες και
+πανεπιστημιακές έρευνες για τη μέτρηση του φαινομένου </span><span lang=EN-US
+style='mso-ansi-language:EN-US'>Internet</span><span lang=EL>. Στην Ελλάδα αλλά
+και στην Ευρώπη γενικότερα υπάρχει έλλειψη αυτής της πληροφορίας.</span></p>
+
+<p class=MsoNormal><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-align:justify'><span lang=EL><span
+style='mso-tab-count:1'>                </span>Για να μπορέσουμε λοιπόν να
+συγκρίνουμε τις νέες οικονομίες που αναπτύσσονται, αλλά και για να πάρουμε μια
+εικόνα της αγοράς μας, ανέπτυξα το πακέτο </span><span lang=EN-US
+style='mso-ansi-language:EN-US'>Xray</span><span lang=EL>. Το </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>Xray</span><span lang=EL>
+επισκέπτεται όλα τα </span><span lang=EN-US style='mso-ansi-language:EN-US'>domains</span><span
+lang=EL> ενός GTLD, όπου αυτό είναι επιτρεπτό, και συλλέγει πληροφορίες. Τα
+στοιχεία που λαμβάνουμε είναι η διεύθυνση </span><span lang=EN-US
+style='mso-ansi-language:EN-US'>IP</span><span lang=EL> του </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>server</span><span lang=EL> του </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>domain</span><span lang=EL>, την
+ενεργή η μη κατάσταση του<span style="mso-spacerun: yes">  </span>και τι </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>software</span><span lang=EL>
+χρησιμοποιεί ο </span><span lang=EN-US style='mso-ansi-language:EN-US'>server</span><span
+lang=EL>. Επίσης μας δίνει στοιχεία για το πόσοι </span><span lang=EN-US
+style='mso-ansi-language:EN-US'>Name</span><span lang=EN-US> </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>Servers</span><span lang=EL>
+υπάρχουν και τα IP αυτών. Από αυτά τα στοιχεία το </span><span lang=EN-US
+style='mso-ansi-language:EN-US'>Xray</span><span lang=EL> παράγει μια σειρά από
+πρωτεύοντα στατιστικά αποτελέσματα.</span></p>
+
+<p class=MsoNormal style='text-align:justify'><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-align:justify'><span lang=EL><span
+style='mso-tab-count:1'>                </span>Το πρώτο κομμάτι του άρθρου
+είναι μια τεχνική ανάλυση του πακέτου και της μεθόδου βελτιστοποίησης. Όσοι από
+εσάς κουραστείτε προχωρήστε στο δεύτερο μέρος όπου ακολουθεί μια παρουσίαση και
+ανάλυση των αποτελεσμάτων. Στα αποτελέσματα θα μπορέσετε να δείτε μια σύγκριση
+ορισμένων επιλεγμένων </span><span lang=EN-US style='mso-ansi-language:EN-US'>e</span><span
+lang=EL>-οικονομιών.</span></p>
+
+<p class=MsoNormal><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<h3 align=center style='text-align:center'><span lang=EL>Μέρος 1ο. Τεχνική
+Ανάλυση</span></h3>
+
+<p class=MsoNormal><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-align:justify'><span lang=EL><span
+style='mso-tab-count:1'>                </span>Το πρωταρχικό βήμα στην ανάπτυξη
+οποιουδήποτε<span style="mso-spacerun: yes">  </span>προϊόντος είναι ο
+προσδιορισμός του προβλήματος που πρέπει να λύσει. Πρέπει λοιπόν να βρούμε όλα
+τα ονόματα καταχωρημένα κάτω από ένα </span><span lang=EN-US style='mso-ansi-language:
+EN-US'>GTLD</span><span lang=EL> και να πάρουμε τα στοιχεία τους όπως
+αναφέρθηκε στην εισαγωγή.</span></p>
+
+<p class=MsoNormal style='text-align:justify'><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-align:justify'><span lang=EL><span
+style='mso-tab-count:1'>                </span>Αποφασίσα λοιπόν στο λογισμικό
+που θα χρησιμοποιήσωμε αλλά φροντίσα να μην επανεφεύρω<span
+style="mso-spacerun: yes">  </span>τον τροχό. Έψαξα στο δια δίκτυο για τον
+πηγαίο κώδικα μιας ελαφριάς εφαρμογής για τη μεταφορά ιστοσελίδων και ξεκίνησα
+από εκεί. Υπάρχουν ήδη έτοιμα μικρά προγραμματάκια που κάνουν αυτή τη δουλειά
+όπως το </span><b><span lang=EN-US style='mso-ansi-language:EN-US'>wget</span><span
+lang=EL>, </span></b><span lang=EL>αλλά το κόστος λειτουργίας τους για μαζικό
+αριθμό </span><span lang=EN-US style='mso-ansi-language:EN-US'>domains</span><span
+lang=EL> είναι μεγάλο. Έτσι για να φτιάξω ένα πρωτότυπο πρόγραμμα αποφάσισα να
+αρχίσω να γράφω χρησιμοποιώντας το πακέτο </span><span lang=EN-US
+style='mso-ansi-language:EN-US'>LWP</span><span lang=EL> της </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>PERL</span><span lang=EL>. </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>To</span><span lang=EN-US> </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>LWP</span><span lang=EL> είναι
+πραγματικά αριστοτεχνική δουλειά αλλά είναι φτιαγμένο με άξονα τη στιβαρότητα
+και όχι την ταχύτητα. Κάποια από αυτήν την αρχική δουλειά μπορείτε να τη δείτε
+στα προγράμματα </span><u><span lang=EN-US style='mso-ansi-language:EN-US'>myscan</span><span
+lang=EL>.</span></u><u><span lang=EN-US style='mso-ansi-language:EN-US'>pl</span></u><span
+lang=EL> και </span><u><span lang=EN-US style='mso-ansi-language:EN-US'>myscan</span><span
+lang=EL>2.</span></u><u><span lang=EN-US style='mso-ansi-language:EN-US'>pl</span></u><span
+lang=EL>.</span></p>
+
+<p class=MsoNormal style='text-align:justify'><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-align:justify'><span lang=EL><span
+style='mso-tab-count:1'>                </span>Το βασικό μου πρόβλημα με την </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>PERL</span><span lang=EL> είναι ότι
+μπέρδευε τα </span><span lang=EN-US style='mso-ansi-language:EN-US'>signals</span><span
+lang=EL> σε κατάσταση Forked Processes. Ίσως και να μην είμαι και τόσο καλός
+στην </span><span lang=EN-US style='mso-ansi-language:EN-US'>PERL</span><span
+lang=EL> , όπως και να έχει αποφάσισα κάποια στιγμή να δουλέψω με </span><b><span
+lang=EN-US style='mso-ansi-language:EN-US'>C</span><span lang=EN-US> </span></b><span
+lang=EL>γιατί είναι η ταχύτερη δυνατή γλώσσα. Στο πανεπιστήμιο κάποτε είχα
+γράψει ένα προγραμματάκι που έφερνε σελίδες </span><span lang=EN-US
+style='mso-ansi-language:EN-US'>web</span><span lang=EL>, ξέθαψα λοιπόν αυτό το
+πρόγραμμα και άρχισα να παίζω με αυτό, να το αλλάζω. Το αρχικό πρόγραμμα έφερνε
+σελίδες από το </span><span lang=EN-US style='mso-ansi-language:EN-US'>internet</span><span
+lang=EL> σε ένα προσωρινό αρχείο στο σκληρό. Χρήσιμο το τοπικό σώσιμο αλλά όταν
+έχεις να επισκεφθείς 200.000 ονόματα γίνεται εφιάλτης.</span></p>
+
+<p class=MsoNormal><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<h4><span lang=EL>Βελτιστοποίηση</span></h4>
+
+<p class=MsoNormal><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-align:justify'><span lang=EL><span
+style='mso-tab-count:1'>                </span>Το πρώτο βήμα της
+βελτιστοποίησης ήταν να αλλάξω το πρόγραμμα να μην φέρνει ολόκληρη την κεντρική
+σελίδα από κάθε </span><span lang=EN-US style='mso-ansi-language:EN-US'>domain</span><span
+lang=EL>, αλλά μόνο την επικεφαλίδα της κατάστασής αυτής και του </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>server</span><span lang=EL>.<span
+style="mso-spacerun: yes">  </span>Αυτό το μικρό κόλπο κατέβασε το χρόνο
+μερικές τάξεις μεγέθους. Το δεύτερο σημαντικό βήμα ήταν να μην χρησιμοποιώ πια
+το προσωρινό αρχείο και έτσι να κατεβάσω το φορτίο του συστήματος.</span></p>
+
+<p class=MsoNormal style='text-align:justify'><span lang=EL><span
+style='mso-tab-count:1'>                </span>Τώρα που πετάξαμε όλα τα περιττά
+πρέπει να δούμε πως μπορούμε να αυξήσουμε την απόδοση. Η φύση του προβλήματος
+είναι παράλληλη, έτσι το να το σπάσουμε σε κομμάτια είναι επόμενο. Αλλά σε πόσα
+κομμάτια το σπας; Εύκολο, σε τόσα κομμάτια όπου χρησιμοποιείς πλήρως τη σύνδεση
+σου στο </span><span lang=EN-US style='mso-ansi-language:EN-US'>internet</span><span
+lang=EL> χωρίς να την πνίξεις. Τελικά αποφάσισα να το σπάσω σε 32 παράλληλες
+λειτουργίες που είναι ένας καλός μαγικός αριθμός.</span></p>
+
+<p class=MsoNormal><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EL><span style='mso-tab-count:1'>                </span></span></p>
+
+<h5><span lang=EL>Παρακολούθηση δεδομένων</span></h5>
+
+<p class=MsoNormal><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-align:justify'><span lang=EL><span
+style='mso-tab-count:1'>                </span>Τώρα πλέον μπορούμε να τρέξουμε
+το πακέτο και να δούμε τι μας επιστρέφει. Είναι καλή τακτική στα πρώτα
+τρεξίματα ενός πακέτου να παρακολουθήστε όλη τη διαδικασία του. Αυτό λέγεται
+και σημείο <b>Άλφα</b> του κώδικα. Παρατήρησα λοιπόν ότι ονόματα που καταλήγουν
+στο ίδιο </span><span lang=EN-US style='mso-ansi-language:EN-US'>IP</span><span
+lang=EL>, αυτό που λέμε </span><span lang=EN-US style='mso-ansi-language:EN-US'>Virtual</span><span
+lang=EN-US> </span><span lang=EN-US style='mso-ansi-language:EN-US'>Servers</span><span
+lang=EL>, έχουν και τον ίδιο </span><span lang=EN-US style='mso-ansi-language:
+EN-US'>Web</span><span lang=EN-US> </span><span lang=EN-US style='mso-ansi-language:
+EN-US'>Server</span><span lang=EL>. Θα έπρεπε φυσικά να το ήξερα αυτό ήδη μιας
+και το επιβάλλει η λογική του πρωτοκόλλου. Έτσι λοιπόν εάν συνδεθούμε μόνο μια
+φορά σε κάθε </span><span lang=EN-US style='mso-ansi-language:EN-US'>IP</span><span
+lang=EL> και πάρουμε τα στοιχεία που χρειαζόμαστε, δεν χρειάζεται να
+ξανασυνδεθούμε για κανένα επόμενο </span><span lang=EN-US style='mso-ansi-language:
+EN-US'>domain</span><span lang=EL> για το ίδιο </span><span lang=EN-US
+style='mso-ansi-language:EN-US'>IP</span><span lang=EL>. Τα στοιχεία που θα μας
+δώσει ο </span><span lang=EN-US style='mso-ansi-language:EN-US'>server</span><span
+lang=EL> είναι πρακτικά ταυτόσημα.</span></p>
+
+<p class=MsoNormal style='text-align:justify'><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-align:justify'><span lang=EL><span
+style='mso-tab-count:1'>                </span>Εδώ το πρόβλημα χωρίζεται στα
+δύο. Η πρώτη μου προσπάθεια να θυμάμαι τις διευθύνσεις που έχω επισκεφθεί
+απέτυχε γιατί παρεξήγησα τη μεθοδολογία προγραμματισμού των </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>Hash</span><span lang=EN-US> </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>Tables</span><span lang=EL> στη ‘</span><span
+lang=EN-US style='mso-ansi-language:EN-US'>C</span><span lang=EL>’. Αλλά
+περισσότερα γι΄ αυτό παρακάτω.</span></p>
+
+<p class=MsoNormal><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<h5><span lang=EL>Απλή και Κομψή Λύση</span></h5>
+
+<p class=MsoNormal><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-align:justify'><span lang=EL><span
+style='mso-tab-count:1'>                </span>Τώρα λοιπόν έχουμε μια τεράστια
+μάζα δεδομένων αποτελούμενη απο ονόματα ιστοσελίδων (</span><span lang=EN-US
+style='mso-ansi-language:EN-US'>web</span><span lang=EN-US> </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>sites</span><span lang=EL>) τα οποία
+καταλήγουν σε κάποιες διυθύνσεις </span><span lang=EN-US style='mso-ansi-language:
+EN-US'>IP</span><span lang=EL> με τρόπο που φαίνεται εκ’ πρώτης όψεως τυχαίος.
+Αλλά άς ρίξουμε άλλη μια ματιά στα δεδομένα και πώς προκύπτου.<span
+style="mso-spacerun: yes">  </span>Πρίν φτάσουμε στη λίστα με τα ονόματα, το
+γνήσιο σετ δεδομένων περνάει απο μια σειρά </span><span lang=EN-US
+style='mso-ansi-language:EN-US'>scripts</span><span lang=EL>, τα οποία τα
+κάνουν λίγο μασάζ μέχρι να ετοιμαστούν για τον </span><span lang=EN-US
+style='mso-ansi-language:EN-US'>scanner</span><span lang=EL>. Επέστρεψα λοιπόν στα
+ωμά, προ μασάζ δεδομένα για να τα ξαναδώ.</span></p>
+
+<p class=MsoNormal style='text-align:justify'><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-align:justify'><span lang=EL><span
+style='mso-tab-count:1'>                </span>Οι διευθύνσεις </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>IP</span><span lang=EL> των ονομάτων
+που είναι καταχωρημένα με τον κάθε </span><span lang=EN-US style='mso-ansi-language:
+EN-US'>ISP</span><span lang=EL>, τείνουν να χρησιμοποιούν τους ίδιους </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>name</span><span lang=EN-US> </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>servers</span><span lang=EL>, και να
+δημιουργούν νησίδες. Ας το δούμε λίγο αυτό: ο ΟΤΕΝΕΤ είναι ένας </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>ISP</span><span lang=EL> με </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>name</span><span lang=EN-US> </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>servers</span><span lang=EL> τους </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>ns</span><span lang=EL>1.otenet.gr
+και ns2.otenet.gr. Ο ΟΤΕΝΕΤ καταχωρεί τις διευθύνσεις των ονομάτων των πελατών
+του σε αυτά τα δύο μηχανήματα. Τα ονόματα με τη σειρά τους καταλήγουν σε ένα
+περιορισμένο αριθμό </span><span lang=EN-US style='mso-ansi-language:EN-US'>IP</span><span
+lang=EL> μιας και χρησιμοποιείται κατά κόρον η τεχνολογία </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>virtual</span><span lang=EN-US> </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>server</span><span lang=EL>. Έτσι
+αυτά τα ονόματα τείνουν να δημιουργούν νησίδες από κοινά </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>IPs</span><span lang=EL>.</span></p>
+
+<p class=MsoNormal style='text-align:justify'><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-align:justify'><span lang=EL><span
+style='mso-tab-count:1'>                </span>Με εφαλτήριο αυτήν την
+παρατήρηση μπορούμε να σορτάρουμε αλφαβητικά με κλειδί πλέον τον </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>Name</span><span lang=EN-US> </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>Server</span><span lang=EL> αντί το </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>domain</span><span lang=EL>. Έτσι
+λαμβάνουμε πολλά συνεχόμενα χτυπήματα στα ίδια </span><span lang=EN-US
+style='mso-ansi-language:EN-US'>IPs</span><span lang=EL>. Ο τρέχων πηγαίος
+κώδικας για τον </span><b><span lang=EN-US style='mso-ansi-language:EN-US'>masscrawler</span><span
+lang=EN-US> </span></b><span lang=EL>χρησιμοποιεί αυτήν την παρατήρηση. Η λύση
+είναι όντως απλή, λίγες απλές μεταβλητές για να θυμόμαστε την τελευταία
+διεύθυνση που επισκεφθήκαμε. Εάν το τρέχων </span><span lang=EN-US
+style='mso-ansi-language:EN-US'>domain</span><span lang=EL> καταλήγει στην ίδια
+διεύθυνση με πριν, τελειώσαμε, εάν όχι, προχωράμε. Αυτό το μικρό κολπάκι έκοψε
+το χρόνο της ανίχνευσης κατά το ήμισυ.</span></p>
+
+<p class=MsoNormal style='text-align:justify'><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-align:justify'><span lang=EL><span
+style='mso-tab-count:1'>                </span>Το μάθημα που πήρα ήταν να
+προσέχω πάρα πολύ τη φύση των δεδομένων μου. Υπάρχει μια τάση στους
+επαγγελματίες της πληροφορικής να προγραμματίζουν αγνοώντας τη φύση των
+στοιχείων τους ή θεωρώντας τα όλα εντελώς τυχαία. Αλλά οι πραγματικοί
+επιστήμονες της πληροφορικής θα σας πουν, ότι στο σχολείο έμαθαν πως οι
+αλγόριθμοι τυλίγονται γύρω από τα δεδομένα πάνω στα οποία δουλεύουν. Με λίγα
+λόγια η θεωρητική υποδομή είναι πράγματι ανεκτίμητη σε όλες τις δουλειές.</span></p>
+
+<p class=MsoNormal><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<h5><span lang=EL>Παρεξηγημένη Μεθοδολογία</span></h5>
+
+<p class=MsoNormal><b><span lang=EN-US style='mso-ansi-language:EN-US'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></b></p>
+
+<p class=MsoNormal style='text-align:justify'><span lang=EN-US
+style='mso-ansi-language:EN-US'><span style='mso-tab-count:1'>                </span></span><span
+lang=EL>Ώρα να γυρίσουμε ένα βήμα πίσω. Το παραπάνω κολπάκι μας γλίτωσε πολύ
+χρόνο αλλά έχουμε και άλλα περιθώρια για επιτάχυνση με τη βοήθεια των </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>hash</span><span lang=EN-US> </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>tables</span><span lang=EL>. Υπάρχει
+ένα ρητό στην επιστημονική κοινότητα που λέει: το πρόβλημα γίνεται οφθαλμοφανές
+όταν σου το εξηγήσει κάποιος.</span></p>
+
+<p class=MsoNormal style='text-align:justify'><span lang=EL>Ξεκίνησα λοιπόν να
+γράφω μικρά δοκιμαστικά προγραμματάκια για να δοκιμάσω τα </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>hash</span><span lang=EN-US> </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>tables</span><span lang=EL> της </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>GNU</span><span lang=EL>-</span><span
+lang=EN-US style='mso-ansi-language:EN-US'>C</span><span lang=EL><span
+style="mso-spacerun: yes">  </span>και το πρόβλημα έγινε ηλίου φαεινότερο. Η
+τρέχουσα ανάπτυξη δεν σώζει δεδομένα στα </span><span lang=EN-US
+style='mso-ansi-language:EN-US'>hashes</span><span lang=EL> αλλά δείκτες στα
+δεδομένα.</span></p>
+
+<p class=MsoNormal style='text-align:justify'><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-align:justify'><span lang=EL><span
+style='mso-tab-count:1'>                </span>Για να θυμόμαστε λοιπόν τα παλιά
+δεδομένα πρέπει πρώτα να τα αποθηκεύσουμε και μετά να περάσουμε δείκτες στα
+σημεία αποθήκευσης τους στα </span><span lang=EN-US style='mso-ansi-language:
+EN-US'>hashes</span><span lang=EL>. Ο υπό ανάπτυξη Άλφα κώδικας του </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>masscrawler</span><span lang=EL>
+χρησιμοποιεί αυτή τη μεθοδολογία για να γλιτώσει άλλη μια τάξη μεγέθους σε
+ταχύτητα.</span></p>
+
+<p class=MsoNormal style='text-align:justify'><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-align:justify'><span lang=EL><span
+style='mso-tab-count:1'>                </span>Μια παρατήρηση εδώ, το ότι τα </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>hashes</span><span lang=EL> μας
+γλιτώνουν από πολύ δευτερο-δουλειά δεν μειώνει σε τίποτα την πολυτιμότητα της
+παρατήρησης για την κοντινότητα των διευθύνσεων </span><span lang=EN-US
+style='mso-ansi-language:EN-US'>IP</span><span lang=EL>. Η χρήση αυτής της παρατήρησης
+σε συνδυασμό<span style="mso-spacerun: yes">  </span>με ανεπτυγμένες μεθόδους
+είναι η συνταγή που κάνει τόσο γρήγορο το </span><span lang=EN-US
+style='mso-ansi-language:EN-US'>Xray</span><span lang=EL>.</span></p>
+
+<p class=MsoNormal><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal><b><span lang=EL>Συναγερμός – </span></b><b><span
+lang=EN-US style='mso-ansi-language:EN-US'>Alarm<o:p></o:p></span></b></p>
+
+<p class=MsoNormal><b><span lang=EN-US style='mso-ansi-language:EN-US'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></b></p>
+
+<p class=MsoNormal style='text-align:justify'><b><span lang=EN-US
+style='mso-ansi-language:EN-US'><span style='mso-tab-count:1'>                </span></span></b><span
+lang=EL>Μέσα στον κώδικα υπάρχει ένα σήμα </span><span lang=EN-US
+style='mso-ansi-language:EN-US'>alarm</span><span lang=EL>. Αυτό το σήμα μας
+ειδοποιεί αν το </span><span lang=EN-US style='mso-ansi-language:EN-US'>domain</span><span
+lang=EL> στο οποίο προσπαθούμε να συνδεθούμε δεν έχει καταλήξει σε κάποιο όνομα
+(</span><span lang=EN-US style='mso-ansi-language:EN-US'>resolution</span><span
+lang=EL>*) ή δεν έχει ανταποκριθεί καθόλου. Για στατιστικούς λόγους
+διαχωρίζουμε αυτές τις δύο περιπτώσεις. Η </span><span lang=EN-US
+style='mso-ansi-language:EN-US'>PERL</span><span lang=EL> έτεινε να μπερδεύει
+τα σήματα αυτά κάτω από συνθήκες </span><span lang=EN-US style='mso-ansi-language:
+EN-US'>Forking</span><span lang=EL> και τελικά αυτός ήταν ο λόγος που στράφηκα
+στην </span><span lang=EN-US style='mso-ansi-language:EN-US'>C</span><span
+lang=EL>.</span></p>
+
+<p class=MsoNormal style='text-align:justify'><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-align:justify'><span lang=EL><span
+style='mso-tab-count:1'>                </span>Ο χρόνος μέχρι να σηκωθεί το </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>alarm</span><span lang=EL> είναι
+ένας άλλος μαγικός αριθμός. Πρέπει να είναι πρώτος αριθμός ειδάλλως τα σήματα
+θα τείνουν να φτάνουν όλα μαζί στα </span><span lang=EN-US style='mso-ansi-language:
+EN-US'>processes</span><span lang=EL> δημιουργώντας καταιγίδες. Αυτό συμβαίνει,
+όπως μπορείτε να δείτε και στο τρέχον εγχειρίδιο του σύμπαντος, γιατί τα
+φαινόμενα τείνουν να συμβαίνουν σε μικρές σύγχρονες σειρές. Ο χρόνος πρέπει
+επίσης να είναι αρκετός, για να επιτρέπει ένα καλό σχετικά μηχάνημα να
+απαντήσει, αλλά και όχι τόσο μεγάλος ώστε τα μηχανήματα που δεν απαντούν να μας
+καθυστερούν υπέρμετρα. Οι αριθμοί στους οποίους κατέληξα είναι 11,13 και 17 για
+γρήγορη, μεσαία και αργή απάντηση. Μπορείτε να τα αλλάξετε μέσα στον κώδικα του
+</span><span lang=EN-US style='mso-ansi-language:EN-US'>masscrawler</span><span
+lang=EL> όπως σας αρέσει.</span></p>
+
+<p class=MsoNormal style='text-align:justify'><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-align:justify'><span lang=EL><span
+style='mso-tab-count:1'>                </span>Ναι ξέρω έπρεπε να είναι
+εξωτερική παράμετρος, το άφησα σαν άσκηση για τους μαθητές.</span></p>
+
+<p class=MsoNormal><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<h4><span lang=EL>Μελλοντικές Κατευθύνσεις</span></h4>
+
+<p class=MsoNormal><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-align:justify'><span lang=EL><span
+style='mso-tab-count:1'>                </span>Ο τρέχων παραλληλισμός γίνεται
+σπάζοντας τα δεδομένα σε 32 κομμάτια και δίνοντας κάθε κομμάτι σε διαφορετική
+επεξεργασία του </span><span lang=EN-US style='mso-ansi-language:EN-US'>masscrawler</span><span
+lang=EL>. Η φυσική γειτνίαση των δεδομένων βοηθάει στο να εμφανίζονται τα ίδια </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>IP</span><span lang=EL> μέσα στα ανεξάρτητα
+σετ.</span></p>
+
+<p class=MsoNormal style='text-align:justify'><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-align:justify'><span lang=EL><span
+style='mso-tab-count:1'>                </span>Φυσικά μπορούμε να γλιτώσουμε
+ακόμη περισσότερο χρόνο κρατώντας μόνο μία κόπια των </span><span lang=EN-US
+style='mso-ansi-language:EN-US'>IP</span><span lang=EL> που να τη μοιράζονται
+όλα τα </span><span lang=EN-US style='mso-ansi-language:EN-US'>processes</span><span
+lang=EL>. Έτσι θα επισκεφθούμε κάθε </span><span lang=EN-US style='mso-ansi-language:
+EN-US'>IP</span><span lang=EL> μόνο μια φορά αντί για</span></p>
+
+<p class=MsoNormal style='text-align:justify'><span lang=EL>πιθανόν όσα και τα </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>processes</span><span lang=EL>. Αυτό
+θα μπορούσε να γίνει με μέθοδο μοιραζόμενης μνήμης και ένα σημαιοφόρο, που
+κατευθύνει πιο </span><span lang=EN-US style='mso-ansi-language:EN-US'>process</span><span
+lang=EL> γράφει κάθε στιγμή σε αυτήν τη μνήμη. Η επιτάχυνση θα είναι πραγματικά
+σημαντική, για παράδειγμα στην περίπτωση της Αυστρίας θα κάνουμε μόνο 8000
+επισκέψεις από τα 200.000 ονόματα που είναι καταχωρημένα. Αυτή είναι μια
+ολόκληρη τάξη μεγέθους!</span></p>
+
+<p class=MsoNormal style='text-align:justify'><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-align:justify'><span lang=EL><span
+style='mso-tab-count:1'>                </span>Για να το κάνουμε ακόμη πιο
+επαγγελματικό το πακέτο θα μπορούσαμε να το υποστηρίξουμε από πίσω με μια βάση
+δεδομένων τύπου </span><span lang=EN-US style='mso-ansi-language:EN-US'>SQL</span><span
+lang=EL> όπως<span style="mso-spacerun: yes">  </span></span><span lang=EN-US
+style='mso-ansi-language:EN-US'>Oracle</span><span lang=EL> ή </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>PostgreSQL</span><span lang=EL>.
+Αυτό θα μας διευκολύνει για να κρατήσουμε ιστορικά στοιχεία χωρίς πραγματικά να
+επιβαρύνει την εφαρμογή. Η καθυστέρηση είναι τάξεις μεγέθους μεγαλύτερη στη
+σύνδεση στο </span><span lang=EN-US style='mso-ansi-language:EN-US'>Internet</span><span
+lang=EL> παρά στην τοπική βάση.</span></p>
+
+<p class=MsoNormal style='text-align:justify'><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-align:justify'><span lang=EL><span
+style='mso-tab-count:1'>                </span>Ένα ακόμη πρόβλημα είναι το
+φορτίο υπό το οποίο βάζουμε το </span><span lang=EN-US style='mso-ansi-language:
+EN-US'>name</span><span lang=EN-US> </span><span lang=EN-US style='mso-ansi-language:
+EN-US'>server</span><span lang=EL> στη διάρκεια της ανίχνευσης, κάποια στιγμή
+είχε φτάσει να καταναλώνει 105ΜΒ </span><span lang=EN-US style='mso-ansi-language:
+EN-US'>Ram</span><span lang=EL>. Αυτό συνεπάγεται οτι ο υπολογιστής μας θα
+καταφύγει σε </span><span lang=EN-US style='mso-ansi-language:EN-US'>swapping</span><span
+lang=EL> άρα και θα γίνει πολύ πιο αργός.</span></p>
+
+<p class=MsoNormal style='text-align:justify'><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-align:justify;text-indent:36.0pt'><span lang=EL>Η
+λύση είναι εύκολη: μετά την πρώτη ανίχνευση<span style="mso-spacerun: yes"> 
+</span>έχουμε έτοιμα τα </span><span lang=EN-US style='mso-ansi-language:EN-US'>IPs</span><span
+lang=EL> στο χέρι μας, στα επόμενα τρεξίματα θα μπορούσαμε να τα
+χρησιμοποιήσουμε έτοιμα χωρίς τη διαδικασία του </span><span lang=EN-US
+style='mso-ansi-language:EN-US'>resolving</span><span lang=EL>. Αυτό συμβαίνει
+γιατί οι πελάτες των </span><span lang=EN-US style='mso-ansi-language:EN-US'>ISPs</span><span
+lang=EL>, στους οποίους ανήκουν τα ονόματα, δεν αλλάζουν και τακτικά τις
+καταχωρήσεις τους. Άλλη μια περίπτωση όπου η φύση του προβλήματος μας διευκολύνει
+στην αντιμετώπισή του.</span></p>
+
+<p class=MsoNormal><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-align:justify'><span lang=EL><span
+style='mso-tab-count:1'>                </span>Θα μπορούσαμε λοιπόν να δώσουμε
+το </span><span lang=EN-US style='mso-ansi-language:EN-US'>resolving</span><span
+lang=EL> για τις κατοπινές ανιχνεύσεις σε μια ασύγχρονη επεξεργασία χαμηλής
+ισχύος. Αλλά ένα λεπτό, όλο αυτό το κομμάτι της ανάλυσης μετατρέπεται σε ένα
+άλλο ολόκληρο προϊόν, και μοιάζει με αίτηση για επιχορήγηση από την ΕΟΚ.</span></p>
+
+<p class=MsoNormal style='text-align:justify'><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<hr><hr>
+<h3 align=center style='text-align:center'><span lang=EL>Μέρος 2ο. Ανάλυση των
+αποτελεσμάτων</span></h3>
+
+<p class=MsoNormal><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-align:justify'><span lang=EL><span
+style='mso-tab-count:1'>                </span>Καλά όλα αυτά και σαν καθώς
+πρέπει τεχνοκράτης ικανοποιήθηκα από το όλο </span><span lang=EN-US
+style='mso-ansi-language:EN-US'>project</span><span lang=EL>, αλλά η ανάγκη
+ήταν η σύγκριση των οικονομιών. Έτρεξα λοιπόν το Xray για τα </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>domains</span><span lang=EL>, AT,
+BG, FI, GR, </span><span lang=EN-US style='mso-ansi-language:EN-US'>NL</span><span
+lang=EL>, </span><span lang=EN-US style='mso-ansi-language:EN-US'>PL</span><span
+lang=EL> και<span style="mso-spacerun: yes">  </span></span><span lang=EN-US
+style='mso-ansi-language:EN-US'>TO</span><span lang=EL> δηλαδή για Αυστρία,
+Βουλγαρία , Φινλανδία, Ελλάδα, Ολλανδία, Πολωνία και Τομπάγκο αντίστοιχα. Το
+Τομπάγκο είναι δημοφιλές με τους ανά το κόσμο αγγλόφωνους πληθυσμούς για
+γλωσσικούς λόγους.</span></p>
+
+<p class=MsoNormal style='text-align:justify'><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-align:justify'><span lang=EL><span
+style='mso-tab-count:1'>                </span>Η παρατήρηση η πρώτη είναι πως η
+</span><span lang=EN-US style='mso-ansi-language:EN-US'>e</span><span lang=EL>-οικονομία
+στην Ελλάδα είναι παραπλήσια της Φινλανδικής αλλά υστερεί σε σχέση με την
+Ολλανδία. Ο πρώτος πίνακας δείχνει τον αριθμό των καταχωρημένων ονομάτων.</span></p>
+
+<p class=MsoNormal style='text-align:justify'><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EL><!--[if gte vml 1]><v:shapetype id="_x0000_t75"
+ coordsize="21600,21600" o:spt="75" o:preferrelative="t" path="m@4@5l@4@11@9@11@9@5xe"
+ filled="f" stroked="f">
+ <v:stroke joinstyle="miter"/>
+ <v:formulas>
+  <v:f eqn="if lineDrawn pixelLineWidth 0"/>
+  <v:f eqn="sum @0 1 0"/>
+  <v:f eqn="sum 0 0 @1"/>
+  <v:f eqn="prod @2 1 2"/>
+  <v:f eqn="prod @3 21600 pixelWidth"/>
+  <v:f eqn="prod @3 21600 pixelHeight"/>
+  <v:f eqn="sum @0 0 1"/>
+  <v:f eqn="prod @6 1 2"/>
+  <v:f eqn="prod @7 21600 pixelWidth"/>
+  <v:f eqn="sum @8 21600 0"/>
+  <v:f eqn="prod @7 21600 pixelHeight"/>
+  <v:f eqn="sum @10 21600 0"/>
+ </v:formulas>
+<img width=467 height=310 src="image002.gif" v:shapes="_x0000_i1025">
+</span></p>
+
+<p class=MsoNormal><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EL><span style='mso-tab-count:1'>                </span>Είναι
+φανερό πως η Βουλγαρία βρίσκεται ακόμη σε νηπιακό στάδιο, ενώ η Πολωνία είναι
+αρκετά μπροστά.</span></p>
+
+<p class=MsoNormal><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EL><span style='mso-tab-count:1'>                </span>Στον
+επόμενο πίνακα είναι το ποσοστό ενεργών </span><span lang=EN-US
+style='mso-ansi-language:EN-US'>domains</span><span lang=EL>.</span></p>
+
+<p class=MsoNormal><span lang=EL>
+
+<img width=416 height=304 src="image004.gif" >
+</span><span lang=EN-US style='mso-ansi-language:EN-US'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-align:justify'><span lang=EL><span
+style='mso-tab-count:1'>                </span>Ο μέσος όρος ενεργών </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>domains</span><span lang=EL> είναι
+γύρω από 80% με την Πολωνία να ωχριά ίσως λόγω υποδομών. Η Ελλάδα με τη
+Φινλανδία βρίσκονται δίπλα - δίπλα. </span><span lang=EN-US style='mso-ansi-language:
+EN-US'><o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-align:justify'><span lang=EN-US
+style='mso-ansi-language:EN-US'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-align:justify;text-indent:36.0pt'><span lang=EL>Φυσικά
+πρέπει να δούμε και πόσοι πραγματικά </span><span lang=EN-US style='mso-ansi-language:
+EN-US'>Servers</span><span lang=EL> υπάρχουν που υποστηρίζουν τόσα </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>domains</span><span lang=EL>. Στον
+παρακάτω πίνακα φαίνεται η κυριαρχία της Ολλανδίας με τις υπόλοιπες χώρες να
+είναι περίπου ίσες.</span></p>
+
+<p class=MsoNormal><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EL>
+<img width=491 height=287 src="image006.gif" >
+</span></p>
+
+<p class=MsoNormal style='text-align:justify'><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-align:justify'><span lang=EL><span
+style='mso-tab-count:1'>                </span>Οι δύο επόμενοι πίνακες είναι
+ενδεικτικοί της κατάστασης της εκάστοτε τοπικής οικονομίας. Ο αριθμός των </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>Name</span><span lang=EN-US> </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>Servers</span><span lang=EL> δηλώνει
+τον αριθμό των εταιρειών που ενεργοποιούνται σαν παροχείς υπηρεσιών </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>Internet</span><span lang=EL>. Ο
+αριθμός των πραγματικών διευθύνσεων των </span><span lang=EN-US
+style='mso-ansi-language:EN-US'>name</span><span lang=EN-US> </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>servers</span><span lang=EL> δείχνει
+πόσες από αυτές τις εταιρείες είναι πραγματικοί φορείς. Η διαφορά των δύο
+τάξεων είναι ενδεικτική του πόσοι θέλουν να μπουν στην αγορά με υποδομές
+τρίτων.</span></p>
+
+<p class=MsoNormal style='text-align:justify'><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<img width=466 height=265 src="image008.gif" >
+</P>
+
+<p class=MsoNormal><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<img width=414 height=280 src="image010.gif">
+
+<p class=MsoNormal><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EN-US style='mso-ansi-language:EN-US'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EN-US style='mso-ansi-language:EN-US'><span
+style='mso-tab-count:1'>                </span></span><span lang=EL>Άρα το
+μεγαλύτερο παιχνίδι γίνεται στο <b>ΤΟ </b>με δεύτερη την Αυστρία.<b> Ξ</b>ανά
+παρατηρήστε Φινλανδία και Ελλάδα.</span></p>
+
+<p class=MsoNormal><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-align:justify;text-indent:36.0pt'><span lang=EL>Ακολουθεί
+η σύγκριση των προγραμμάτων που χρησιμοποιούνται στους </span><span lang=EN-US
+style='mso-ansi-language:EN-US'>Web</span><span lang=EN-US> </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>Servers</span><span lang=EL>. Οι
+μεγάλοι αντίπαλοι είναι ο </span><span lang=EN-US style='mso-ansi-language:
+EN-US'>APACHE</span><span lang=EL>, ο </span><span lang=EN-US style='mso-ansi-language:
+EN-US'>IIS</span><span lang=EL> της </span><span lang=EN-US style='mso-ansi-language:
+EN-US'>Microsoft</span><span lang=EL>, και ο </span><span lang=EN-US
+style='mso-ansi-language:EN-US'>Netscape</span><span lang=EL> της πάλε ποτέ
+κραταιάς </span><span lang=EN-US style='mso-ansi-language:EN-US'>Netscape</span><span
+lang=EL>.</span></p>
+
+<p class=MsoNormal style='text-indent:36.0pt'><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-indent:36.0pt'><span lang=EL><!--[if gte vml 1]><v:shape
+ id="_x0000_i1030" type="#_x0000_t75" style='width:369.75pt;height:228pt'
+ o:ole="">
+<img src="image012.gif">
+
+<p class=MsoNormal style='text-indent:36.0pt'><span lang=EL><!--[if gte vml 1]><v:shape
+ id="_x0000_i1031" type="#_x0000_t75" style='width:353.25pt;height:211.5pt'
+ o:ole="">
+<img src="image014.gif">
+<p class=MsoNormal style='text-indent:36.0pt'><span lang=EN-US
+style='mso-ansi-language:EN-US'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-left:42.55pt'><span lang=EL><!--[if gte vml 1]><v:shape
+ id="_x0000_i1032" type="#_x0000_t75" style='width:363pt;height:206.25pt'
+ o:ole="">
+<img src="image016.gif">
+<p class=MsoNormal><span lang=EN-US style='mso-ansi-language:EN-US'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EN-US style='mso-ansi-language:EN-US'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EN-US style='mso-ansi-language:EN-US'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-align:justify'><span lang=EN-US
+style='mso-ansi-language:EN-US'><span style='mso-tab-count:1'>                </span></span><span
+lang=EL>Παρατηρήστε την σχετική κυριαρχία του </span><span lang=EN-US
+style='mso-ansi-language:EN-US'>Netscape</span><span lang=EL> Στην Φινλανδία
+που έχει παράδοση στην τεχνολογία </span><span lang=EN-US style='mso-ansi-language:
+EN-US'>internet</span><span lang=EL>. Επίσης ενδιαφέρον είναι η κυριαρχία της </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>Microsoft</span><span lang=EL> στην
+Ελλάδα. Φαίνεται πως οι Έλληνες είναι αρκετά πλούσιοι ή δεν ενδιαφέρονται για
+οικονομίες κλίμακας με τη χρήση του </span><span lang=EN-US style='mso-ansi-language:
+EN-US'>Apache</span><span lang=EL>.</span></p>
+
+<p class=MsoNormal style='text-align:justify'><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-align:justify'><span lang=EL><span
+style='mso-tab-count:1'>                </span>Για να ξεκαθαρίσω λίγο τα
+πράγματα: ο </span><span lang=EN-US style='mso-ansi-language:EN-US'>apache</span><span
+lang=EN-US> </span><span lang=EN-US style='mso-ansi-language:EN-US'>server</span><span
+lang=EL> είναι δωρεάν και χρειάζεται έμπειρους τεχνολόγους για να τον
+χειριστούν. Ο </span><span lang=EN-US style='mso-ansi-language:EN-US'>IIS</span><span
+lang=EL> είναι πάρα πολύ απλός και κατάλληλος για μια εταιρεία που θέλει από
+μόνη της να στήσει την παρουσία της χωρίς ιδιαίτερα ειδικευμένο προσωπικό. </span></p>
+
+<p class=MsoNormal style='text-align:justify'><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-align:justify'><span lang=EL><span
+style='mso-tab-count:1'>                </span>Αυτές οι εικόνες μας δείχνουν
+καθαρά θα έλεγα την ψυχοσύνθεση αλλά και την κατάσταση της </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>e</span><span lang=EL>-οικονομίας
+κάθε κράτους. Η πολύ ευχάριστη έκπληξη είναι αυτή της Πολωνίας, με αυτή της
+Ολλανδίας να κυριαρχεί. Η Ελλάδα πάει καλά αλλά πρέπει κάποια στιγμή οι αρχές
+της να πάψουν να πολεμούν το </span><span lang=EN-US style='mso-ansi-language:
+EN-US'>INTERNET</span><span lang=EL><span style="mso-spacerun: yes"> 
+</span>και να βρουν ένα τρόπο να μην το κατατρέχουν με νομολογίες στυλ
+«κουλοχέρη».</span></p>
+
+<p class=MsoNormal style='text-align:justify'><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-align:justify'><span lang=EL><span
+style='mso-tab-count:1'>                </span>Μπορούν φυσικά να βγουν πολλά
+περισσότερα συμπεράσματα από αυτά τα λίγα κάπου όμως η ανάγνωση τους μπορεί να
+τρίψει κάποια ευαίσθητα νεύρα. Υπάρχει και<span style="mso-spacerun: yes"> 
+</span>πληθώρα επιπλέον στοιχείων που έχω αποκομίσει η οποία μπορεί να δώσει
+και περισσότερες αναλύσεις, δυστυχώς όμως η στατιστική μου χωλένει. Για να
+αποφύγω λοιπόν από τη μία να προσβάλλω αθέμιτα κάποιους ή να αναλύσω λάθος άλλα
+στοιχεία κλείνω εδώ με τις ευχαριστίες μου που ακολουθήσατε το άρθρο μέχρι εδώ.
+</span></p>
+
+<h3><span lang=EL>Παράρτημα:</span></h3>
+
+<p class=MsoNormal><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-align:justify;text-indent:36.0pt'><span lang=EL>Το
+πακέτο είναι γραμμένο σε μια ποικιλία γλωσσών όπως η ΄</span><span lang=EN-US
+style='mso-ansi-language:EN-US'>C</span><span lang=EL>’,</span><span
+lang=EN-US style='mso-ansi-language:EN-US'>PERL</span><span lang=EL>,AWK,</span><span
+lang=EN-US style='mso-ansi-language:EN-US'>SED</span><span lang=EL> κ.λ.π. πάνω
+σε σύστημα </span><span lang=EN-US style='mso-ansi-language:EN-US'>Unix</span><span
+lang=EL>. Θεωρώ ότι το </span><span lang=EN-US style='mso-ansi-language:EN-US'>Unix</span><span
+lang=EL> είναι το ιδανικό λειτουργικό για δικτυακές εφαρμογές και γι’ αυτό το
+χρησιμοποίησα.</span></p>
+
+<p class=MsoNormal style='text-align:justify;text-indent:36.0pt'><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='text-align:justify;text-indent:36.0pt'><span lang=EL>Ολόκληρο
+το πακέτο </span><span lang=EN-US style='mso-ansi-language:EN-US'>Xray</span><span
+lang=EL> υπάρχει έτοιμο στο </span><span lang=EN-US style='mso-ansi-language:
+EN-US'>internet</span><span lang=EL> στο προσωπικό μου </span><span lang=EN-US
+style='mso-ansi-language:EN-US'>web</span><span lang=EN-US> </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>site</span><span lang=EL>: </span><span
+lang=EN-US style='mso-ansi-language:EN-US'><a href="http://www.unix.gr/">http<span
+lang=EL style='mso-ansi-language:EL'>://</span>www<span lang=EL
+style='mso-ansi-language:EL'>.</span>unix<span lang=EL style='mso-ansi-language:
+EL'>.</span>gr</a></span><span lang=EL> μαζί με πολύ περισσότερα προγράμματα
+και στοιχεία για το </span><span lang=EN-US style='mso-ansi-language:EN-US'>Internet</span><span
+lang=EL>. Στο ίδιο </span><span lang=EN-US style='mso-ansi-language:EN-US'>web</span><span
+lang=EN-US> </span><span lang=EN-US style='mso-ansi-language:EN-US'>site</span><span
+lang=EL> μπορείτε επίσης να βρείτε μια έκδοση της τεχνικής ανάλυσης στην
+Αγγλική.</span></p>
+
+<p class=MsoNormal style='text-align:justify'><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EN-US style='mso-ansi-language:EN-US'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+
+<!--
+<h3><span lang=EL>Σύντομο Βιογραφικό:</span></h3>
+
+<p class=MsoNormal><b><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></b></p>
+
+-->
+
+<p class=MsoNormal style='text-align:justify'><b><span lang=EL><span
+style='mso-tab-count:1'>                </span></span></b><span lang=EL
+style='mso-ansi-language:EN-US'><span style="mso-spacerun: yes"> </span></span></p>
+
+<p class=MsoNormal><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<h3><span lang=EL>Γλωσσάριο:</span></h3>
+
+<p class=MsoNormal style='margin-left:70.9pt;text-indent:-70.9pt'><b><span
+lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></b></p>
+
+<p class=MsoNormal style='margin-left:70.9pt;text-indent:-70.9pt'><b><span
+lang=EN-US style='mso-ansi-language:EN-US'>Forking</span></b><span lang=EL>:<span
+style='mso-tab-count:1'>                </span>Τρόπος που ένα πρόγραμμα σπάει
+και αντιγράφει τον εαυτό του σε κομμάτια για να μοιραστεί το φορτίο του.</span></p>
+
+<p class=MsoNormal style='margin-left:70.9pt;text-indent:-70.9pt'><b><span
+lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></b></p>
+
+<p class=MsoNormal style='margin-left:70.9pt;text-indent:-70.9pt'><b><span
+lang=EN-US style='mso-ansi-language:EN-US'>GNU</span><span lang=EL>-</span></b><b><span
+lang=EN-US style='mso-ansi-language:EN-US'>C</span><span lang=EL>:</span></b><span
+lang=EL><span style='mso-tab-count:1'>                 </span>Ο μεταγλωτιστής (</span><span
+lang=EN-US style='mso-ansi-language:EN-US'>compiler</span><span lang=EL>) </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>C</span><span lang=EL> που
+χρησιμοποίησα για την ανάπτυξη του </span><span lang=EN-US style='mso-ansi-language:
+EN-US'>masscrawler</span><span lang=EL>.</span></p>
+
+<p class=MsoNormal style='margin-left:70.9pt;text-indent:-70.9pt'><b><span
+lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></b></p>
+
+<p class=MsoNormal style='margin-left:70.9pt;text-indent:-70.9pt'><b><span
+lang=EN-US style='mso-ansi-language:EN-US'>G</span><span lang=EL>Τ</span></b><b><span
+lang=EN-US style='mso-ansi-language:EN-US'>LD</span></b><span lang=EN-US
+style='mso-ansi-language:EN-US'>:<span style='mso-tab-count:2'>                                    </span>Global
+Top Level Domain. </span><span lang=EL>Tο παγκόσμιο </span><span lang=EN-US
+style='mso-ansi-language:EN-US'>Internet</span><span lang=EL> έχει τη μορφή
+πολλαπλών πυραμίδων. Οι κορυφές είναι τα </span><span lang=EN-US
+style='mso-ansi-language:EN-US'>GTLDs</span><span lang=EL> όπου από κάτω
+καταχωρούνται τα επιμέρους ονόματα. Στην Ελλάδα π.χ.<span style="mso-spacerun:
+yes">  </span>οι καταχωρήσεις γίνονται κάτω το .</span><span lang=EN-US
+style='mso-ansi-language:EN-US'>GR</span><span lang=EL> .</span></p>
+
+<p class=MsoNormal style='margin-left:70.9pt;text-indent:-70.9pt'><b><span
+lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></b></p>
+
+<p class=MsoNormal style='margin-left:70.9pt;text-indent:-70.9pt'><b><span
+lang=EN-US style='mso-ansi-language:EN-US'>Hash</span><span lang=EN-US> </span></b><b><span
+lang=EN-US style='mso-ansi-language:EN-US'>Table</span><span lang=EL>:</span></b><span
+lang=EL> <span style='mso-tab-count:1'>         </span>Προγραμματιστική /
+Αλγεβρική μεθοδολογία για την αποθήκευση και γρήγορη εύρεση ζευγαριών κλείδων
+και συζυγών των δεδομένων. Αφήστε το , είναι ένα ολόκληρο άρθρο απο μόνο του.
+Συντομογραφία: </span><b><span lang=EN-US style='mso-ansi-language:EN-US'>hashes</span></b></p>
+
+<p class=MsoNormal><b><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></b></p>
+
+<p class=MsoNormal style='margin-left:70.9pt;text-indent:-70.9pt'><b><span
+lang=EN-US style='mso-ansi-language:EN-US'>IP</span><span lang=EL> / </span></b><b><span
+lang=EN-US style='mso-ansi-language:EN-US'>IP</span><span lang=EN-US> </span></b><b><span
+lang=EN-US style='mso-ansi-language:EN-US'>address</span></b><span lang=EL>:<span
+style='mso-tab-count:1'>    </span>Αριθμητική διεύθυνση </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>Internet</span><span lang=EL> τύπου
+123.250.239.123. Ο τηλεφωνικός αριθμός αν θέλετε ενός υπολογιστή που είναι
+συνδεμένος στο διαδίκτυο.</span></p>
+
+<p class=MsoNormal><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal><b><span lang=EN-US style='mso-ansi-language:EN-US'>Masscrawler</span><span
+lang=EL>: <span style='mso-tab-count:1'>      </span></span></b><span lang=EL>Το
+όνομα του ανιχνευτή που έγραψα.</span></p>
+
+<p class=MsoNormal><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-left:70.9pt;text-indent:-70.9pt'><b><span
+lang=EL>Μ</span></b><b><span lang=EN-US style='mso-ansi-language:EN-US'>ulti</span><span
+lang=EN-US> </span></b><b><span lang=EN-US style='mso-ansi-language:EN-US'>Tasking</span><span
+lang=EL>:</span></b><span lang=EL><span style="mso-spacerun: yes">  
+</span>Πολλαπλές ασχολίες, αργκό των υπολογιστών που δηλώνει οτι ένας
+υπολογιστής τρέχει πολλά προγράμματα ταυτόχρονα.</span></p>
+
+<p class=MsoNormal style='margin-left:70.9pt;text-indent:-70.9pt'><span
+lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal><b><span lang=EN-US style='mso-ansi-language:EN-US'>Name</span><span
+lang=EN-US> </span></b><b><span lang=EN-US style='mso-ansi-language:EN-US'>Servers</span></b><span
+lang=EL>:<span style='mso-tab-count:1'>     </span>Εκεί όπου κρατείται η
+διεύθυνση του καταχωρημένου ονόματος (</span><span lang=EN-US style='mso-ansi-language:
+EN-US'>domain</span><span lang=EL>)</span></p>
+
+<p class=MsoNormal><b><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></b></p>
+
+<p class=MsoNormal><b><span lang=EN-US style='mso-ansi-language:EN-US'>Process</span><span
+lang=EL>(</span></b><b><span lang=EN-US style='mso-ansi-language:EN-US'>es</span><span
+lang=EL>):</span></b><span lang=EL><span style='mso-tab-count:1'>         </span>Διαδικασίες
+, ενα πρόγραμμα τη στιγμή που τρέχει.</span></p>
+
+<p class=MsoNormal style='margin-left:70.9pt;text-indent:-70.9pt'><b><span
+lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></b></p>
+
+<p class=MsoNormal style='margin-left:70.9pt;text-indent:-70.9pt'><b><span
+lang=EL>Resolution:<span style='mso-tab-count:1'>           </span></span></b><span
+lang=EL>Η διαδικασία με την οποία ρωτάμε ένα </span><span lang=EN-US
+style='mso-ansi-language:EN-US'>name</span><span lang=EN-US> </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>server</span><span lang=EL> να μας
+δώσει τη διεύθυνση </span><span lang=EN-US style='mso-ansi-language:EN-US'>IP</span><span
+lang=EL> ενος καταχωρημένου ονόματος.</span></p>
+
+<p class=MsoNormal><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal><b><span lang=EN-US style='mso-ansi-language:EN-US'>Scanner</span><span
+lang=EL>:</span></b><span lang=EL><span style='mso-tab-count:1'>               </span>Ανιχνευτής,
+γενικό όνομα προγραμμάτων για τι άλλο; ανίχνευση δεδομένων.</span></p>
+
+<p class=MsoNormal><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-left:70.9pt;text-indent:-70.9pt'><b><span
+lang=EN-US style='mso-ansi-language:EN-US'>Signal</span></b><span lang=EL>: <span
+style='mso-tab-count:2'>                                  </span>Το λογισμικό
+αντίστοιχο ενός </span><span lang=EN-US style='mso-ansi-language:EN-US'>Interrupt</span><span
+lang=EL>. Ένα σήμα που λεει στο πρόγραμμά μας να σταματήσει την τρέχουσα
+λειτουργία του για να κάνει προσωρινά κάτι άλλο</span></p>
+
+<p class=MsoNormal><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-left:70.9pt;text-indent:-70.9pt'><b><span
+lang=EN-US style='mso-ansi-language:EN-US'>Swapping</span><span lang=EL>: <span
+style='mso-tab-count:1'>            </span></span></b><span lang=EL>Η
+διαδικασία κατα την οποία το λειτουργικό σύστημα του υπολογιστή μεταφέρει
+αχρησιμοποίητα κομμάτια της </span><span lang=EN-US style='mso-ansi-language:
+EN-US'>RAM</span><span lang=EL> του στο σκληρό δίσκο. Αυτά τα κομμάτια
+ελευθερώνονται έτσι για να χρησιμοποιηθούν απο προγραμμάτα που έχουν έλλειψη σε
+μνήμη.</span></p>
+
+<p class=MsoNormal><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-left:70.9pt;text-indent:-70.9pt'><b><span
+lang=EN-US style='mso-ansi-language:EN-US'>Virtual</span><span lang=EN-US> </span></b><b><span
+lang=EN-US style='mso-ansi-language:EN-US'>Server</span><span lang=EL>:<span
+style='mso-tab-count:1'>    </span></span></b><span lang=EL>Ιδεατός </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>server</span><span lang=EL>, για
+οικονομία κλίμακας οι </span><span lang=EN-US style='mso-ansi-language:EN-US'>ISPs</span><span
+lang=EL> εξυπηρετούν από ένα μηχάνημα πολλαπλά </span><span lang=EN-US
+style='mso-ansi-language:EN-US'>domains</span><span lang=EL>. Κάθε </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>domain</span><span lang=EL> λοιπόν
+φαίνεται σαν μια ιδεατή ανεξάρτητη οντότητα.</span></p>
+
+<p class=MsoNormal><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='margin-left:70.9pt;text-indent:-70.9pt'><b><span
+lang=EL><span style="mso-spacerun: yes"> </span>(</span></b><b><span
+lang=EN-US style='mso-ansi-language:EN-US'>Web</span><span lang=EL>) </span></b><b><span
+lang=EN-US style='mso-ansi-language:EN-US'>Server</span></b><span lang=EL>:<span
+style='mso-tab-count:1'>     </span>Διπλό νόημα, όταν δεν αναφέρεται στον
+υπολογιστή καθ’ εαυτό, είναι το λογισμικό που τρέχει για να σερβίρει τις
+σελίδες </span><span lang=EN-US style='mso-ansi-language:EN-US'>web</span><span
+lang=EL>.</span></p>
+
+<p class=MsoNormal><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<h3><span lang=EL>Βιβλιογραφία:</span></h3>
+
+<p class=MsoNormal><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EN-US style='mso-ansi-language:EN-US'>Richard W
+Stevens <span style='mso-tab-count:1'>             </span>Advanced Programming
+in the UNIX(R)<span style="mso-spacerun: yes">   </span>Environment<o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EN-US style='mso-ansi-language:EN-US'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal style='tab-stops:78.0pt'><span lang=EN-US style='mso-ansi-language:
+EN-US'>Larry Wall <span style='mso-tab-count:2'>                            </span>Programming
+Perl (3<sup>rd</sup> Edition)<o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EN-US style='mso-ansi-language:EN-US'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EN-US style='mso-ansi-language:EN-US'>Gnu Project<span
+style='mso-tab-count:2'>                           </span>C Programming Online
+Manual Pages.<o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EN-US style='mso-ansi-language:EN-US'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EN-US style='mso-ansi-language:EN-US'>Dale
+Dougherty, <span style='mso-tab-count:2'>                  </span>sed &amp; awk
+(2<sup>nd</sup><span style="mso-spacerun: yes">  </span>Edition)<o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EN-US style='mso-ansi-language:EN-US'>Arnold
+Robbins<span style='mso-tab-count:2'>                   </span> <o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EN-US style='mso-ansi-language:EN-US'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EN-US style='mso-ansi-language:EN-US'><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EL><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></span></p>
+
+</div>
+
+</body>
+
+</html>

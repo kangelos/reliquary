@@ -1,0 +1,39 @@
+#!/bin/bash
+
+grep dir: doms.txt |\
+awk '{ print $2}' | while read dir
+do
+	domain=`basename $dir`
+	echo "# $dir"
+		if [ ! -f $dir/.qmail-default ]
+		then
+			continue
+		fi
+		cat $dir/.qmail-default | while read dotq 
+		do
+			mailalternateaddress="catchall"
+				oldaddress=`echo $dotq	| awk '{print $4}' | sed -e 's/\/Maildir.*//g'`
+				oldaddress=`basename $oldaddress`
+				if [ $oldaddress == "bounce-no-mailbox" ] 
+				then
+					continue
+				fi
+				if [ $oldaddress == "delete" ] 
+				then
+					continue
+				fi
+echo "
+dn: uid=$oldaddress,ou=$domain,ou=domains,o=top
+uid: $oldaddress
+sn: $domain
+objectClass: top
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: qmailUser
+objectClass: PureFTPdUser
+mailAlternateAddress: catchall@${domain}
+
+"
+	done
+done
+

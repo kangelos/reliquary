@@ -1,0 +1,22 @@
+#!/bin/bash
+
+#set -x 
+
+if [ $# -ne 3 ]
+then
+	echo "Usage: faxit <device> <number> <message>"
+	exit
+fi
+
+
+device=$1
+faxnum=$2
+message=$3
+
+newmessage="$faxnum (Stocktrade FAX) $message";
+echo $newmessage;
+
+/etc/gsm/sendsms $device 1100 "$newmessage"
+
+result=$?
+exit $result

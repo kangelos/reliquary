@@ -1,0 +1,47 @@
+
+This disk  contains the following files
+
+     TURBO    PCK
+     SET8X8   FNT
+     PEEKSMAL PAS
+     BPWEIGHT DAT
+     BINTOASC PAS
+     ASC8X8   FNT
+     BP       OUT
+     BP       DAT
+     BACKPROP PAS
+     BP4HIDDE PAS
+     BP4WEIGH DAT
+     BP4WEIGH OUT
+ ----------------------------------------------------------------------------
+
+TURBO    PCK : Turbo Pascal Pick File. Nothing To worry About
+
+SET8X8   FNT : The Binary Encoded font File
+
+PEEKSMAL PAS : The Binary font file peeker.It shows all the ASCII 8 x 8 font
+
+BPWEIGHT DAT : The "RAW" output from the backpropagation program
+
+BACKPROP OUT : The Formatted ("Presentation Quality") output from the program
+
+BINTOASC PAS : Binary to ASCII Converter Takes as input 'SET8X8.fnt' and for
+               output 'ASC8X8.FNT'
+
+ASC8X8   FNT : Human readable or comprehensible font file used for input for
+               the back-prop program.Type it to see what it contains.
+
+BP       OUT : Another  output file from the program with different settings
+
+BP       DAT : "RAW" Weight outputs corresponding to the above file
+
+BACKPROP PAS : The main dish. ENJOY!
+
+BP4HIDDE PAS : A main dish with four weights in the hidden layer
+
+BP4WEIGH DAT : The raw Output from the above program
+
+BP4WEIGH OUT : The 'Presentation' output from "BP4HIDDE.PAS"
+
+                                    Waiting to Hearing from you
+                                             Angelos._

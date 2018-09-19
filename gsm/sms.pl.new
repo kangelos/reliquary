@@ -1,0 +1,365 @@
+package sms;
+
+# Package version 3.0a
+
+# Functions provided:
+#  $msg = map_chars($msg);
+#  ($pdulen,$pdu) = encode_pdu($class,$number,$msg,$coding,$vp,$sca);
+#  ($number,$time,$msg,$pid,$coding,$sca,$haveheader) = decode_pdu($pdu,$nosca);
+#  $msg = unmap_chars($msg);
+
+sub encode_pdu {
+	my ($class,$number,$msg,$coding,$vp,$sca) = @_;
+	my $pdu, $encoded_sca;
+
+	$pdu = $vp ? "11" : "01";		# PDU type
+	$pdu .= "00";				# Dummy Message Reference
+
+	my $type = ($number =~ /^\+/) ? "91" : "81";
+	$number =~ s/\D//g;			# Delete non-digits
+	$pdu .= sprintf("%.2X%s",length($number),$type);
+	$number .= "F";				# For odd number of digits
+	while ($number =~ /^(.)(.)(.*)$/) {	# Get pair of digits
+		$pdu .= "$2$1";
+		$number = $3;
+	}
+
+	$pdu .= "00";				# Protocol ID
+	$pdu .= ($class =~ /([0-3])/) ? "F$1" : "00";	# Coding/Class
+
+	if ($vp) {					# Validity Period
+		my %t=(	'm' =>      60,
+			'h' =>   3_600,
+			'd' =>  86_400,
+			'w' => 604_800,
+		);
+		$vp =~ /([\d\.]+)([mhdw])/i;
+		$vp = $1 * $t{lc $2};		# VP measured in seconds
+		if ($vp/$t{'w'} >= 5) {
+			$vp = int($vp/$t{'w'})+192;
+		}
+		elsif ($vp/$t{'d'} >= 2) {
+			$vp = 30 * $t{'d'}  if ($vp > 30 * $t{'d'});
+			$vp = int($vp/$t{'d'})+166;
+		}
+		elsif ($vp/$t{'h'} >= 12.5) {
+			$vp = 24 * $t{'h'}  if ($vp > 24 * $t{'h'});
+			$vp = int(($vp-12*$t{'h'})/($t{'h'}/2))+143;
+		}
+		else {
+			$vp = 720 * $t{'m'} if ($vp > 720 * $t{'m'});
+			$vp = 5 * $t{'m'}   if ($vp < 5 * $t{'m'});
+			$vp = int($vp/($t{'m'}*5))-1;
+		}
+		$pdu .= sprintf("%.2X",$vp);
+	}
+
+	$pdu .= sprintf("%.2X", length($msg));		# User Data Length
+	$pdu .= encode_7bit(substr($msg,0,160));	# User Data
+
+	if (defined $sca) {
+		if ($sca) {
+			$encoded_sca = ($sca =~ /^\+/) ? "91" : "81";
+			$sca =~ s/\D//g;		# Delete non-digits
+			$sca .= "F";			# For odd digits
+			while ($sca =~ /^(.)(.)(.*)$/) {# Get pair of digits
+				$encoded_sca .= "$2$1";
+				$sca = $3;
+			}
+			$encoded_sca = sprintf("%.2X%s",
+					length($encoded_sca)/2, $encoded_sca);
+		}
+		else {
+			$encoded_sca = "00";
+		}
+	}
+	else {
+		$encoded_sca = "";
+	}
+
+	return wantarray ?
+		(length($pdu)/2,$encoded_sca.$pdu) : $endcoded_sca.$pdu;
+}
+
+sub encode_7bit {
+	my $msg = shift;
+	my ($bits,$ud);
+	foreach (split(//,$msg)) {
+		$bits .= unpack('b7', $_);
+	}
+	while (length $bits) {
+		$octet = substr($bits,0,8);
+		$ud .= unpack("H2", pack("b8", substr($octet."0" x 7, 0, 8)));
+		$bits = substr($bits,8);
+	}
+	return uc $ud;
+}
+
+sub map_chars {
+	(my $retval = shift) =~ tr|\$\@|\x02\x00|;
+	return $retval;
+}
+
+sub decode_pdu {
+	my @pdu = split(//,shift);
+	my $nosca = shift;
+	my ($number,$time,$msg,$pid,$coding,$haveheader,$sca);
+
+	if (!$nosca) {
+		my $len = hex("$pdu[0]$pdu[1]");
+		shift @pdu; shift @pdu;
+		$sca = '';
+		if ($len-->0) {
+			$sca = "+" if ("$pdu[0]$pdu[1]" eq "91");
+			shift @pdu; shift @pdu;
+			for ($i=0; $i<$len; $i++) {
+				$sca .= $pdu[1];
+				$sca .= $pdu[0] unless ($pdu[0] =~ /F/i);
+				shift @pdu; shift @pdu;
+			}
+		}
+	}
+	else {
+		$sca = undef;
+	}
+
+	my $pdu_type = hex("$pdu[0]$pdu[1]");		shift @pdu; shift @pdu;
+	my $submit = $pdu_type & 0x01;
+	if ($submit) { shift @pdu; shift @pdu; }	# Skip MR
+	$haveheader = $pdu_type & 0x40;
+
+	my $len = hex("$pdu[0]$pdu[1]");		shift @pdu; shift @pdu;
+	$number = "+" if ("$pdu[0]$pdu[1]" eq "91");	shift @pdu; shift @pdu;
+	for ($i=0; $i<256-int((512-$len)/2); $i++) {
+		$number .= $pdu[1];
+		$number .= $pdu[0] unless ($pdu[0] =~ /F/i);
+		shift @pdu; shift @pdu;
+	}
+
+	$pid = hex("$pdu[0]$pdu[1]");			shift @pdu; shift @pdu;
+	$coding = hex("$pdu[0]$pdu[1]");		shift @pdu; shift @pdu;
+
+	if (!$submit or ($pdu_type&0x18) == 0x18) {
+		$time  =  "$pdu[1]$pdu[0]";		shift @pdu; shift @pdu;
+		$time .= "/$pdu[1]$pdu[0]";		shift @pdu; shift @pdu;
+		$time .= "/$pdu[1]$pdu[0]";		shift @pdu; shift @pdu;
+		$time .= " $pdu[1]$pdu[0]";		shift @pdu; shift @pdu;
+		$time .= ":$pdu[1]$pdu[0]";		shift @pdu; shift @pdu;
+		$time .= ":$pdu[1]$pdu[0]";		shift @pdu; shift @pdu;
+							shift @pdu; shift @pdu;
+	}
+	elsif (($pdu_type&0x18) == 0x10) {
+		$vp  =  hex("$pdu[0]$pdu[1]");	shift @pdu; shift @pdu;
+
+		# convert VP to minutes
+		if    ($vp<=143) { $vp = ($vp+1)*5; }
+		elsif ($vp<=167) { $vp = 720+($vp-143)*30; }
+		elsif ($vp<=196) { $vp = ($vp-166)*1_440; }
+		else             { $vp = ($vp-192)*10_080; }
+
+		# convert minutes to weeks, days and hours
+		$time = "+        ";
+		if ($vp>=10_080) {
+			$time .= int($vp/10_080)."w";
+			$vp = $vp%10_080;
+		}
+		if ($vp>=1_440) {
+			$time .= int($vp/1_440)."d";
+			$vp = $vp%1_440;
+		}
+		if ($vp>=60) {
+			$time .= int($vp/60)."h";
+			$vp = $vp%60;
+		}
+		if ($vp>0) {
+			$time .= $vp."m";
+		}
+	}
+
+	my $udlen = hex("$pdu[0]$pdu[1]");		shift @pdu; shift @pdu;
+	my $ud = join('',@pdu);
+	if ($coding == 0 or ($coding&0xf4) == 0xf0) {
+		$msg = substr(decode_7bit($ud),0,$udlen);
+	}
+	elsif (($coding&0xf4) == 0xf4) {
+		$msg = substr(decode_8bit($ud),0,$udlen);
+	}
+	else {
+		warn "\nUnknown Data Coding Scheme $coding\n";
+		$msg = '<--Cannot be decoded-->';
+	}
+	return ($number,$time,$msg,$pid,$coding,$sca,$haveheader);
+}
+
+sub decode_7bit {
+	my $ud = $_[0];
+	my ($msg,$bits);
+	while (length($ud)) {
+		$bits .= unpack('b8',pack('H2',substr($ud,0,2)));
+		$ud = substr($ud,2);
+	}
+	while ($bits =~ /^([01]{7})(.*)$/) {
+		$msg .= pack('b7',$1);
+		$bits = $2;
+	}
+	return $msg;
+}
+
+sub decode_8bit {
+	my $ud = $_[0];
+	my $msg;
+
+	while (length($ud)) {
+		$msg .= pack('H2',substr($ud,0,2));
+		$ud = substr($ud,2);
+	}
+	return $msg;
+}
+
+sub unmap_chars {
+	(my $retval = shift) =~ tr (\x00\x02) (\@\$);
+# Change accented characters to their unaccented counterpart.
+# This mapping may vary from country to country.
+	$retval =~ tr (\x07\x0f\x7f\x04\x05\x1f\x5c\x7c\x5e\x7e)
+		      (iaaeeEOoUu);
+	return $retval;
+}
+
+%ceercause = (
+1	=>	'Unassigned/unallocated number',
+3	=>	'No route to destination',
+6	=>	'Channel unacceptable',
+8	=>	'Operator determined barring',
+16	=>	'Normal call clearing',
+17	=>	'User busy',
+18	=>	'No user responding',
+19	=>	'User alerting, no answer',
+21	=>	'Call rejected',
+22	=>	'Number changed',
+26	=>	'Non selected user clearing',
+27	=>	'Destination out of order',
+28	=>	'Invalid number format (incomplete number)',
+29	=>	'Facility rejected',
+30	=>	'Response to STATUS ENQUIRY',
+31	=>	'Normal, unsmecified',
+
+34	=>	'No circuit/channel available',
+38	=>	'Network out of order',
+41	=>	'Temporary failure',
+42	=>	'Switching equipment congestion',
+43	=>	'Access information discarded',
+44	=>	'Requested circuit/channel not available',
+47	=>	'Resources unavailable, unspecified',
+
+49	=>	'Quality of service unavailable',
+50	=>	'Requested facility not subscribed',
+55	=>	'Incoming call barred with the CUG',
+57	=>	'Bearer capability not authorized',
+58	=>	'Bearer capability not presently available',
+63	=>	'Service or option not available, unspecified',
+
+65	=>	'Bearer service not implemented',
+68	=>	'ACM equal or greater than ACMmax',
+69	=>	'Requested facility not implemented',
+70	=>	'Only restricted digital information bearer capability is available',
+79	=>	'Service or option not implemented, unspecified',
+
+81	=>	'Invalid transaction identifier value',
+87	=>	'User not member of CUG',
+88	=>	'Incompatible destination',
+91	=>	'Invalid transit network selection',
+95	=>	'Semantically incorrect message',
+
+96	=>	'Invalid mandatory information',
+97	=>	'Message type non-existent or not implemented',
+98	=>	'Message type not compatible with protocol state',
+99	=>	'Information element non-existent or not implemented',
+100	=>	'Conditional IE error',
+101	=>	'Message not compatible with protocol state',
+102	=>	'Recovery on time expire',
+111	=>	'Protocol error, unspecified',
+
+127	=>	'Internetworking, unspecified',
+
+252	=>	'Call barring on outgoing calls',
+253	=>	'Call barring on incoming calls',
+254	=>	'Call impossible',
+255	=>	'Lower layer failure',
+);
+
+%cmserror = (
+1	=>	'Unassigned/unallocated number',
+8	=>	'Operator determined barring',
+10	=>	'Call barred',
+21	=>	'Short message transfer rejected',
+27	=>	'Destination out of service',
+28	=>	'Unidentified subscriber',
+29	=>	'Facility rejected',
+30	=>	'Unknown subscriber',
+38	=>	'Network out of order',
+41	=>	'Temporary failure',
+42	=>	'Congestion',
+47	=>	'Resources unavailable, unspecified',
+69	=>	'Requested facility not implemented',
+81	=>	'Invalid short message transfer reference value',
+95	=>	'Invalid message, unspecified',
+96	=>	'Invalid mandatory information',
+97	=>	'Message type non-existent or not implemented',
+98	=>	'Message not compatible with short message protocol state',
+99	=>	'Information element non-existent or not implemented',
+111	=>	'Protocol error, unspecified',
+127	=>	'Internetworking, unspecified',
+300	=>	'ME failure',
+301	=>	'SMS interface of ME reserved',
+302	=>	'Operation not allowed',
+303	=>	'Operation not supported',
+304	=>	'Invalid PDU mode parameter',
+305	=>	'Invalid text mode parameter',
+310	=>	'SIM not inserted',
+311	=>	'SIM PIN required',
+312	=>	'Phone security code required',
+313	=>	'SIM failure',
+314	=>	'SIM busy',
+315	=>	'SIM wrong',
+316	=>	'SIM PUK required',
+320	=>	'General memory error',
+321	=>	'Invalid memory index',
+322	=>	'SIM memory full',
+330	=>	'SC address unknown',
+331	=>	'No network service',
+332	=>	'Network timeout',
+500	=>	'Unknown error',
+);
+
+%cmeerror = (
+0	=>	'Phone failure',
+1	=>	'No connection to phone',
+2	=>	'Transceiver-adapter link reserved',
+3	=>	'Operation not allowed',
+4	=>	'Operation not supported',
+5	=>	'Phone security code required',
+10	=>	'SIM not inserted',
+11	=>	'SIM PIN required',
+12	=>	'SIM PUK required',
+13	=>	'SIM failure',
+14	=>	'SIM busy',
+15	=>	'SIM wrong',
+16	=>	'Incorrect password',
+17	=>	'SIM PIN2 required',
+18	=>	'SIM PUK2 required',
+20	=>	'Memory full',
+21	=>	'Invalid memory index',
+22	=>	'Not found',
+23	=>	'General memory error',
+24	=>	'Text string too long',
+25	=>	'Invalid characters in text string',
+26	=>	'Dial string too long',
+27	=>	'Invalid characters in dial string',
+30	=>	'No network service',
+31	=>	'Network timeout',
+100	=>	'Unknown error',
+256	=>	'Protocol stack bad state',
+257	=>	'Bad cell (not in the synchronized ones)',
+258	=>	'Lost cell (doe to DSF...)',
+);
+1;

@@ -1,0 +1,68 @@
+#!/usr/bin/perl
+#
+#  Perl interface for sms messages, (c) Angelos Karageorgiou
+#
+$TIMEOUT=25;
+
+print "\n\n";
+
+$device=$ARGV[0];
+$number=$ARGV[1];
+$message=$ARGV[2];
+
+
+
+require POSIX;
+$loc=POSIX::setlocale(&POSIX::LC_CTYPE,"ISO-8859-7");  
+$message=uc $message;
+
+$rate=0.3;
+$frate=0.05;
+
+
+if ( $number == "" ) {
+	print ("usage wrong\n");
+	exit($EX_UNAVAILABLE);
+}
+
+
+
+if (length($message) > 160 ) {
+	$message=substr($message,0,160);
+}
+
+use Expect;
+require "sms.pl";
+
+($pdulen,$pdu)=sms::encode_pdu(0,$number,$message,'7bit','24h'); 
+
+open(DEVICE,"+>$device") || die "Couldn't open $device, $!\n";
+
+$modem=Expect->exp_init(\*DEVICE);
+$modem->log_stdout(0);
+$modem->exp_stty('raw','-echo','9600');
+
+$modem->send_slow($frate,"AT\r");
+$modem->expect(30,'-re','OK') || exit(-1);
+
+#$modem->send_slow($frate,"AT+CMGF=0\r");
+#$modem->expect(30,'-re','OK') || exit(-1);
+
+$pdulen--;
+$modem->send_slow($frate,"AT+CMGS=$pdulen\r");
+#$modem->send_slow(0,"AT+CMGS=$pdulen\r");
+$modem->expect(30,'-re','>') || exit(-1);
+
+$modem->send_slow($frate,"$pdu");
+$modem->expect(30,'ERROR','-re','\+CMGS: [0-9]+');
+
+$fail=$modem->exp_match();
+$modem->expect(0);
+$modem->hard_close();
+
+
+if ( $fail !~ /CMGS/ )  {
+	exit -1;
+}
+
+exit 0;

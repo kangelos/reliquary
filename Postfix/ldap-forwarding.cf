@@ -1,0 +1,8 @@
+domain=hash:/etc/postfix/domains.hash
+bind=no
+server_host = ldap://ldap01:389 ldap://ldap02:389
+search_base = ou=%d,ou=domains,o=top
+query_filter = (|(mail=%s)(mailalternateaddress=%s))
+result_attribute = mailForwardingAddress
+scope = one
+version = 3

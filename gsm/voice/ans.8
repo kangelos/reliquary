@@ -1,0 +1,232 @@
+.\" Process this file with
+.\" groff -man -Tascii ans.8
+.\"
+.TH ANS 8 "8 September 1997" "Ans Version 0.6" "User Manuals"
+
+.SH NAME
+ans \- answering machine for voice modem
+
+.SH SYNOPSIS
+\fBans\fR [ \fIplay\fR | \fIdelete\fR | \fInow\fR | \fIstop\fR | \fIstart\fR ]
+
+.SH DESCRIPTION
+Full-featured answering machine for voice modems. Automatic
+voice/data/fax discrimination. Run from the command line or
+from \fBinittab\fR(5).
+
+.SH OPTIONS
+
+Without option, \fIans\fR starts waiting for a call, displaying
+log messages to the standard output. \fIAns\fR can be run in the
+background with output redirected to a file.
+
+.IP \fBplay\fR
+Play received voice messages.
+
+.IP \fBdelete\fR
+Delete received messages upon confirmation.
+
+.IP \fBnow\fR
+The running \fIans\fR process is forced to answer a call
+immediately. No (more) rings are waited and the greeting
+message is not played: the process starts to record an
+incoming message. If a fax or a calling modem is detected, the
+process switches to the appropriate operation.
+
+.IP \fBstop\fR
+Create a stop file (see FILES section) and kill a \fBvmcp\fR(8)
+process which is waiting for the RINGs from the modem.
+This prevent a running \fIans\fR process from answering the phone.
+The running \fIans\fR process starts a loop and every 10 seconds
+checks if the stop file was removed.
+The modem device is so released for use by other processes.
+
+.IP \fBstart\fR
+The stop file is removed.
+A running \fIans\fR process can exit the loop and restart waiting
+RINGs from the modem. The modem device is locked and become
+unavailable to other processes.
+
+
+.SH OPERATION
+
+When properly installed and started, \fIans\fR sleeps untill it receives
+a call (really it starts a \fBvmcp\fR(8) process which waits for a RING).
+After WAITRINGS rings (default is 4) it answers the call playing
+the \fIgreeting.msg\fR message. After the beep the caller can leave
+a message (deafult max time is 120 s).
+.br
+If \fIans\fR detects a fax or a calling modem during greeting or during
+message recording, it switches to the appropriate operation.
+.br
+To enter \fIans\fR remote operation the caller must play a \fI#\fR DTMF
+tone when \fIans\fR is playing its greeting, then he/she must enter the
+password and terminate it with a \fI#\fR too. If all the messages listed in
+FILES section has been recorded, each remote operation is driven
+by an appropriate message.
+
+
+.SH RECEIVING DATA CALLS
+
+As stated before, \fIans\fR can discriminate voice, fax or data
+calls.
+Neverthless, while every fax machine or modem-fax emits a
+\fIfax call tone\fR when
+it is placing a fax call, not every modem can produce a
+\fIdata
+call tone\fR when it is placing a data call.
+So if the caller doesn't produce the tone, \fIans\fR
+is not able to acknowledge the data call and it responds as if
+it was voice.
+.br
+If the caller's modem allows the \fI^\fR dialling modifier,
+he/she should place the call with a command like:
+.sp
+	\fBATDT^291568\fR
+.sp
+otherwise, he/she sould try a command like:
+.sp
+	\fBATDT291568,,,,,,3\fR.
+.sp
+The number of commas must be adjusted until the DTMF tone \fI3\fR
+falls during the playing of the greeting message. If \fIans\fR
+detects a DTMF tone \fI3\fR during the greeting, it is forced
+to answer a data call.
+
+
+.SH FILES
+
+The \fIans\fR script relies on many binaries and support files.
+Except \fBefax\fR(1), \fBvmcp\fR(8) and maybe
+\fBagetty\fR(8), all the
+binaries should to be standard on every unix-like system.
+This is a complete list of files and directories needed:
+
+
+.in +0.5i
+.ti -0.5i
+\fB/bin/cat\fR
+.ti -0.5i
+\fB/bin/cp\fR
+.ti -0.5i
+\fB/bin/cut\fR
+.ti -0.5i
+\fB/bin/date\fR
+.ti -0.5i
+\fB/bin/echo\fR
+.ti -0.5i
+\fB/bin/kill\fR
+.ti -0.5i
+\fB/bin/ls\fR
+.ti -0.5i
+\fB/bin/mv\fR
+.ti -0.5i
+\fB/bin/rm\fR
+.ti -0.5i
+\fB/bin/touch\fR
+.ti -0.5i
+\fB/dev/null\fR
+.br
+Null file for fake input and output.
+.ti -0.5i
+\fB/dev/ttyS\fRn
+.br
+Device to which modem is connected.
+.ti -0.5i
+\fB/sbin/agetty\fR
+.br
+Program for incoming data calls handling.
+.ti -0.5i
+\fB/tmp/\fR
+.br
+Temporary directory.
+.ti -0.5i
+\fB/usr/bin/diff\fR
+.ti -0.5i
+\fB/usr/bin/efax\fR
+.br
+Program for incoming faxes handling.
+.ti -0.5i
+\fB/usr/bin/find\fR
+.ti -0.5i
+\fB/usr/bin/sed\fR
+.ti -0.5i
+\fB/usr/bin/sort\fR
+.ti -0.5i
+\fB/usr/bin/vmcp\fR
+.br
+Program to communicate with the modem.
+.ti -0.5i
+\fB/usr/bin/wc\fR
+.ti -0.5i
+\fB/usr/local/lib/ans/\fR
+.br
+This directory must contains the following files:
+\fBask_passwd.msg\fR
+.br
+voice message: "please enter your password and terminate it with #"
+.br
+\fBch_greeting.msg\fR
+.br
+voice message: "record the new greeting after the beep, press # to
+confirm, 9 to cancel"
+.br
+\fBget_msgs_mnu.msg\fR
+.br
+voice message: "press 4 to rewind, 6 to forward, 9 to delete message,
+# to stop"
+.br
+\fBgreeting.msg\fR
+.br
+voice message: "this is the (phone #), leave a message after the beep"
+.br
+\fBmsg_deleted.msg\fR
+.br
+voice message: "message deleted"
+.br
+\fBpasswd\fR
+.br
+text file containig the password for \fIans\fR remote access. The
+password is followed by a \fI#\fR and a new-line.
+.br
+\fBpasswd_ch.msg\fR
+.br
+voice message: "password changed successfully"
+.br
+\fBpasswd_not_ch.msg\fR
+.br
+voice message: "password not changed"
+.br
+\fBremote_menu.msg\fR
+.br
+voice message: "press 1 to listen the messages, 2 to listen the
+greeting, 3 to change it and 4 to change the password"
+.br
+\fBwrong_passwd.msg\fR
+.br
+voice message: "wrong password"
+.ti -0.5i
+\fB/var/lock/LCK..ttyS\fRn
+.br
+Lock file created to signal that modem device is in use.
+.ti -0.5i
+\fB/var/run/ans.ttyS\fRn\fB.stop\fR
+.br
+Stop file created when \fIans stop\fR is executed.
+.ti -0.5i
+\fB/var/spool/fax/\fR
+.br
+Directory for incoming faxes.
+.ti -0.5i
+\fB/var/spool/voice/\fR
+.br
+Directory for incoming voice messages.
+
+
+.SH "SEE ALSO"
+\fBagetty\fR(8),
+\fBefax\fR(1),
+\fBvmcp\fR(8)
+
+.SH AUTHOR
+Niccolo Rigacci <fd131@cleveland.freenet.edu>

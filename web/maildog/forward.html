@@ -1,0 +1,90 @@
+<?
+	include('defaults.php3');
+if ( empty($server) || empty($account) || empty($password) ) {
+        Header("Location: $MAILDOG");
+        exit;
+}
+?>
+<meta charset="iso-8859-7">
+<body bgcolor="#EEEEEE">
+<font face=arial>
+<?
+
+$msg_number=implode($argv," ");
+
+
+$mbox = imap_open("{$server:143}INBOX",$account,$password,OP_READONLY);
+
+$status=imap_check($mbox);
+$num_msg=$status->Nmsgs;
+
+$header=imap_header($mbox,$msg_number,1);
+$from   =$header->fromaddress;
+$to   =$header->toaddress;
+$subject="Re:" . $header->subject;
+$replyto =$header->reply_toaddress;
+if ( empty ($replyto) ) {
+	$replyto =$header->toaddress;
+}
+if ( ereg("\"",$replyto) ) {
+	$replyto=ereg_replace("\"","",$replyto);
+}
+
+
+#$body    = "Forwarded message follows:\n\n\n";
+$body	=  "--------------- Forwarded message ---------------\n";
+$body	.=  "\nFrom: " 	. $from;
+$body	.=  "\nSubject: " 	. $subject;
+$body	.=  "\nTo: "		. $to;
+$body	.=  "\nReply-To: "	. $replyto;
+$body	.=  "\n\n";
+
+$body   .= imap_body($mbox,$msg_number);
+
+imap_close($mbox);
+
+?>
+
+<table bgcolor="#006699" width=100%>
+<tr>
+	<td align=center><font face=arial color="white">
+		Forward Message / Προώθηση Μηνύματος
+	</td>
+</tr>
+</table>
+
+<center>
+<form action="sendmail.html" method=post>
+<table border=0 cellspacing=2 cellpadding=6>
+ <tr>
+        <td align=right>
+		<font Face=arial>From:
+	</td>
+	<td><font Face=arial>
+<? 
+	print "<input name=\"email\" value=\"$account@$server\" size=40>"; 
+?>
+	</td>
+</tr>
+ <tr>
+        <td align=right>
+		<font Face=arial> To:
+	</td>
+	<td><font Face=arial>
+		<input name="to" size=40>
+	</td>
+</tr>
+ <tr>
+       <td align=right>
+		<font Face=arial> Subject:
+	</td>
+	<td><font Face=arial>
+<? print "	<input name=\"subject\" value=\"$subject\" size=40>";?>
+</td>
+</tr>
+ <tr>
+	<td valign=top><font Face=arial>Message:</td>
+        <td><textarea name="message" rows=13 cols=70><? print "$body"; ?></textarea></td>
+</tr>
+</table>
+<input type="Submit" value="                    Send it                    ">

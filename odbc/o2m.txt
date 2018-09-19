@@ -1,0 +1,493 @@
+#!/usr/bin/perl 
+
+
+
+
+#######################################################################
+#
+# Multi threaded Telnet to ODBC server 
+# Angelos Karageorgiou angelos@unix.gr.gr Dec 2003
+#
+#
+# This is a universal server , meaning all you need is a PC with a 
+# valid odbc connection, This then can be exported to anywhere
+# You will need activeperl sdk  and perltray
+#
+# Binary versions availlable upon request
+#
+#
+# Legal Statement:
+#
+# No warranties whatsoever given, Use at your own risk, YMMV
+# this is released under the GPL which can be found at
+# http://www.gnu.org/copyleft/gpl.html
+#
+# Copyright (C)  2003,2004,2005 Angelos Karageorgiou
+#######################################################################
+
+
+
+#######################################################################
+#o2m.ini should placed in c:\unix.gr\o2m.ini
+# and it should contain
+#DSN=yourdsn
+#USER=odbcadmin
+#PASS=adminsodbcpass
+#WORKERS=numberofthreads
+#PORT=port to listneto
+#######################################################################
+
+
+
+
+
+#################### edit this ##################
+my $EXPIRES="30/12/2004";
+my $WORKERS=2;			
+my $LPORT=434;			
+my $DSN="dbi:ODBC:sample";
+my $USER="Administrator";                 
+my $PASS="";
+#################### edit above ##################
+
+
+
+################ Do not touch below this ##############
+my $VERSION="Version o2m:1.e";
+use PerlTray;
+use threads;
+use threads::shared;
+#use strict;			# uncomment if you dare
+use IO;
+use IO::Socket::INET;
+use DBI;
+use DBI::DBD;
+use Time::localtime;
+use Win32::Process;
+
+# avoid translation to UTF-8
+use bytes;
+no locale;
+
+# forward declarations;
+sub checkexpiration;
+sub query;
+sub worker;
+sub sprint;
+
+
+# variables
+my $SSLID=undef;
+my $once=0;
+my $lock:shared=1;
+my $check:shared=1;
+my $keepgoing:shared=1;
+my @THREADS=();
+my $main_sock=undef;
+
+
+
+######################################################################
+# functions , uhhh sorry subs start here
+
+#############
+#
+sub Shutdown{ &myexit }
+
+
+
+########################
+#
+sub show_balloon {
+    return Balloon("Universal Odbc to Telnet Server\r\nvVersion $VERSION\r\n\r\nby Angelos Karageorgiou\r\nangelos@unix.gr\r\n", "O2M", "Info",2)
+}
+
+sub show_unix.gr {
+    return Balloon("UNIX.gr \r\nSolutions Provider\s\nhttp://www.unix.gr\r\nangelos\@unix.gr.gr\r\n", "O2M","Info",2)
+}
+
+#############
+#
+sub ToolTip { return "O2M" . $VERSION; }
+
+#############
+#
+sub PopupMenu {
+    return [
+		["*UNIX.gr Solutions", \&show_unix.gr],
+		["About o2m  server", \&show_balloon],
+		["--------------"],
+		[" Exit server ", \&myexit]
+	];
+}
+
+
+#############
+#
+sub logmsg {
+	my $msg=shift @_;
+	lock($lock);
+	open(my $LOG,">>C:\\unix.gr\\odbc2net.log") || return;
+	my $now=ctime(time());
+	print $LOG $now . " " .  $msg . "\n";
+	close($LOG);
+return 1;
+}
+
+
+
+
+#############
+# interactive check
+
+sub SSLinit{
+	my $expires=shift @_;
+	my $retcode=undef;
+
+	if (checkexpiration($expires) < 1 ) {
+		logmsg "Program Expired";
+		Balloon("\rYour copy of o2m has expired\r\rPlease contact UNIX.gr Consulting","O2M","ERROR",3);
+		return undef;
+	}
+
+	&readconf;
+	eval {	DBI->connect($DSN,$USER,$PASS)	} 
+	if ( $@) {
+	    	Balloon("$@ Invalid ODBC DSN","O2M","ERROR",3);
+		sleep 2;
+		exit;
+ 	};
+}
+
+
+
+
+####################
+#
+sub readconf{
+# overrides default variables
+	open(INFILE,"c:\\unix.gr\\o2m.ini") || return -1;
+	while(<INFILE>) {
+		chomp();
+		if ( /^#/ ) { next }
+		(my $var,my $val)=split('=');
+		if ( $var =~ /^DSN/i )	 	{ $DSN="dbi:ODBC:" . $val; 	next; }
+		if ( $var =~ /^USER/i ) 	{ $USER=$val; 	next; }
+		if ( $var =~ /^PASS/i ) 	{ $PASS=$val; 	next; }
+		if ( $var =~ /^WORKERS/i )	{ $WORKERS=$val; 	next; }
+		if ( $var =~ /^PORT/i )		{ $LPORT=$val; 	next; }
+	}
+	
+	close INFILE;
+}
+
+
+
+#############
+#
+sub Timer {    
+	SetTimer(0);    
+	if ( $once>0 ) { return }	# just in case
+	$once=1;
+
+	close STDIN;
+	close STDOUT;
+	close STDERR;
+	open STDOUT, ">c:\\unix.gr\\o2m_out.txt";
+	open STDERR ,">c:\\unix.gr\\o2m_err.txt";
+
+
+	$SSLID=SSLinit($EXPIRES);	# oh yes this is a teaser !
+
+	# Create Main Listener
+        $main_sock = new  IO::Socket::INET->new( 
+					Prot => 'tcp',
+		                        LocalPort => $LPORT,
+		                        Listen =>  $WORKERS * 3, 
+					LocalAddr => '127.30.40.50',
+		                        Reuse => 1 
+				);
+
+
+	if ( ! defined $main_sock ) {
+		logmsg "cannot create listener";
+       		Balloon("cannot create listener","O2M","ERROR",3);
+		sleep 3;
+		exit;
+	}
+
+    	logmsg("Creating $WORKERS Worker Threads");
+	for (my $i=0; $i<$WORKERS; $i++) {
+		my $lthread=threads->create(\&worker,$EXPIRES,$main_sock,$DSN,$USER,$PASS);
+		if (! defined $lthread ) {
+			logmsg "Listener Thread failed, cannot continue";
+       			Balloon("Listener Thread Failed","O2M","ERROR",3);
+			exit;
+			sleep 2;
+		}
+
+		logmsg "Thread $i Created";
+		push @THREADS,$lthread;
+	}
+	logmsg "Threads done";
+
+	Balloon("DB Server Ready\r\n$WORKERS workers created\r\nVersion $VERSION","Angelos Karageorgiou","INFO",3);
+	SetTimer(10);
+	return 1; # success
+}
+
+
+
+#############
+#
+sub checkexpiration{
+	my $expires=shift @_;
+
+
+	  return 1;   # forget it fot the time being
+
+
+   lock($check);
+
+   my ($expday,$expmon,$expyear)=split('/',$expires);
+    if (
+		( localtime->year() + 1900 > $expyear )   ||
+        (( localtime->year() + 1900 == $expyear ) &&( localtime->mon()+1 > $expmon))
+	){
+		return -2;
+      }
+  return 1;
+}
+
+
+
+
+
+
+
+#############
+#
+sub myexit {
+	Balloon("Stopping SSL Process", "O2M", "Info",1);
+	my $retcode=0;			# just init it
+	Win32::Process::KillProcess($SSLID,$retcode);
+	kill 'TERM',$SSLID;
+	kill 9,$SSLID;
+	kill 2,$SSLID;
+	kill $SSLID;
+
+	Balloon("Signalling Back End to Terminate\r\n", "O2M", "Info",1);
+
+	$keepgoing=0; 	#	the signal to the backend to stop
+	$main_sock->close();
+
+	exit 1;
+}
+
+
+
+
+
+########################
+#
+sub sprint {  # windows is brain dead print chars one at a time
+	my $fh=shift @_;
+	my $data=shift@_;
+	my $RAW=0;
+
+	threads->yield;
+	if ( $RAW==0 ) {
+		return print $fh $data;
+	} else {
+	# for Raw sockets;	one character at a time
+		my $len=length($data);
+		for ( my $i=0; $i<$len;$i++) {
+			my $rc = syswrite($fh,substr($data,$i,1),1);
+			if (( ! defined $rc ) || ( $rc != 1 ) ) { return -1 }
+		}
+	
+	return 1;
+	}
+}
+
+
+
+
+
+
+######################
+#
+
+sub worker{
+    my $expires=shift @_;
+    my $lsock=shift @_;
+	my $dsn=shift @_;
+	my $user=shift @_;
+	my $pass=shift @_;
+
+	# Internal PERL engine errors are redircted to a per thread file
+	# Poor man's C-Style Daemonification in Windows Perl :-<
+	close STDIN;
+	close STDOUT;
+	close STDERR;
+	my $id=threads->tid;
+	open STDOUT, ">c:\\unix.gr\\o2m_out_${id}.txt";	# per worker error log
+	open STDERR, ">c:\\unix.gr\\o2m_err_${id}.txt";
+	print STDOUT "Starting\n";
+	print STDERR "Starting\n";
+
+
+
+	my $dbh=undef;
+	eval {
+		$dbh=DBI->connect($dsn,$user,$pass)
+	}
+	if ( ( $@) || ( !defined $dbh ) ) {
+    		Balloon("ODBC Failed:". $DSN, "O2M", "Error",2)
+		logmsg "ODBC Failed";
+		return;
+	}
+
+	$lsock->listen();  # this is where it does not block
+	while( $keepgoing==1) {	
+		threads->yield;
+		my $new_sock = $lsock->accept() ;
+		if ( $keepgoing!=1) 		{ last } 
+		if ( ! defined $new_sock)	{ last }
+		query($new_sock,$expires,$dbhx);
+		$new_sock->close;
+	}
+
+$dbh->disconnect();
+return 1;
+}
+
+
+
+
+
+#############
+#
+sub query{
+	my $Client = shift @_;
+	my $expires = shift @_;
+	my $dbh=shift @_;
+
+
+	
+    my $sqlTicker="";	# initialize the arrays so strict does not bitch
+
+
+	if ( checkexpiration($expires) < 1 ) {   # not thread safe
+                logmsg "Program Expired on $expires";
+        		sprint ($Client,"ERROR: program expired on $expires\r\n");
+			goto GETOUT;
+    }
+    
+
+	if ( ! defined $dbh ) {
+		sprint($Client,"ERROR:No ODBC Connection\r\n");
+		goto GETOUT;
+	}
+
+	if ( ! sprint($Client, "O2M ready\r\n")  ) { 
+		logmsg "Client disconnected abnormally during greeting";
+		goto GETOUT;
+	}
+
+
+	$sqlTicker=<$Client>; chomp($sqlTicker);
+	$sqlTicker =~ s/\;.$// ; # a bit of clean up
+
+	if ( ! sprint($Client,"You Said: $sqlTicker\r\n") ) { 
+		logmsg "Client disconnected abnormally during verification"; 
+		goto GETOUT;
+	}
+
+
+        if ( $sqlTicker =~ /^quit/i ) {	goto GETOUT }
+
+        if ( $sqlTicker =~ /^info/i ) {
+                sprint ($Client, 
+				$dbh->get_info( 16 ). "\r\n".
+                		$dbh->get_info( 17 ). "\r\n".
+                		$dbh->get_info( 18 ). "\r\n");
+		goto GETOUT;
+        }
+
+
+
+        if ( length($sqlTicker) < 10 ) {
+                logmsg("command too short $sqlTicker");
+                sprint ($Client, "ERROR: command too short $sqlTicker\r\n");
+				goto GETOUT;
+        }
+
+
+        if ( $sqlTicker =~ /delete\s/i ) {	# no no no !
+                logmsg("ERROR: command not supported $sqlTicker");
+                sprint ($Client, "ERROR: command not supported $sqlTicker\r\n");
+				goto GETOUT;
+        }
+
+
+        my $sth = undef;
+	eval { $sth $dbh->prepare($sqlTicker) }
+
+        if ( ($@) || ( ! defined $sth ) ){
+                 logmsg  "Error: ",$dbh->errstr;
+                 sprint ($Client, "ERROR: " . $dbh->errstr ,"\r\n");
+				goto GETOUT;
+        }
+
+	eval {  $sth->execute() }
+	if ( $@) {
+		logmsg  "Error: ",$sth->errstr;
+        	sprint ($Client, "ERROR: " . $sth->errstr ,"\r\n");
+		goto GETOUT;
+	}
+
+
+
+        # all seems to be OK now
+
+        while (my @row = $sth->fetchrow_array ) {
+		threads->yield;
+                my $resline="";
+                for (my $i=0;$i<$#row; $i++) {
+			my $temprow=$row[$i];
+			# well what are you doing with these characters anywhow
+			$temprow =~ s/\|/ /g;	
+                        $resline .= $temprow;
+                        $resline .= "|";
+                }
+
+		$temprow=$row[$#row];   # Last element
+		$temprow =~ s/\|/ /g;
+		$resline .= $temprow;
+
+		$resline =~ s/\r/ /g;	# get rid of embedded lines
+		$resline =~ s/\n/ /g;
+		$resline .=  "\r\n";    # now add them back :-)
+        	if ( ! sprint ($Client, $resline ) ) {
+			logmsg "Client disconnected abnormally during data send";
+			goto GETOUT;
+		}
+		
+	} # end while loop
+
+
+GETOUT:
+    sprint ($Client ,"Done\r\n"); 
+	if ( $sth )		{ 	$sth->finish 		}
+
+return 1;
+} # end query 
+
+
+
+###############################################################
+
+SetTimer(10);   # everything starts here and ends here too!
+
+

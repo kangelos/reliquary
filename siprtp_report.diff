@@ -1,0 +1,41 @@
+*** siprtp_report.c.new	Fri Jul  3 10:26:19 2009
+--- siprtp_report.c	Mon Feb 19 03:13:53 2007
+***************
+*** 225,260 ****
+  	   ""
+  	   ));
+  
+- /* adaptation of Telchemy's MOS calculation Angelos Karageorgiou , angelos@unix.gr */
+- float rxloss=audio->rtcp.stat.rx.loss * 100.0 / (audio->rtcp.stat.rx.pkt + audio->rtcp.stat.rx.loss);
+- float txloss=audio->rtcp.stat.tx.loss * 100.0 / (audio->rtcp.stat.tx.pkt + audio->rtcp.stat.tx.loss);
+- float avrxjitter=audio->rtcp.stat.rx.jitter.avg / 1000.0;
+- float avtxjitter=audio->rtcp.stat.tx.jitter.avg / 1000.0;
+- float AverageLatency=audio->rtcp.stat.rtt.avg/2000;
+- 
+- float Jitter=avtxjitter;
+- if ( Jitter < avrxjitter ) { Jitter=avrxjitter; }
+- float  EffectiveLatency = ( AverageLatency + (Jitter * 2) + 10 );
+- 
+- float R=0;
+- if (EffectiveLatency < 160){
+-    R = 93.2 - (EffectiveLatency / 40);
+- }else{
+-    R = 93.2 - (EffectiveLatency - 120) / 10;
+- }
+- 
+- float PacketLoss=txloss;
+- if  (PacketLoss < rxloss ) { PacketLoss=rxloss; }
+- R = R - (PacketLoss * 2.5);
+- float MOS = 1 + (0.035) * R + (.000007) * R * (R-60) * (100-R);
+- if ( R < 0 ) { MOS=0; }
+- 
+-     PJ_LOG(3, (THIS_FILE,
+- 	   "   Jitter %f AverageLatency %f  EffectiveLatency %f packetloss %f R %f  \nMOS score : %3.1f \n", Jitter, AverageLatency, EffectiveLatency , PacketLoss,R, MOS,
+- 	   ""
+- 	   ));
+- 
+- printf (" rxloss %f txloss %f Jitter %f \n", rxloss, txloss, Jitter);
+      pj_log_set_decor(decor);
+  }
+  
+--- 225,230 ----

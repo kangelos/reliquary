@@ -1,0 +1,93 @@
+<?
+include('defaults.php3');
+if ( empty($server) || empty($account) || empty($password) ) {
+        Header("Location: $MAILDOG");
+        exit;
+}
+?>
+<meta charset="iso-8859-7">
+<body bgcolor=white>
+<font face=arial>
+
+
+<table bgcolor="#cccccc" width="100%">
+<tr>
+        <td>
+                <font face=arial color="#00008F">
+                Expunge / Διαγραφή
+                </font>
+        </td>
+        <td align=right>
+                <font face=arial color=blue>
+                MailDog by Angelos Karageorgiou
+                </font>
+        </td>
+</tr>
+</table>
+<br><br>
+<?
+$mbox = imap_open("{$server:143}INBOX",$account,$password);
+
+
+
+if ( ! $mbox ) {
+	echo("<br><br>
+		<center><font color=red size=+1>
+		<h3> Cannot Expunge Inbox / Το Inbox δεν καθάρισε</h3>
+		</center>
+	");
+} else {
+$status=imap_check($mbox);
+$num_msg=$status->Nmsgs;
+$deleted=imap_delete($mbox,$msg_number);
+
+for ($i=1; $i<=$num_msg; $i++) {
+	$var=sprintf("del_%s",$i);
+	$val=$$var;
+	if ( ! empty ( $val ) ) {
+		$deleted=0;
+		$deleted=imap_delete($mbox,$i);
+		if ( ! $deleted ) {
+			print "<center><h2> Could not delete Msg # $i</h2><center>";
+		}
+	}
+}
+
+
+#
+# Totally remove them
+#
+$deleted=imap_expunge($mbox);
+
+echo ("<meta http-equiv=\"Refresh\" content=\"3; URL=$MAILDOG/listinbox.html\">");
+if ( $deleted ) {
+	echo("
+	<br><br>
+		<center><font color=maroon size=+1>
+		<h3> Inbox Expunged / Το Inbox καθάρισε</h3>
+		</center>
+	");
+} else {
+	echo("<br><br>
+		<center><font color=red size=+1>
+		<h3> Cannot Expunge Inbox / Το Inbox δεν καθάρισε</h3>
+		</center>
+	");
+}
+echo("
+<center>
+<font face=arial size=+1>
+<br>
+<br>
+<br>
+Θα μεταφερείτε στο ταχυδρομείο σας σε 3 δευτερόλεπτα
+<br>
+You will be forwarded to your inbox in 3 seconds
+");
+
+}
+
+imap_close($mbox);
+?>
+
+<br><br>

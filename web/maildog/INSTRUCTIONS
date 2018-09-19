@@ -1,0 +1,24 @@
+
+	This is an open source project released under the GPL
+for the GPL look into http://www.fsf.org/copyleft/gpl.html
+
+
+Prerequisites: You need apache , PHP 3.0.x compiled as a module, 
+IMAP from washington.edu Compile the whole mess and install as per 
+the instructions of each individual package. 
+
+Then do a tar zxvf maildog.tgz followed by mv maildog /usr/local/apach/htdocs/
+or wherever else your target dir is.
+
+
+Keep in mind that this is a pre-alpha software, use at your own peril,
+I take no responsibility whatsoever as to the stability, merchantability,
+fitness, obesity, security or any aspect of this package.
+
+
+Included you will find a perl script dogmime.pl , which is another
+approach for decomposing mime emails, plus some silly cgi scripts.
+
+Feel free to send me your comments.
+
+March 2000 , Angelos Karageorgiou

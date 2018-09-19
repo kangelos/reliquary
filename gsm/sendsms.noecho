@@ -1,0 +1,108 @@
+#!/usr/bin/perl
+#
+#  Perl interface for sms messages, (c) Angelos Karageorgiou
+#
+$progname="SENDSMS";
+
+# Possible result codes in general
+@ex_args = (
+	    'OK'        =>      '($&,$`)',
+            'TIMEOUT'   =>      '($&,$S)',
+            'EOF'       =>      '($&)',
+            '\n.*ERROR.*\n' =>  '($&,$`)'
+);
+     
+
+$debug=1;
+$device=$ARGV[0];
+$number=$ARGV[1];
+$message=$ARGV[2];
+
+
+
+require '/etc/gsm/lock.pl';
+
+# make a lockfile
+$tempdev=$device;
+$tempdev =~ s/\/dev\///gi;
+
+
+$lockdev = "/tmp/LCK..$tempdev";
+
+for ($i=1; ; $i++) {
+        $retval = lock::lock($lockdev,'V2');
+        last if $retval;
+        defined $retval or die "Error while locking serial port";
+        last unless $i<10;
+        sleep($i);                      # wait more
+}
+die "Cannot make lock file $lockdev" unless $retval;
+
+
+
+if ( $number == "" ) {
+	print ("usage wrong\n");
+	exit($EX_UNAVAILABLE);
+}
+
+
+
+if (length($message) > 160 ) {
+	$message=substr($message,0,160);
+}
+$logmessage=$message; # save it
+
+############################################################################
+#
+#	The real work to send an SMS message
+#
+############################################################################
+
+require "sms.pl";
+require "chat3.pl";
+
+$SPEED = "9600";
+$timeout = 6;   
+
+$rate=0.3;
+$frate=0.05;
+($pdulen,$pdu)=sms::encode_pdu(1,$number,$message,'7bit','24h'); 
+
+chat::open_tty($device,$SPEED) || die "$progname: $!"; 
+
+
+chat::print("AT\r");		# miss a few heartbeats but set up line correctly
+@R = chat::expect($timeout, @ex_args);
+($R[0] =~ /OK/ ) or die "$progname: chat timed out $R[0]";
+if ( $debug ) { print "@R"; }
+
+chat::print("AT\r");		# miss a few heartbeats but set up line correctly
+@R = chat::expect($timeout, @ex_args);
+($R[0] =~ /OK/ ) or die "$progname: chat timed out $R[0]";
+if ( $debug ) { print "@R"; }
+
+$pdulen--;
+chat::print("AT+CMGS=$pdulen\r"); 
+chat::print("$pdu");
+@R = chat::expect($timeout, @ex_args);
+if ( $debug ) { print "@R"; }
+
+chat::close_tty(S);
+lock::unlock($lockdev);
+
+
+
+if ( 
+	( $R[0] !~ /CMGS/ ) && 
+	( $R[0] !~ /CMGS|OK/ ) 
+   ){
+	 print "$progname: Could not send message, error:$R[0]";
+	$string="Failed:   $device $number $logmessage\n";
+	system("/usr/bin/logger -plocal3.debug \"$string\"");
+	exit -1;
+    }
+
+$string="Success: $device $number $logmessage\n";
+system("/usr/bin/logger -plocal3.debug \"$string\"");
+
+0;

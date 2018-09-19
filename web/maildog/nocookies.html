@@ -1,0 +1,10 @@
+<?
+include('defaults.php3');
+SetCookie("password","deleted",time()-6000000);
+SetCookie("email","deleted",time()-6000000);
+SetCookie("domain","deleted",time()-6000000);
+SetCookie("server","deleted",time()-6000000);
+SetCookie("account","deleted",time()-6000000);
+Header("Location: $MAILDOG");
+exit;
+?>

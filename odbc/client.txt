@@ -1,0 +1,76 @@
+#!/usr/bin/perl
+                                                                                                                             
+#######################################################################
+#
+# Perl CLient for the Multi threaded Telnet to ODBC server
+# Angelos Karageorgiou angelos@unix.gr.gr Dec 2003
+#
+#
+#
+# Legal Statement:
+#
+# No warranties whatsoever given, Use at your own risk, YMMV
+# this is released under the GPL which can be found at
+# http://www.gnu.org/copyleft/gpl.html
+#
+# Copyright (C)  2003,2004,2005 Angelos Karageorgiou
+#######################################################################
+
+use warnings;
+require 5.002;
+use strict;
+no utf8;
+no locale;
+use bytes;
+use Socket;
+use IO::Handle;
+use IO::Select;
+use Carp;
+my $command="";
+$ENV{'LANG'}="greek";	# oh well I am greek
+use POSIX qw(locale_h);
+setlocale(LC_ALL,"el_GR.ISO-8859-7") || die "Cannot set locale";
+                                                                                                                             
+my $proto = getprotobyname('tcp');
+my $machine_name= "127.0.0.1" || die "please give me tha machinename";
+my $port =  434;
+                                                                                                                             
+# Creating a socket handle
+socket(Client, PF_INET, SOCK_STREAM, getprotobyname('tcp')) || die $!;
+                                                                                                                             
+my $sin = sockaddr_in ($port,inet_aton($machine_name));
+                                                                                                                             
+if ( ! ( connect(Client,$sin) ) )
+  { print "Error in connect call : " , $! , " \nSERVER IS NOT RUNNING\n"; exit (1) ; }
+                                                                                                                             
+                                                                                                                             
+#Client->autoflush(1);
+my @CMDS;
+my @parts;
+#push @CMDS , "info";
+#push @CMDS ,"select * from Trnums";
+push @CMDS ,shift || die "No Sql Statement";
+                                                                                                                             
+my $line;
+$line="";
+$line=<Client>;
+ if ( ! $line ) {       die $!; }
+                                                                                                                             
+print $line ."\n";
+                                                                                                                             
+foreach $command (@CMDS) {
+        $command = $command . "\r\n";
+        print Client $command;
+        while($line=<Client>){
+                if ( $line =~ /Done/ )  { last; }
+                print $line;
+                if ( $line =~ /Error/ig ) {
+                        last;
+                }
+        }
+}
+                                                                                                                             
+print Client "quit\n";
+$line=<Client>;
+print "$line\n";;
+close Client;

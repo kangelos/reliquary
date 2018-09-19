@@ -1,0 +1,8 @@
+bind=no
+server_host = ldap://ldap01:389 ldap://ldap02:389
+search_base = ou=domains,o=top
+query_filter = (&(ou=%d)(objectClass=organizationalUnit)(objectClass=qmailUser))
+result_attribute = DomainAliasedTo
+result_format = %U@%s
+scope = sub
+version = 3

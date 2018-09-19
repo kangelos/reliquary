@@ -1,0 +1,73 @@
+
+
+
+			W E B    S U R V E Y S
+
+
+This is a CGI enguine that turns any ordinary web page into a full blown survey.
+
+It can 
+
+
+	validate numbers, by checking for valid input as well as checks ranges
+
+	Force respondents to answer a question before progressing
+
+	direct the flow of the survey  depending upon previous answers
+
+	etc. etc.
+
+
+survey.html is the launcher  
+users.hmtl is the survey proper 
+nextq.cgi is the engine
+
+
+you can email me at angelos@unix.gr for support 
+
+****************
+* Instructions *
+****************
+
+the survey starts with the Tag
+<!-- START_SURVEY -->
+and ends with the tag 
+<!-- END-SURVEY -->
+
+question groups start with 
+<!-- START-GROUP X -->
+and end with 
+<!-- END-GROUP X -->
+
+there is no provision for nested groups , it would be dysfunctional anyway
+
+within the html code you can use tags like 
+proceed
+setvar
+jumpto
+
+
+here are some examples
+
+<input type="radio" Name="pc" value="386" onclick="proceed()">386
+
+	if you clink on this radio you immediately move to the next question
+
+Other:<input type=text name="pc-other" onchange="setvar('pc','other');setvar('pc','other')">
+
+	typing inside the other box sets also the variable "pc" to "other"
+
+<input type="radio" Name="multiple-users" value="no" onclick="skipto(6)">No<br>
+
+	Clicking on this button will skipp all groups of questions and go to 
+	group number 6
+
+Hours Online:<input type="text" Name="Hours-Online" onchange="validate_number('Hours-Online')">
+
+	If you want to check that the user has entered a number and not garbage 
+	use the above example
+
+
+Age (18-45):<input type="text" Name="Age" onchange="number_range_check('Age',18,45)">
+
+	Check that the user has entered a valid number in the range between 18 and 45

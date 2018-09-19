@@ -1,0 +1,4 @@
+echo ""
+echo "                     ****** Search Engine Processing  ******"
+echo ""
+/etc/searchupdate

@@ -1,0 +1,110 @@
+/*
+ * Greek Iso-8859-7 LC_CTYPE locale for BSD/OS 3.1-40
+ * Angelos Karageorgiou Jan 1999, angelos@unix.gr
+ * feel free to use it, let me know of changes
+ *
+ *  changing the case of a stressed char removes the stress , this way regexes work better
+ *
+ *
+ */
+
+ENCODING "EUC"
+VARIABLE        1 0x0000 2 0x8080 2 0x0080 3 0x8000 0x8080
+
+ALPHA           'A' - 'Z' 'a' - 'z' 0x7f - 0xfe
+CONTROL         0x00 - 0x1f 0x7f - 0x9f
+DIGIT           '0' - '9'
+GRAPH           0x21 - 0x7e  0x7f - 0x9f
+LOWER           'a' - 'z'
+PUNCT           0x21 - 0x2f 0x3a - 0x40 0x5b - 0x60 0x7b - 0x7e
+SPACE           0x09 - 0x0d 0x20 0xff
+UPPER           'A' - 'Z'  0xa2  0xb8 - 0xba   0xbc   0xbe - 0xbf   0xc1 - 0xdb
+LOWER		'a' - 'z'  0xc0  0xdc - 0xfe
+XDIGIT          'a' - 'f' 'A' - 'F'
+TODIGIT         < '0' - '9' : 0 >
+TODIGIT         < 'A' - 'F' : 10 >
+TODIGIT		< 'a' - 'f' : 10 >
+
+PRINT           0x20 - 0x7e 0xa0-0xfe
+MAPLOWER        < 'A' - 'Z' : 'a' >
+MAPLOWER	< 'a' - 'z' : 'a' >
+
+/*
+ *		Greek
+ */
+
+
+MAPLOWER        < 0xc1 - 0xd9 : 0xe1 >	/*  Upper case to lowercase  losing accents*/
+MAPLOWER	< 0xe1 - 0xf9 : 0xe1 >	/* Lowercase letters to lowercase */
+
+MAPLOWER        < 0xa2 0xe1 >	/* 'A -> a */
+MAPUPPER        < 0xa2 0xc1 >	/* 'A -> A */
+
+MAPLOWER        < 0xb8 0xe5 >	/* 'E -> e */
+MAPUPPER        < 0xb8 0xc5 >	/* 'E  -> E */
+
+MAPLOWER        < 0xb9 0xe7 >	/* 'H -> h */
+MAPUPPER        < 0xb9 0xc7 >	/* 'H -> H */
+
+MAPLOWER        < 0xba 0xe9 >	/* 'I -> i */
+MAPUPPER        < 0xba 0xc9 >	/* 'I -> I */
+
+MAPLOWER        < 0xbc 0xef >	/* 'O -> o */
+MAPUPPER        < 0xbc 0xcf >	/* 'O -> O */
+
+MAPLOWER        < 0xbe 0xf5 >	/* 'Y -> y */
+MAPUPPER        < 0xbe 0xd5 >	/* 'Y -> Y */
+
+MAPLOWER        < 0xbf 0xf9 >	/* 'Ù -> ù */
+MAPUPPER        < 0xbf 0xd9 >	/* 'Ù -> Ù */
+
+MAPLOWER        < 0xda 0xe9 >	/* :I -> i */
+MAPUPPER        < 0xda 0xc9 >	/* :I -> I */
+
+MAPLOWER        < 0xdb 0xf5 >	/* :Y -> y */
+MAPUPPER        < 0xdb 0xd5 >	/* :Y -> Y  */
+
+
+MAPUPPER        < 'A' - 'Z' : 'A' >	/* UPPER CASE MAPPINGS losing accents */
+MAPUPPER	< 'a' - 'z' : 'A' >
+
+MAPUPPER	< 0xe1 - 0xf9 : 0xc1 >	/* small to upper */
+MAPUPPER        < 0xc1 - 0xd9 : 0xc1 > 	/* Upper case to upper case */
+
+
+MAPUPPER < 0xdc  0xc1 >	/* 'á -> A */
+MAPLOWER < 0xdc  0xe1 >	/* 'á -> a */
+
+MAPUPPER < 0xdd 0xc5 >	/* 'å -> E  */
+MAPLOWER < 0xdd 0xe5 >	/* 'å -> e */
+
+MAPUPPER < 0xde 0xc7 >	/* 'ç -> H */
+MAPLOWER < 0xde 0xe7 >	/* 'ç -> h  */
+
+MAPUPPER < 0xdf 0xc9 >	/* 'é -> I  */
+MAPLOWER < 0xdf 0xe9 >	/* 'é -> i */
+
+MAPUPPER < 0xf2 0xd3 >	/* ò */
+
+
+MAPUPPER < 0xc0 0xc9 >	/* :i me tono -> I */
+MAPLOWER < 0xc0 0xe9 >	/* :i me tono -> i */
+
+MAPUPPER < 0xe0 0xd5 >	/* :y -> Y */
+MAPLOWER < 0xe0 0xf5 >	/* :y -> y */
+
+MAPUPPER < 0xfa 0xc9 >	/* :i -> I */
+MAPLOWER < 0xfa 0xe9 >	/* :i -> i */
+
+MAPUPPER < 0xfb 0xd5 >	/* :y -> Y */
+MAPLOWER < 0xfb 0xf5 >	/* :y  -> y */
+
+MAPUPPER < 0xfc 0xcf >	/* 'o -> O */
+MAPLOWER < 0xfc 0xef >	/* 'o -> o */
+
+MAPUPPER < 0xfd 0xd5 >	/* 'y -> Y */
+MAPLOWER < 0xfd 0xf5 >	/* 'y -> y */
+
+MAPUPPER < 0xfe 0xd9 >	/* 'w -> W */
+MAPLOWER < 0xfe 0xf9 >	/* 'w -> w */
+

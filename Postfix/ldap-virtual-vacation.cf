@@ -1,0 +1,9 @@
+bind=no
+domain=hash:/etc/postfix/domains.hash
+server_host = ldap://ldap01:389 ldap://ldap02:389
+search_base = ou=%d,ou=domains,o=unix
+query_filter = (&(mail=%s)(VacationStatus=active))
+result_attribute = mail
+result_format = %u+%d@autoreply.unix.gr,%u@%d
+scope = sub
+version = 3

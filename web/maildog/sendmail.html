@@ -1,0 +1,40 @@
+<?
+	include('defaults.php3');
+if ( empty($server) || empty($account) || empty($password) ) {
+        Header("Location: $MAILDOG");
+        exit;
+}
+?>
+
+<meta charset="iso-8859-7">
+<body bgcolor="#EEEEEE">
+<font face=arial>
+
+<?
+
+mail($to,$subject,$message,"From: $email\nReply-To: $email\nX-Mailer: MailDog (http://www.yes.gr/maildog/");
+?>
+
+
+<table bgcolor="#006699" width=100% cellpadding=5>
+<tr>
+	<td align=center><font face=arial color="white" size=+1>
+		Message Sent / Μήνυμα έφυγε
+	</td>
+</tr>
+</table>
+
+
+
+<br>
+<br>
+<br>
+<br>
+<center>
+<font face=arial color=blue size=+1>
+
+Το μύνημα σας είναι καθ' οδόν!
+<br>
+<br>
+Your message is on its way!
+</font>    

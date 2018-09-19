@@ -1,0 +1,11 @@
+
+Angelos Karageorgiou,  angelos@unix.gr
+
+
+Web site , and probably generic indexer, uses perl db files should be 
+portable all over the place, released under the GPL 
+
+system consists of a batch file wrapper for the filesystem traverser and 
+indexer cgi script for your web site, a little html example and a script to 
+dump the contents of the db file to screen.
+

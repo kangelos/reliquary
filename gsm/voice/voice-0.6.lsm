@@ -1,0 +1,23 @@
+Begin3
+Title:		voice - suite to drive voice modems
+Version:	0.6
+Entered-date:	Sep 8 1997
+Description:	Little utility to drive modems, with special
+		features for voice handling.
+		Allow send string - wait string interaction.
+		Includes a bash script simulating a full-featured
+		answering machine with voice/data/fax discrimination,
+		ready to go for Rockwell voice commands (USRobotics).
+		Runs from the command line or from inittab.
+Keywords:	voice modem answering machine serial comm
+Author: 	fd131@cleveland.freenet.edu (Niccolo Rigacci)
+Maintained-by:	fd131@cleveland.freenet.edu (Niccolo Rigacci)
+Primary-site:	sunsite.unc.edu /pub/Linux/apps/serialcomm/modem
+		34 kb voice-0.6.tar.gz
+		875   voice-0.6.lsm
+Alternate-site:	mailto:rigacci@math.unifi.it
+		Subject: get voice.tgz
+Original-site:
+Platforms:	Linux and a modem with voice capabilities
+Copying-policy:	GPL
+End

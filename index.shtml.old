@@ -1,0 +1,145 @@
+<html lang="el-GR">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-7"> 
+<title>unix.gr Tools and Papers on Unix/Email systems/Security/Custom Development  by Angelos Karageorgiou</Title>
+<body bgcolor=white>
+<head>
+<script>
+<!--
+function pop() {
+ newwindow=open("/cgi-bin/start.cgi?users.html","Questionaire", "toolbar=no", "location=no", "directories=no", "status=no", "menubar=0", "scrollbars=yes", "resizable=yes", "copyhistory=no", "history=no", width="620", height="460")
+}
+// -->
+</script>
+</head>
+
+<center>
+<table border=0 width=80%>
+<tr>
+	<td colspan=2 align=center><img src="logo.gif" align=center border=0><font size=120 color=magenta face=arial><b>.gr</b></font> 
+ </td>
+</tr>
+
+<tr>
+	<td>
+<font face=arial>
+<br>
+
+And for something completely ordinary nowadays, visit <a href="http://angelicquotes.wordpress.com">my blog</a> or my <a href="http://www.linkedin.com/in/unixgr">linkedin profile</a>
+<br>
+<p>
+<p>
+
+If you are looking for child safe internet browsing I have created <a href="http://www.kidns.eu">KIDNS.eu</a><br>
+<br>
+Download my free <a href="UnsecureEavesDrop.exe">UnsecureEavesDrop.exe</a> spy program with am embedded web server.
+<br>
+Run it on a target PC, and then you can monitor your target by using any web browser by following a url like http://targetPCsIP:42000/monitor<br><font color=red><b>Beware: this program is Insecure </b></font> I take no responsibility if it is abused
+<br>
+<br>
+For commercial grade recording and auditting  you will need <a href="/rautor">Rautor</a> <b> The windows auditing solution!</b>
+	<br><p>
+</td>
+
+</tr>
+</table>
+</center>
+<table width=80% border=0 cellpadding=0 cellspacing=0>
+<tr><td>
+</td></tr></table>
+<br>
+<br>
+
+<table border=0 cellpadding=0 cellspacing=0 width=100%>
+<tr>
+
+<td valign=top>
+	<a href="AngResCV.pdf"><img src="daemon.gif" border=0></a><br>
+	<font face=arial>click on me for my resume</font>
+</td>
+
+<td rowspan=2 valign=top> 
+	<table border=0 cellpadding=5 cellspacing=0>
+			<!--#include file="AUDIT.html"-->
+		<tr><td><br><br></td></tr>
+			<!--#include file="JAVA.html"-->
+		<tr><td><br><br></td></tr>
+			<!--#include file="MAIL.shtml"-->
+		<tr><td><br><br></td></tr>
+			<!--#include file="WEBMISC.shtml"-->
+		<tr><td><br><br></td></tr>
+			<!--#include file="VOIP.html"-->
+		<tr><td><br><br></td></tr>
+			<!--#include file="ODBC.html"-->
+		<tr><td><br><br></td></tr>
+			<!--#include file="RADIUS.shtml"-->
+		<tr><td><br><br></td></tr>
+			<!--#include file="PAPERS.html"-->
+		<tr><td><br><br></td></tr>
+			<!--#include file="DNS.shtml"-->
+		<tr><td><br><br></td></tr>
+			<!--#include file="FIRE.shtml"-->
+		<tr><td><br><br></td></tr>
+			<!--#include file="CONTRIBS.shtml"-->
+		<tr><td><br><br></td></tr>
+			<!--#include file="HISTORIC.shtml"-->
+	</table>
+</td>
+
+<td valign=top>
+	<font face=arial>click on me</font>
+	<a href="AngResCV.pdf"><img src="daemonr.gif" border=0></a><br>
+	<font face=arial>for my resume</font>
+
+</td>
+
+</tr>
+
+<tr>
+	<td valign=bottom>
+		<a href="AngResCV.pdf"><img src="daemonr.gif" border=0 align=right></a>
+	</td>
+	<td valign=bottom>
+		<a href="AngResCV.pdf"><img src="daemon.gif" border=0 align=right></a>
+	</td>
+
+</tr>
+</table>
+
+
+<center>
+	<br>
+<a href="/Macedonia"><img src="http://www.unix.gr/Macedonia/verginas.jpg" border=no></a><br>
+The Macedonian F.A.Q.<br>
+Compiled by Dr. Nikos Valkanas<br>
+<br><br>
+<br><br><br>
+<script type="text/javascript"><!--
+google_ad_client = "pub-7233395468529209";
+/* 728x90, created 11/12/09 */
+google_ad_slot = "8705736286";
+google_ad_width = 728;
+google_ad_height = 90;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+</center>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-11640974-1");
+pageTracker._trackPageview();
+} catch(err) {}</script
+<br>
+
+<center> <font color=red>
+Big red UNIX<sup>*</sup> logo by <a href="http://www.underlab.gr" target="_underlab">Underlab</a>.<br>
+Small daemon shamelessly gotten from the <a href="http://www.freebsd.org" target="_freebsd">FreeBSD</a> web site.
+<br>
+ * All Trademarks are property of their respective owners
+<br>
+</center>

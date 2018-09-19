@@ -1,0 +1,86 @@
+<html>
+<head>
+<meta charset="iso-8859-7">
+<style type="text/css">
+<!--
+A:link, A:visited { text-decoration: none; color: blue  }
+A:hover { text-decoration: underline; color: red }
+-->
+</style>
+
+<script>
+<!--
+
+
+function xgoto(xlocation) {
+    mylocation=xlocation;
+    top.window.frames['main'].frames['message'].location=mylocation;
+}
+
+function xgoto_center(xlocation) {
+    mylocation=xlocation;
+    top.window.frames['main']location=mylocation;
+}
+
+function mclose(mylocation) {
+    center.window.frames['inbox'].newWin.close();
+    center.window.location=mylocation;
+}
+
+// -->
+</script>
+</head>
+
+<body bgcolor="#006699" color=white>
+<center>
+<form>
+<table width=100% cellpadding=0 border=0>
+<tr>
+	
+        <td align=center valign=bottom><font face=arial color=white>
+	 <input type=button value="Refresh List" onclick="xgoto('listinbox.html')">
+	</font>
+        </td>
+</tr>
+<tr>
+ 	<td align=center valign=bottom><font face=arial color=white>
+	 <input type=button value="Compose" onclick="xgoto('compose.html')">
+	</font>
+        </td>
+
+</tr>
+<tr>
+ 	<td align=center><font face=arial color=white>
+	 <input type=button value="Logout" onclick="xgoto_center('logout.html')">
+	</font>
+        </td>
+
+</tr>
+<tr>
+ 	<td align=center><font face=arial color=white>
+	 <input type=button value="Clear Cookies" onclick="xgoto_center('nocookies.html')">
+	</font>
+        </td>
+
+</tr>
+<tr>
+        <td align=center><font face=arial color=white>
+	 <input type=button value="Instructions/Οδηγίες" onclick="xgoto('inboxinst.html')">
+	</font>
+        </td>
+
+</tr>
+</table>
+</form>
+<center>
+
+<img src="smalldogs.gif" border=0>
+<br>
+<font color=white>
+MailDog by<br>
+<font size=-1>
+Angelos Karageorgiou
+</font>
+          
+</body>
+</html>

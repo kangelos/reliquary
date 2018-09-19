@@ -1,0 +1,64 @@
+
+
+PHP Code to generate the URL
+=================================================================
+<?php
+        $url="http://original Url goes here, scramble it if you feel like it";
+
+
+        date_default_timezone_set('Europe/Athens');
+        $now=time();
+        $secret="big_bad_secret";
+        $bigurl=$url."&ts=$now";
+        $md=md5($secret.$bigurl);
+        $bigurl=$bigurl."&s=$md";
+
+        print $bigurl."\n";
+?>
+
+
+Perl code to verify URL generated from above snippet
+For the complete script to be run under SQUID contact me
+===================================================================
+use POSIX qw(tzset);
+use Digest::MD5  qw(md5 md5_hex md5_base64);
+$ENV{TZ} = 'Europe/Athens';
+tzset();
+my $secret="big_bad_secret";
+my $badtimestampurl="http://mysite/expired";
+my $badsignatureurl="http://mysite/hackattempt";
+
+my $now = time();
+# assume .html extension in the original URL's end
+$url =~ m/^(.*\.html)?\&ts=([0-9][0-9]*?)\&s=(.*?)$/gi;
+my $origurl=$1;
+my $ts=$2;
+my $sig=$3;
+if      (
+				( ! $origurl ) || ( ! $ts ) || ( ! $sig )
+		){
+#       print $url."\r\n";# we don't care about you you are not a signed url
+		print "\n";
+		next;
+}
+if ( $ts > $now+3600) { # past the hour
+		print $badtimestampurl."\n";
+		next;
+}
+my $md= md5_hex($secret.$origurl."&ts=".$ts);
+if ($sig ne $md) {
+		print $badsignatureurl."\n";
+		next;
+}
+# all is well
+print $origurl ."\n";
+
+====================================================================
+
+Caveats:
+timezones must match
+servers must be ntp synchronized
+secret passwords must match ( obvious)
+Url formation must remain stable ( obvious)
+
+

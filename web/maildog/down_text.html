@@ -1,0 +1,63 @@
+<?
+if ( empty($domain) || empty($account) || empty($password) ) {
+        Header("Location: https://www.unix.gr/maildog/");
+        exit;
+}
+
+
+
+
+
+
+$temp=implode($argv," ");
+$numparts=explode(",",$temp);
+$msg_number=$numparts[0];
+$msg_part=$numparts[1];
+$type=$numparts[2];
+$realname=$numparts[3];
+$extension=ereg_replace("^.*\.","",$realname);
+
+
+$extension=strtolower($extension);
+
+$alltypes="application/octet-stream";
+$mime=fopen("/usr/local/apache/conf/mime.types","r");
+while ( !feof($mime) ) {
+	$mytype=fgets($mime,1000);
+#	print "<h1> $extension $mytype</h1>";
+	if ( eregi("\s$extension","$mytype") ) {
+		$mimeparts=explode("	",$mytype);
+		$alltypes=$mimeparts[0];
+		break; 
+	}
+}
+fclose($mime);
+
+#$alltypes=strtolower($type);
+
+$mbox = imap_open("{$domain:143}INBOX",$account,$password,OP_READONLY);
+
+$status=imap_check($mbox);
+$num_msg=$status->Nmsgs;
+
+
+
+$body   =imap_fetchbody($mbox,$msg_number,$msg_part);
+$mypid= getmypid();
+$tempfile="/tmp/swellfile." . getmypid();
+$tmp=fopen($tempfile,"w");
+fwrite($tmp,$body);
+fclose($tmp);
+
+
+
+
+Header("Location: downtext.html/$realname?$alltypes,$mypid");
+
+##Header("Content-Type: $alltypes; name=\"$realname\"");
+#Header("Content-Type: $alltypes");
+#$imginput=popen("/usr/contrib/bin/mmencode -u $tempfile","r");
+#fpassthru($imginput);
+#unlink("$tempfile");
+?>
+

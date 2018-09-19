@@ -1,0 +1,59 @@
+#!/bin/sh
+# 
+# Record a message from the modem to a file.
+#
+
+TTYS=modem
+VMCP="/usr/bin/vmcp -g -d$TTYS"
+
+if [ $# = 1 ]; then
+
+   # Reset the serial line to raw, the modem to factory defaults.
+   $VMCP -z38400 -t8 -c"AT&F1" -wOK
+
+   # If needed, set some values:
+   #  - Modem sets CD line on remote carrier
+   #  - Modem hangs up and return to command mode on DTR switch
+   #  - Enable RTS/CTS hardware flow control
+   # $VMCP -c"AT&C1&D2&K3" -wOK
+
+   # Select voice mode.
+   $VMCP -c"AT#CLS=8" -wOK
+
+   # Bits per sample.
+   $VMCP -c"AT#VBS=4" -wOK
+
+   # Timeout if off-hook and no data, or if non zero BDR and no data.
+   $VMCP -c"ATS30=60" -wOK
+
+   # Slect baud rate (n*2400).
+   $VMCP -c"AT#BDR=16" -wOK
+
+   # Silence detection period (n*100 ms).
+   $VMCP -c"AT#VSP=20" -wOK
+
+   # Silence detection tuner (1 quiet lines, 2 midrange, 3 noisy lines).
+   $VMCP -c"AT#VSS=2" -wOK
+
+   # Enable silence deletion.
+   $VMCP -c"AT#VSD=1" -wOK
+
+   # Voice line select for a beep: generally 1 is handset, 2 is speaker.
+   $VMCP -c"AT#VLS=2" -wVCON
+
+   # Voice line select for recording: generally 1 is handset, 3 is microphone.
+   $VMCP -c"AT#VLS=3" -wVCON
+
+   # Set beep timer (5/10 of s) and beep a tone.
+   $VMCP -c"AT#VBT=5#VTS=#" -wOK
+
+   # Voice receive capturing data to file (skip CONNECT 0Dh 0Ah string).
+   # Exit on keypress, timeout, <DLE><q> or <DLE><s>.
+   $VMCP -c"AT#VRX" -W"\cCONNECT\r\n" -k -e -t120 -o$1 -xqs
+
+   # Stop voice receive sending a single LF char.
+   $VMCP -c"\c\n" -wVCON
+
+   # Hang-up.
+   $VMCP -c"ATH" -wOK
+fi

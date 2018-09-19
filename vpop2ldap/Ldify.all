@@ -1,0 +1,142 @@
+#!/usr/bin/perl 
+
+#angelos karageorgiou
+
+$domain="";
+$mydir="";
+$uid=1000000;
+
+my %NotDoms=(
+'skipme.gr' => 1,
+
+);
+
+open(fin,"<domains.txt");
+while(<fin>) {
+	chomp($_);
+	$mailrelay="maildrop:";
+	$mailhost="mxhost.gr";
+
+	if ( /^domain:\s/ ) {
+		($dummy,$domain)=split(/:/);
+		$domain =~ s/^\s//g;
+
+		if ($NotDoms{"$domain"}==1 ) {
+			next;
+		}
+print "dn: ou=$domain,ou=domains,o=top
+ou: $domain
+objectClass: organizationalUnit
+objectClass: top
+objectClass: qmailUser
+mailTransport: $mailrelay
+
+";
+}
+	if ( /dir:\s/ ) {
+		if ($NotDoms{"$domain"}==1 ) {
+			next;
+		}
+		($dummy,$mydir)=split(/:/);
+		$mydir =~ s/^\s//g;
+
+print "# start $domain\n";
+	open(pass,"<$mydir/vpasswd");
+		while(<pass>){
+		chomp($_);
+		@parts=split(":");
+
+
+
+$username=$parts[0];
+$newdir=$username;
+$newdir =~ s :/disk2/vpopmail/domains/::g;
+$sub1=substr($newdir,0,2);
+$sub2=substr($newdir,2,2);
+# get rid of unprintables
+$sub1=~s/[\`\~\!\@\#\$\%\^\&\*\(\)\_\+\=\-\[\]\{\}\;\'\\\|\"\:\,\.\/\<\>\?]/X/g;
+$sub2=~s/[\`\~\!\@\#\$\%\^\&\*\(\)\_\+\=\-\[\]\{\}\;\'\\\|\"\:\,\.\/\<\>\?]/X/g;
+
+
+while (length($sub1) < 2 ){
+	$sub1 .= 'X';
+}
+
+while (length($sub2) < 2 ){
+	$sub2 .= 'X';
+}
+	
+
+
+$subdir=$sub1 . "/" . $sub2;
+($sn,$fn)=split(/\s/,$parts[4]);
+$quota=$parts[6];
+$files=int($quota / 512);
+
+
+
+
+$quota=250*1024*1024;
+
+$mailQuota=$quota ."S";
+if ( $username =~ /postmaster/i ) {
+	$mailQuota=$quota ."S,3000C"
+}
+
+
+$homedir="/home/domains/$domain/$subdir/$newdir";
+$olddir=$parts[5];
+$olddir =~ s/^\///g;
+
+#print "# mkdir -p $homedir\n";
+#print "# mv \$OLDHOME/$olddir $homedir\n";
+#print "# maildirmake -q ${quota}S,${files}C $homedir/Maildir/\n";
+print "dn: uid=$username,ou=$domain,ou=domains,o=top
+uid: $username
+cn: $parts[4]
+sn: $sn
+objectClass: top
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: qmailUser
+userPassword: $parts[7]
+mail: $username\@$domain
+homeDirectory: $homedir
+mailMessageStore: $homedir/Maildir/
+mailQuota: ${mailQuota}
+accountStatus: created
+objectClass: PureFTPdUser
+FTPQuotaMBytes: 50
+";
+
+
+$res=open(al,"<$mydir/.qmail-$parts[0]");
+$extra="";
+if ($res){
+	$aliases="";
+	$forwards="";
+
+	while(<al>){
+		$alias=$_;
+		chomp($alias);
+		$alias =~ s/^\&//g;
+		if ( $alias =~ m/Maildir/ ) {
+		@aparts=split('/',$alias);
+		$newusername = $aparts[$#aparts-1]."@".$aparts[$#aparts-2];
+print "mailForwardingAddress: $newusername\n";
+		} else {
+print "mailForwardingAddress: $alias\n";
+		}
+	}
+	close(al);	
+}
+
+print "\n";
+
+}
+
+
+ print "# end $domain \n";
+}
+}
+

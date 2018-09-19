@@ -1,0 +1,94 @@
+<META HTTP-EQUIV="content-type" CONTENT="text/html; charset=iso-8859-7">
+<html>
+<title> .GR statistics and seach engine by Angelos Karageorgiou</title>
+<body bgcolor=white>
+<center>
+
+<font color =red><h1> Outrageous , the NS servers for .GR no longer allow AXFRs</h1>
+<h1> Sorry people I can do nothing more </h1>
+<h3> Check out the Stats on the <a href="../PLstatus">.PL</a> TLD</h3>
+</font>
+<br>
+<br>
+<br>
+<br>
+
+<h2> Historical Statistics for the .GR TLD</h2>
+This page is  Updated whenever I feel like it<br>
+Copyright and Copy Angelos Karageorgiou all rights reserved<br>
+Απαγορεύεται η αναδημοσιεύση αυτων των στοιχειων χωρις την αδεια μου <br>
+No publication of this data is allowed without my explicit permission<br> 
+</center>
+<br>
+<br>
+
+<table width="90%" cellspacing=5>
+<tr>
+<td width=50%>
+<b><font size=+1><a href="Wed080801.html">Wed Aug 8 2001</a> Full stats except SSL</b></font><p>
+
+<dir>
+on Wed  8-08-2001 there were 37099 domains <br>
+on Thu 27-09-2001 there are 38699 domains <br>
+Between the two dates there were 678 domains removed and 2278 domains added <br>
+the files are: <a href="removed.domains">removed.domains</a> and <a href="added.domains">added.domains</a> <br>
+<p>
+</dir>
+
+<b><font size=+1><a href="Thu270901.html">Thu Sep 27 2001</a> Say Oct 1 :-)</b> </font><p>
+
+<dir>
+on Thu 27-09-2001 there were 38699 domains<br>
+on Wed 10-10-2001 there are 39402 domains<br>
+Between the two dates there were 147 domains removed and 850 domains added<br>
+<p>
+</dir>
+
+<b><font size=+1><a href="Wed101001.html">Wed 10 10 '01</a> </b>Checking new mass crawler</b> </font> <p>
+
+<dir>
+on Wed 10-10-2001 there were 39402 domains<br>
+on Mon 22-10-2001 there are 40009 domains <b>!</b> <br>
+Between the two dates there were 125 domains removed and 732 domains added<br>
+the files are: <a href="removed221001.domains">removed.domains</a> and <a href="added221001.domains">added.domains</a> <br>
+<p>
+</dir>
+
+<b><font size=+1><a href="Mon221001.html">Mon 22 Oct 2001</a> YES we broke the 40K mark </b></font> <p>
+
+<dir>
+on Mon22-10-2001 there were 40009 domains<br>
+on Mon-5-11-2001/ there were 40652 domains<br>
+Between the two dates there were 294 domains removed and 937 domains added<br>
+</dir>
+
+<b><font size=+1><a href="Mon051101.html">Mon 5 Nov 2001</a>  40652 domains scanned in 85 Minutes. 478 domains/minute with 32 processes over a 512K line ! </b></font> <p>
+<font size=+1><a href="none.html">Fri 23 Nov 2001</a> <font color=RED><B>R.I.P.</b></font> No data whatsoever, them
+squareheads have blocked AXFRs from the root DNS servers. <b> Another free service bites the dust</b><p>
+</td>
+
+
+<td valign=top>
+
+<form action="/cgi-bin/dns-search" method=post>
+<b>Enter a word to look for</b>:<input name=domain value="unix">
+<input type=submit value=find>
+</form>
+Please type some letters from the domain and hit [FIND].
+<hr>
+<br><br>
+<font color=maroon size=+1>The software used to generate these reports  is called <a href="/various/Xray.tar.gz">Xray</a>. Here is the <a href="/various/readme-xray.txt">readme</a> file for the project. You also need the 
+<a href="/various/masscrawler.tar.gz">masscrawler</a>.
+</font>
+<p>
+<b> Tech Notes on Fast Searches </b><p>
+The search engine is based on my db based perl search engine. The Xray package
+generates 2 files domains_scanned and domains_per_server which are combined
+into one database file with <a href="mkd.pl">mkd</a>. This file is in turn used
+by the cgi-script <a href="dns-search.pl">dns-search.pl</a> as a persistent hash table.
+</td>
+</tr>
+</table>
+<hr>
+<br><br>
+<b><font size=+1><a href="http://www.unix.gr">Return</a> to UNIX.gr</b></font> <p>

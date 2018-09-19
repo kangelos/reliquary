@@ -1,0 +1,254 @@
+.\" Process this file with
+.\" groff -man -Tascii vmcp.8
+.\"
+.TH VMCP 8 "8 September 1997" "Vmcp Version 0.6" "User Manuals"
+
+.SH NAME
+vmcp \- Voice Modem Control Program
+
+.SH SYNOPSIS
+.B vmcp
+[\fB-c \fIcommand\fR]
+[\fB-d \fIdevice\fR]
+[\fB-e\fR]
+[\fB-g\fR]
+[\fB-h\fR]
+[\fB-i \fIin_file\fR]
+[\fB-k\fR]
+[\fB-l \fIlockfile\fR]
+[\fB-o \fIout_file\fR]
+[\fB-q\fR]
+[\fB-s \fIesc_file\fR]
+[\fB-t \fIsec\fR]
+[\fB-w \fIwaitstring\fR]
+[\fB-W \fIskipstring\fR]
+[\fB-x \fIesc_string\fR]
+[\fB-z \fI9600\fR | \fI19200\fR | \fI38400\fR | \fI57600\fR | \fI115200\fR | \fI230400\fR]
+
+.SH DESCRIPTION
+A simple way to drive a modem is through a program that allows
+interaction of the type \fIsend-string\fR, \fIwait-string\fR.
+A command string is sent to the modem and then the program waits
+for a specified answer from the modem itself.
+.sp
+For voice operation we must add some functionalities because
+it is not possible to give a stream of digitized voice on
+the command line and we must capture the incoming voice to a
+file too. Beside that we have to handle the \fIescaped chars\fR
+that the modem embed in the voice stream when we are receiving
+voice (to signal silence, DTMF tones, etc.), and those we send
+to the modem when we are sending voice.
+.sp
+Voice Modem Control Porgram (\fIvmcp\fR) faces all the matters:
+.in +0.5i
+.ti -0.5i
+\fBi)\fR	it can send to the modem a string specified on the command line
+.ti -0.5i
+\fBii)\fR	it can send to the modem a binary file
+.ti -0.5i
+\fBiii)\fR	it can capture data from the modem to a binary file, stripping escaped chars
+.ti -0.5i
+\fBiv)\fR	it can capture escaped chars from the modem to a separate file
+.ti -0.5i
+\fBv)\fR	exits on receiving a given string from the modem
+.ti -0.5i
+\fBvi)\fR	exits on receiving a given escaped char from the modem
+.ti -0.5i
+\fBvii)\fR	exits on timeout or keypress
+
+.SH OPTIONS
+
+.IP "\fB-c \fIcommand\fR"
+The specified command is sent to the modem
+before sending the input file (\fI-i\fR option).
+String is parsed for escaped chars (see below).
+If string is prefixed with "AT" or "at", a pause of 2 ms
+is executed before sending the command to the modem. This
+is required by some modem brands.
+
+.IP "\fB-d \fIdevice\fR"
+Device at which the modem is connected to. If \fI-d\fR option
+is not specified, \fIttyS0\fR is assumed. No leading \fI/dev/\fR
+required.
+
+.IP "\fB-e\fR"
+Enable DLE-escaped characters handling. When \fIvmcp\fR receives a
+DLE char (10 hex) from the modem, it extracts the subsequent char
+and sends it to the escaped chars file (specified by the \fI-s\fR
+option) instead of to the output file (\fI-o\fR option).
+If a duoble DLE is received, one is sent to the output file and
+the other is dropped. Characters sent to the modem from the input
+file (\fI-i\fR option) are checked: if a DLE char is found, it
+is doubled.
+
+.IP "\fB-g\fR"
+Debug option, turn on some message printing.
+
+.IP "\fB-h\fR"
+Display a brief help.
+
+.IP "\fB-i \fIin_file\fR"
+Send the specified binary file to the modem.
+
+.IP "\fB-k\fR"
+Exit if ESC key is pressed. Do not use this option if \fIvmcp\fR
+is to be run in the background.
+
+.IP "\fB-l \fIlockfile\fR"
+Make a lock-file with the specified pathname. Following FSSTND
+1.2 directives (Linux Filesystem Structure), it is recommended
+\fI/var/lock/LCK..ttyS\fRn, where n is replaced by a digit (0
+for the first serial line, 1 for the second...).
+The lock file is in HDB lockfile format: ten byte ASCII decimal
+number, with a trailing newline.
+
+.IP "\fB-o \fIout_file\fR"
+Save output received from the modem to the specified filename.
+Default is \fI/dev/null\fR.
+
+.IP "\fB-q\fR"
+Exit when input file (specified by the \fI-i\fR option) has
+sent entirely to the modem.
+
+.IP "\fB-s \fIesc_file\fR"
+Save DLE\-escaped characters received from the modem to the
+specified filename. Default is \fI/dev/null\fR.
+Option \fI-e\fR must be specified too.
+
+.IP "\fB-t \fIsec\fR"
+Exit after a \fIsec\fR seconds timeout. If no \fI-t\fR option is
+specified a default of 5 seconds is assumed. To disable timeout,
+specify zero (\fIvmcp\fR my waits forever).
+
+.IP "\fB-w \fIwaitstring\fR"
+Exit on receipt of specified string from the modem.
+String is parsed for escaped chars (see below).
+
+.IP "\fB-W \fIskipstring\fR"
+The specified string is skipped before starting to save data to the
+\fI-o\fR file. The program does not exit at this string.
+String is parsed for escaped chars (see below).
+
+.IP "\fB-x \fIesc_string\fR"
+Exit on receipt of a DLE\-escaped char contained in the specified
+string.
+
+.IP "\fB-z \fI9600\fR | \fI19200\fR | \fI38400\fR | \fI57600\fR | \fI115200\fR | \fI230400\fR"
+The serial line is set to raw mode, hardware control flags are
+set to \fIN\fRo parity, \fI8\fR datbits, \fI1\fR stop bit,
+\fIRTS/CTS\fR flow control enabled. \fIBaud\fR rate is set as specified.
+.br
+\fIDTR\fR line is dropped for 3 seconds. Many modems
+respond to this signal (or can be instructed to do so) by resetting
+themselves to a sane state. Using this option,
+the \fI-t\fR timeout value should be increased.
+.br
+The line is set with (among others) -hupcl and clocal options.
+In this way no hangup signal is sent when the process closes
+the tty and modem control signals are disabled (we are interested
+in talking to the modem, not to a remote system, so the connection
+is local).
+.br
+
+.SH "ESCAPE CHARS"
+The strings following the \fI-c\fR, \fI-w\fR and \fI-W\fR options have a
+carriage return (chr 0Dh)
+appended by default. They are also parsed to do
+some backslash conversion.
+The following backslash-escaped characters are enabled:
+
+.in +0.5i
+.ti -0.5i
+\fB\\c\fR	suppress trailing carriage return
+.ti -0.5i
+\fB\\n\fR	new line
+.ti -0.5i
+\fB\\r\fR	carriage return
+.ti -0.5i
+\fB\\nnn\fR	the character whose ASCII code is nnn (octal).
+
+.SH "EXIT STATUS"
+\fIVmcp\fR is intended to be used from shell scripts, its exit
+status reflects the result of operation. You can for example
+test it with the bash special parameter \fI$?\fR, which expands
+to the status of the most recently executed command. Those are
+the exit codes and their meanings:
+
+.IP \fB0\fR
+Successful result, \fIvmcp\fR received the string specified by
+the \fI-w\fR option or the \fI-q\fR option was specified and the
+end of input file was reached.
+
+.IP \fB1\-99\fR
+Successful result, \fIvmcp\fR recived an escaped char contained
+in the string specified by the \fI-x\fR option. The code indicate
+which one: 1 stands for the first, 2 for the second...
+
+.IP \fB100\fR
+Timeout has expired.
+
+.IP \fB101\fR
+ESC key was pressed.
+
+.IP \fB150\fR
+Out of memory.
+
+.IP \fB151\fR
+Syntax error.
+
+.IP \fB152\fR
+\fIVmcp\fR was unable to open the communication device specified by the
+\fI-d\fR option.
+You must have read-write rights on this device.
+
+.IP \fB153
+An error occurred opening the file(s) specified by the
+\fI-i\fR, \fI-o\fR or \fI-s\fR options.
+
+.IP \fB154
+An error occurred writing to the communication device.
+
+.IP \fB155
+An error occurred closing the communication device or some file.
+
+.IP \fB156
+\fIVmcp\fR was unable to create the lock file specified by the 
+\fI-l\fR option.
+
+.IP \fB157
+An error occurred while setting stdin via \fBioctl\fR(2) function call.
+
+.IP \fB158
+An error occurred creating the lock file.
+
+.IP \fB159
+Unsupported baud rate specified by the \fI-z\fR option.
+
+.IP "\fBGreather than 200"
+Exit on signal. Exit status = signal + 200.
+
+.SH FILES
+
+.IP "\fB/dev/ttyS0\fR"
+Default device used to access the modem if \fI-d\fR option is
+not specified.
+
+.IP "\fB/dev/null\fR"
+Default destination for input, output and escaped-char files if
+\fI-i\fR, \fI-o\fR or \fI-s\fR options are not specified.
+
+.IP "\fB/var/lock/LCK..ttyS\fRn"
+Suggested lock file to be created with the \fI-l\fR option.
+
+.SH NOTES
+To use \fIvmcp\fR the modem must be connected to the system by
+a full-wired serial cable because the program uses RTS, CTS and
+DTR signals. No problems with internal modems.
+ 
+.SH "SEE ALSO"
+\fBans\fR(8),
+\fBstty\fR(1L),
+\fBtermios\fR(2)
+
+.SH AUTHOR
+Niccolo Rigacci <fd131@cleveland.freenet.edu>

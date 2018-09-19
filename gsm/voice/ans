@@ -1,0 +1,689 @@
+#!/bin/sh
+#-------------------------------------------------------------------------
+# ans		A bash script to simulate an answering machine.
+#		Discriminate voice, fax and data calls. Password-protected
+#		remote mode to retrieve and delete messages. Remote change
+#		of greeting and password.
+#
+# Version:	0.6		Sep 8 1997
+#
+# Author:	Niccolo Rigacci <fd131@cleveland.freenet.edu>
+#
+# Copyright (C) 1996 Niccolo Rigacci
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+#-------------------------------------------------------------------------
+
+
+#-------------------------------------------------------------------------
+# USER CONFIGURABLE PARAMETERS
+#-------------------------------------------------------------------------
+WAITRINGS=4
+
+# Umask assigned to recorded files.
+UMASK=0117
+
+# Discard message if shorter than SHORTMSG bytes. My modem
+# with default settings records approx. 3.5 kb per second,
+# but better compression methods (USR/GSM) can do less.
+SHORTMSG=4000
+
+# Max message length (seconds).
+TIMEOUT=120
+
+# Devices, directories and filenames
+#------------------------------------------
+    TTYS="ttyS0"
+  DEVICE="/dev/${TTYS}"
+    NULL="/dev/null"
+  LIBDIR="/usr/local/lib/ans"
+  FAXDIR="/var/spool/fax"
+VOICEDIR="/var/spool/voice"
+  TMPDIR="/tmp"
+    LOCK="/var/lock/LCK..${TTYS}"
+  PASSWD="${LIBDIR}/passwd"
+STOPFILE="/var/run/ans.${TTYS}.stop"
+ DOITNOW="/var/run/ans.${TTYS}.now"
+    TMP1=${TMPDIR}/${$}.1.tmp
+    TMP2=${TMPDIR}/${$}.2.tmp
+     EXT=msg
+
+# Auxiliary binaries
+#------------------------------------------
+    VMCP="/usr/bin/vmcp -g -d${TTYS}"
+    EFAX="/usr/bin/efax"
+
+# Standard auxiliary binaries
+#------------------------------------------
+  AGETTY="/sbin/agetty"
+     CAT="/bin/cat"
+      CP="/bin/cp"
+     CUT="/bin/cut"
+    DATE="/bin/date"
+    ECHO="/bin/echo"
+    DIFF="/usr/bin/diff"
+    FIND="/usr/bin/find"
+    KILL="/bin/kill"
+      LS="/bin/ls"
+      MV="/bin/mv"
+      RM="/bin/rm"
+     SED="/usr/bin/sed"
+    SORT="/usr/bin/sort"
+   TOUCH="/bin/touch"
+      WC="/usr/bin/wc"
+
+# Modem commands
+#------------------------------------------
+
+# Reset the modem to factory defaults.
+AT_RESET="AT&F1"
+
+# Set some values (uncomment if needed):
+#  - Modem sets CD line on remote carrier
+#  - Modem hangs up and return to command mode on DTR switch
+#  - Enable RTS/CTS hardware flow control
+# AT_LINE="AT&C1&D2&K3"
+
+# Initialize voice operations:
+#  CLS Select voice mode
+#  VBS Bits per sample
+#  VSP Silence detection period (n*100 ms)
+#  VSD Enable silence deletion
+#  VLS Voice line select: generally 0 is telephone/handset, 4 with speaker on
+#  S30 Timeout if off-hook and no data, or if BDR <> 0 and no data
+#  BDR Slect baud rate (n*2400)
+# NOTE: Command line generally must be shorter than 60 chars!
+AT_VOICE="AT#CLS=8#VBS=4#VSP=20#VSD=1#VLS=4S30=60#BDR=16"
+
+# Select device for playback: generally 1 is handset, 2 is speaker.
+AT_PLAYDEV="AT#VLS=2"
+
+# Enable silence detection (1 quiet, 2 midrange, 3 noisy lines).
+AT_SILENCE_ENA="AT#VSS=2"
+
+# Disable silence detection.
+AT_SILENCE_DIS="AT#VSS=0"
+
+# Start voice transmit.
+AT_VTX="AT#VTX"
+
+# Start voice receive.
+AT_VRX="AT#VRX"
+
+# Play a beep.
+AT_BEEP="AT#VBT=3#VTS=#"
+
+# Select data mode.
+AT_DATA="AT#CLS=0"
+
+# Select fax mode.
+AT_FAX="AT#CLS=2"
+
+# Answer a call.
+AT_A="ATA"
+
+# Hang-up.
+AT_H="ATH"
+
+# Builtin messages files
+#------------------------------------------
+   ASK_PASSWD=${LIBDIR}/ask_passwd.$EXT
+  CH_GREETING=${LIBDIR}/ch_greeting.$EXT
+ GET_MSGS_MNU=${LIBDIR}/get_msgs_mnu.$EXT
+     GREETING=${LIBDIR}/greeting.$EXT
+  MSG_DELETED=${LIBDIR}/msg_deleted.$EXT
+    PASSWD_CH=${LIBDIR}/passwd_ch.$EXT
+PASSWD_NOT_CH=${LIBDIR}/passwd_not_ch.$EXT
+  REMOTE_MENU=${LIBDIR}/remote_menu.$EXT
+ WRONG_PASSWD=${LIBDIR}/wrong_passwd.$EXT
+
+#-------------------------------------------------------------------------
+# END OF USER CONFIGURABLE PARAMETERS
+#-------------------------------------------------------------------------
+
+
+#-------------------------------------------------------------------------
+# FUNCTIONS
+#-------------------------------------------------------------------------
+
+#-------------------------------------------------------------------------
+# log(message)
+#-------------------------------------------------------------------------
+log()
+   {
+   $ECHO "$($DATE +%m-%d\ %H:%M) ${0}: ${1}"
+   }
+
+#-------------------------------------------------------------------------
+# reset_modem(void)
+#-------------------------------------------------------------------------
+reset_modem()
+   {
+   $VMCP -z38400 -t8 -c"$AT_RESET" -wOK
+   if [ $? -ne 0 ]; then
+      log "Can't reset $DEVICE line or modem"
+      exit
+   fi
+
+   if [ "$AT_LINE" != "" ]; then
+      $VMCP -c"$AT_LINE" -wOK
+      if [ $? -ne 0 ]; then
+         log "Modem is not responding"
+         exit
+      fi
+   fi
+   }
+
+#-------------------------------------------------------------------------
+# play_beep(void)
+#-------------------------------------------------------------------------
+play_beep()
+   {
+   $VMCP -c"$AT_BEEP" -wOK
+   }
+
+#-------------------------------------------------------------------------
+# wait_rings(rings_number)
+# Return after receiving rings_number RINGs and if $STOPFILE not found.
+# Return also if $DOITNOW file is created ("ans now" command was ran).
+#-------------------------------------------------------------------------
+wait_rings()
+   {
+   local N
+   local WAIT
+
+   WAIT=true
+   while [ $WAIT = true ]; do
+      if [ -f $STOPFILE ]; then
+         log "Found ${STOPFILE}: waiting"
+         while [ -f $STOPFILE ]; do sleep 10; done
+         log "Stopfile removed"
+      fi
+      # Reset the modem here! If left in voice mode no RING reported.
+      reset_modem
+      $VMCP -l$LOCK -wRING -t0
+      if [ -f $DOITNOW ]; then
+         WAIT=false
+      elif [ ! -f $STOPFILE ]; then
+         N=1
+         WAIT=false
+         while [ $N -lt $1 -a $WAIT = false ]; do
+            N=$[$N + 1]
+            $VMCP -wRING -t5
+            if [ $? -ne 0 ]; then
+               WAIT=true
+            fi
+            if [ -f $DOITNOW ]; then
+               WAIT=false
+               N=$1
+            fi
+         done
+      fi
+   done
+   }
+
+#-------------------------------------------------------------------------
+# play_message(filename, dle_stop_string) 
+#-------------------------------------------------------------------------
+play_message()
+   {
+   local N
+
+   $VMCP -c"$AT_VTX" -wCONNECT
+   $VMCP -e -q -t$TIMEOUT -i$1 -x$2
+   N=$?
+   if [ $N -eq 0 ]; then
+      # Send <DLE><ETX>: terminate sending message gracefully.
+      $VMCP -c"\c\020\003" -wVCON
+   else
+      # Send <DLE><CAN>: abort sending message (escaped char received).
+      $VMCP -c"\c\020\030" -wVCON
+   fi
+   return $N
+   }
+
+#-------------------------------------------------------------------------
+# record_message(filename, dle_stop_string) 
+#-------------------------------------------------------------------------
+record_message()
+   {
+   local N
+
+   play_beep
+   # Record a message
+   $VMCP -c"$AT_VRX" -W"\cCONNECT\r\n" -e -t$TIMEOUT -o$1 -x$2
+   N=$?
+   $VMCP -c"\c\n" -wVCON
+   play_beep
+   return $N
+   }
+
+#-------------------------------------------------------------------------
+# voice_call(filename)
+# Receive a voice call and store it in ${VOICEDIR}/filename.${EXT}
+#-------------------------------------------------------------------------
+voice_call()
+   {
+   local FNAME
+   local N
+
+   FNAME=${VOICEDIR}/${1}.${EXT}
+   record_message $FNAME "bqd#sthc2e3"
+   N=$?
+   # Discard message if too short.
+   if [ $($WC --bytes < $FNAME) -lt $SHORTMSG ]; then
+      log "Short message discarded"
+      $RM -f $FNAME
+   fi
+   case $N in
+      5|6|7)
+         # Silence, off-hook or on-hook detected.
+         log "Message discarded"
+         $RM -f $FNAME
+         ;;
+      8|9)
+         log "After voice receiving a Fax"
+         fax_call $1
+         ;;
+      10|11)
+         log "After voice receiving a Data call"
+         data_call
+         ;;
+   esac
+   }
+
+#-------------------------------------------------------------------------
+# get_passwd(filename)
+# Ask for a password via DTMF (terminated with a "#") and store it in $1.
+# Return 1 if password entered correctly.
+#-------------------------------------------------------------------------
+get_passwd()
+   {
+   local N
+
+   play_message $ASK_PASSWD "#"
+   play_beep
+   # Disable silence detection and listen for the password.
+   $VMCP -c"$AT_SILENCE_DIS" -wOK
+   $VMCP -c"$AT_VRX" -W"\cCONNECT\r\n" -e -t20 -s$1 -x"#bd"
+   N=$?
+   # Stop listening and enable silence detection.
+   $VMCP -c"\c\n" -wVCON
+   $VMCP -c"$AT_SILENCE_ENA" -wOK
+   # Append a new-line to the file.
+   $ECHO >> $1
+   return $N
+   }
+
+#-------------------------------------------------------------------------
+# change_password(void)
+#-------------------------------------------------------------------------
+change_password()
+   {
+   get_passwd $TMP1
+   if [ $? -eq 1 ]; then
+      get_passwd $TMP2
+      if [ $? -eq 1 ]; then
+         $DIFF -q $TMP1 $TMP2 > $NULL
+         if [ $? -ne 0 ]; then
+            log "Password not changed"
+            play_message $PASSWD_NOT_CH "#"
+         else
+            $MV -f $TMP1 $PASSWD
+            log "Password changed"
+            play_message $PASSWD_CH "#"
+         fi
+      fi
+   fi
+   $RM -f $TMP1
+   $RM -f $TMP2
+   }
+
+#-------------------------------------------------------------------------
+# remote_mode(void)
+#-------------------------------------------------------------------------
+remote_mode()
+   {
+   local N
+   local ABORT
+   local OPTIONS
+
+   get_passwd $TMP1
+   if [ $? -eq 1 ]; then
+      $DIFF -q $PASSWD $TMP1 > $NULL
+      if [ $? -ne 0 ]; then
+         play_message $WRONG_PASSWD "#"
+         log "Wrong passwd: $($CAT $TMP1)"
+      else
+         OPTIONS="1234#bd"
+         ABORT=false
+         while [ $ABORT = false ]; do
+            play_message $REMOTE_MENU $OPTIONS
+            N=$?
+            play_beep
+            if [ $N -eq 0 ]; then
+               # Listen for the command.
+               $VMCP -c"$AT_SILENCE_DIS" -wOK
+               $VMCP -c"$AT_VRX" -W"\cCONNECT\r\n" -e -t15 -x$OPTIONS
+               N=$?
+               $VMCP -c"\c\n" -wVCON
+               $VMCP -c"$AT_SILENCE_ENA" -wOK
+            fi
+            case $N in
+               1)
+                  log "Retrieving messages"
+                  retrieve_messages
+                  ;;
+               2)
+                  play_message $GREETING "#"
+                  play_beep
+                  ;;
+               3)
+                  log "Changing greeting"
+                  change_greeting
+                  ;;
+               4)
+                  log "Changing password"
+                  change_password
+                  ;;
+               *)
+                  log "Leaving remote menu"
+                  ABORT=true
+                  ;;
+            esac
+         done
+      fi
+   fi
+   $RM -f $TMP1
+   }
+
+#-------------------------------------------------------------------------
+# retrieve_messages(void)
+#-------------------------------------------------------------------------
+retrieve_messages()
+   {
+   local I
+   local N
+   local LC
+   local FNAME
+
+   play_message $GET_MSGS_MNU "#"
+   # Create a list of messages to play.
+   $FIND $VOICEDIR -name "*.${EXT}" -type f -maxdepth 1 | $SORT > $TMP1
+   # Create a list of messages to delete.
+   $CP $NULL $TMP2
+   I=1
+   LC=$($WC -l < $TMP1)
+   while [ $I -le $LC ]; do
+      FNAME=$($SED -n ${I},${I}p $TMP1)
+      play_message $FNAME "649#"
+      case $? in
+         0|1)
+            # Next message.
+            I=$[$I + 1]
+            ;;
+         2)
+            # Previous message.
+            if [ $I -gt 1 ]; then I=$[$I - 1]; fi
+            ;;
+         3)
+            # Add filename to delete.
+            $ECHO $FNAME >> $TMP2
+            play_message $MSG_DELETED "#"
+            I=$[$I + 1]
+            ;;
+         *)
+            # Exit from retrieving messages.
+            I=$[$LC + 1]
+            ;;
+      esac
+      # Signal end of message.
+      play_beep
+   done
+   $RM -f $(cat $TMP2)
+   $RM -f $TMP1
+   $RM -f $TMP2
+   }
+
+#-------------------------------------------------------------------------
+# change_greeting(void)
+#-------------------------------------------------------------------------
+change_greeting()
+   {
+   play_message $CH_GREETING "#"
+   record_message $TMP1 "#9bqsd"
+   case $? in
+      1)
+         $MV -f $TMP1 $GREETING
+         log "Greeting changed"
+         ;;
+      *)
+         $RM -f $TMP1
+         log "Greeting unchanged"
+         ;;
+   esac
+   }
+
+#-------------------------------------------------------------------------
+# fax_call(filename)
+# Receive a fax and store it in ${FAXDIR}/filename
+#-------------------------------------------------------------------------
+fax_call()
+   {
+   $VMCP -c"$AT_FAX" -wOK
+   exec $EFAX -d $DEVICE -v chewmainr -x "#${LOCK}" -or -i "E0X3" -i "+FCLASS=2;+FCR=1;\Q1" -c "1,5,0,2,0,0,0,0" -l "+39 55 291568" -z "&F" -r ${FAXDIR}/${1}
+   }
+
+#-------------------------------------------------------------------------
+# data_call(void)
+#-------------------------------------------------------------------------
+data_call()
+   {
+   $VMCP -c"$AT_DATA" -wOK
+   $VMCP -c"$AT_A" -t60 -w"\cCONNECT"
+   if [ $? -eq 0 ]; then
+      exec $AGETTY -h -t60 38400,19200,9600,4800,2400,1200 $TTYS
+   fi
+   }
+
+#-------------------------------------------------------------------------
+# do_stop(void)
+#-------------------------------------------------------------------------
+do_stop()
+   {
+   if [ -f $STOPFILE ]; then
+      log "Stopfile already exists: it will NOT answer"
+   else
+      if $TOUCH $STOPFILE; then
+         log "Stopfile created: it will NOT answer"
+      fi
+   fi
+   if [ -f $LOCK ]; then
+      if $KILL $($CAT $LOCK); then
+         log "$DEVICE unlocked"
+      else
+         log "Can't unlock $DEVICE"
+      fi
+   else
+      log "It seems that $DEVICE is not locked"
+   fi
+   }
+
+#-------------------------------------------------------------------------
+# do_start(void)
+#-------------------------------------------------------------------------
+do_start()
+   {
+   if $RM -f $STOPFILE; then
+      log "Stopfile removed: it WILL answer"
+   fi
+   }
+
+#-------------------------------------------------------------------------
+# do_play(void)
+#-------------------------------------------------------------------------
+do_play()
+   {
+   local FILE
+   local WASSTOP
+
+   if [ -f $STOPFILE ]; then WASSTOP=true; else WASSTOP=false; fi
+   do_stop
+   $ECHO "Playing $($LS ${VOICEDIR}/*.$EXT | $WC -w) message(s) in ${VOICEDIR}"
+   $VMCP -c"$AT_VOICE" -wOK
+   $VMCP -c"$AT_PLAYDEV" -wVCON
+   for FILE in ${VOICEDIR}/*.${EXT}; do
+      if [ -f $FILE ]; then
+         $LS -lG $FILE | $CUT -b21-
+         $VMCP -c"$AT_VTX" -wCONNECT
+         $VMCP -k -e -q -t$TIMEOUT -i$FILE
+         $VMCP -c"\c\020\003" -wVCON
+      fi
+   done
+   $VMCP -c"$AT_H" -wOK
+   if [ $WASSTOP = false ]; then do_start; fi
+   }
+
+#-------------------------------------------------------------------------
+# do_delete(void)
+#-------------------------------------------------------------------------
+do_delete()
+   {
+   local R
+
+   $ECHO -n "Remove all messages from ${VOICEDIR}? [N/y] "
+   read R
+   if [ "$R" = "y" -o "$R" = "Y" ]; then
+      $RM ${VOICEDIR}/*.${EXT}
+   fi
+   }
+
+#-------------------------------------------------------------------------
+# do_now(void)
+#-------------------------------------------------------------------------
+do_now()
+   {
+   if [ -f $STOPFILE ]; then
+      log "Can't answer now: ans is stopped"
+   else
+      if [ -f $LOCK ]; then
+         $TOUCH $DOITNOW
+         if $KILL $($CAT $LOCK); then
+            log "$DEVICE unlocked"
+         else
+            log "Can't unlock $DEVICE"
+            $RM -f $DOITNOW
+         fi
+      else
+         log "Can't answer now: $DEVICE is not locked by ans"
+      fi
+   fi
+   }
+
+
+#-------------------------------------------------------------------------
+# MAIN LOOP
+#-------------------------------------------------------------------------
+
+# Check for command line argument.
+if [ $# -gt 0 ]; then
+   case $1 in
+      now)
+         do_now; exit
+         ;;
+      stop)
+         do_stop; exit
+         ;;
+      start)
+         do_start; exit
+         ;;
+      play)
+         do_play; exit
+         ;;
+      delete)
+         do_delete; exit
+         ;;
+      *)
+         $ECHO "Answering machine script for voice modems."
+         $ECHO -e "Usage: $0 [OPTION]"
+         $ECHO -e "\tnow\t\tforce a running process to answer immediately"
+         $ECHO -e "\tplay\t\tplay received messages"
+         $ECHO -e "\tdelete\t\tdelete received messages"
+         $ECHO -e "\tstop\t\tprevent a running process from answering the phone"
+         $ECHO -e "\tstart\t\tresume a running process answering the phone"
+         $ECHO -e "Without option, start waiting for a call."
+         exit
+         ;;
+   esac
+fi
+
+if [ ! -d $VOICEDIR -o ! -w $VOICEDIR ]; then
+   log "$VOICEDIR: No such directory or permission denied"
+   exit
+fi
+if [ ! -d $FAXDIR -o ! -w $FAXDIR ]; then
+   log "$FAXDIR: No such directory or permission denied"
+   exit
+fi
+if [ -f $LOCK ]; then
+   log "Device $DEVICE locked by PID $($CAT $LOCK)"
+   exit
+fi
+
+umask $UMASK
+
+log "Resetting the modem and waiting for $WAITRINGS rings"
+wait_rings $WAITRINGS
+
+# Generate a filename for the incoming message.
+MSGNAME=$($DATE +%y%m%d%H%M%S)
+
+# Answer the call.
+$VMCP -c"$AT_VOICE" -wOK
+$VMCP -c"$AT_SILENCE_ENA" -wOK
+$VMCP -c"$AT_A" -wVCON
+
+# Play the greeting only if needed.
+if [ -f $DOITNOW ]; then
+   $RM -f $DOITNOW
+   N=0
+else
+   play_message $GREETING "c2e3#ht"
+   N=$?
+fi
+
+# Discriminate call...
+case $N in
+   0)
+      log "Receiving a Voice call"
+      voice_call $MSGNAME
+      ;;
+   1|2)
+      log "Receiving a Fax"
+      fax_call $MSGNAME
+      ;;
+   3|4)
+      log "Receiving a Data call"
+      data_call
+      ;;
+   5)
+      log "Entering remote mode"
+      remote_mode
+      ;;
+   6|7)
+      log "Answer aborted"
+      ;;
+esac
+$VMCP -c"$AT_H" -wOK

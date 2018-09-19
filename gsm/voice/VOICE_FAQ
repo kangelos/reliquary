@@ -1,0 +1,143 @@
+FREQUENTLY ASKED QUESTIONS ABOUT VOICE
+--------------------------------------
+
+INDEX
+
+* Question 1: Garbled voice with U.S. Robotics Modem
+* Question 2: Converting voice files to .wav, .au or .snd
+* Question 3: How to do a PPP dialin
+* Question 4: How do I select playback/record device?
+
+--------------------------------------
+
+* Question 1: Garbled voice with U.S. Robotics Modem
+
+I got it to record and playback a file, except the when I play back the
+file it just sounds like garbage. I have a USR Sporster 33.6 faxmodem
+with personal voice mail.
+
+* Answer
+
+NOTE: This should happen only with voice versions before 0.6.
+
+The default voice compression method used by the USR Sportster Voice
+modem is the GSM-USR, which is very sensible to byte loss; i.e. if just
+a single byte of the data stream is dropped, the resulting file is
+unusable. The scripts vrec, vplay and ans before version 0.6 use two
+different commands to start voice receiving and to do voice capturing,
+so if some bytes are lost between, the resulting voice message is
+damaged.
+
+Starting with version 0.6, a single vmcp call (with -W option) is used
+to start voice receiving and to do voice capturing; so no bytes should
+be lost and the voice should recorded correctly.
+
+But someone may prefere to use a less sensible voice compression method
+selecting ADPCM voice compression instead of the default GSM one. Figure
+out which compression method and which voice sample rate your modem
+supports by issuing the AT#VSM=? command while in Voice Mode (AT#CLS=8).
+In the vrec and vplay scripts add a line like this:
+
+   $VMCP -c"AT#VSM=129,8000" -wOK
+
+where 129 and 8000 are parameter obtained from the VSM command. The line
+must be added just after the command <$VMCP -c"AT#CLS=8" -wOK>. In the
+ans script change the line that starts with AT_VINIT= with something
+like this:
+
+   AT_VINIT="AT#CLS=8#VSM=129,8000..."
+
+--------------------------------------
+
+* Question 2: Converting voice files to .wav, .au or .snd
+
+Is there a way for me to convert between your voice files and other
+sound files (e.g., WAV, SND, etc.). I was able to find a program from
+Rockwell that converts from RIFF and WAV, but it seems that your is not
+the same as RIFF
+
+* Answer
+
+No, unfortunately the voice encoding is modem-dependent, i.e. despite
+some modems uses the same commands set, they encode the voice with
+different algorythms. Generally the Windows software boundled with the
+modem is able to do the conversion, but it is an hard task (for me) to
+reverse-engineer the code or to find good documentation.
+
+--------------------------------------
+
+* Question 3: How to do a PPP dialin
+
+Every time I try to dialin as a data call and I use this data call as a
+terminal everything works fine. Every time I dialin and establish a ppp
+connection (login as user ppp with diplogin as login shell), the server
+modem doesn't hang up properly if the client closes the connection.
+
+* Answer
+
+After a regular login, I use this script to switch the line to ppp:
+
+#!/bin/sh
+#
+# start_ppp     Convert the (serial) line to PPP. The remote host
+#               is assigned an IP address resolving the name ptp0.
+#
+# Version       /usr/local/bin/start_ppp        1.2     10/15/96
+#
+# Author:       Niccolo Rigacci, <fd131@cleveland.freenet.edu>
+#
+ECHO=/bin/echo
+MESG=/usr/bin/mesg
+STTY=/bin/stty
+TTY=/usr/bin/tty
+PPPD=/usr/sbin/pppd
+ARGS="-detach silent :ptp0 proxyarp"
+case $($TTY) in
+   /dev/ttyS[0-3])
+      $MESG n
+      $STTY -echo
+      $ECHO "Now switching to PPP..."
+      exec $PPPD $ARGS
+      ;;
+   *)
+      $ECHO "Can't do PPP: you are *NOT* on a serial line."
+      ;;
+esac
+
+--------------------------------------
+
+* Question 4: How do I select record/playback device?
+
+Voice modems can use different devices for recording and playing back
+voice. They can use internal microphone and speaker, or external ones.
+They can also use the connected handset as a microphone/speaker system.
+The capabilities of your modem are listed by the AT#VLS=? command.
+This is an example:
+
+AT#CLS=8
+OK
+AT#VLS=?
+0,1,2,3,4,6
+
+OK
+
+The modem answered that it can use:
+a telephone line (type 0)
+a transmit/receive device - like an attached handset - (type 1)
+a transmit only device - like an external speaker - (type 2)
+a receive only device - like an external microphone - (type 3)
+a telephone line with speaker on (type 4)
+a telephone line with speaker and microphone on (type 6).
+
+Not all the modems can use the same devices; for example a Sportster
+Voice 33.6 Faxmodem I have can use only devices of type 0,2,3,4,6 (and
+it lists this values at the #VLS=? command), and some multi-line modems
+can show multiple zeroes at the begin of the list.
+
+When you want to select a specified device you must issue the AT#VLS=n
+command, where n is *NOT* the device type, but the device position!
+
+So if your modem answered 0,2,3,4,6 as the list of device types, and you
+want to select the microphone for recording a message (a receive only
+device, type 3), you must use the command AT#VLS=2, as the "3" is shown
+in the 2nd position (0 is the first).

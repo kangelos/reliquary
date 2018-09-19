@@ -1,0 +1,18 @@
+ From: Angelos Karageorgiou (akarageo@nyx10.cs.du.edu)
+ Subject: greek on linux 
+ Newsgroups: soc.culture.greek, alt.news.macedonia
+ Date: 1994-07-17 19:15:28 PST 
+
+
+I have just uploaded a version of the 437 codepage for greek on sunsite.unc.edu
+under pub/Linux/Incoming
+
+All the people out there with vga monitors that are running linux
+can now type/read greek.
+
+It requires a kernel > 0.99 probably > 1.00
+and the kbd-0.87 package.
+
+Have fun.
+  
+O btw, can we get this in the technical faq ?

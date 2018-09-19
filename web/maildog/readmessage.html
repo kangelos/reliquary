@@ -1,0 +1,320 @@
+<?
+if ( empty($server) || empty($account) || empty($password) ) {
+        Header("Location: $MAILDOG");
+        exit;
+}
+?>
+
+<html>
+<head>
+<meta charset="iso-8859-7">
+<style>
+<!--
+A:link, A:visited { text-decoration: blue }
+A:hover { text-decoration: underline; color: red }
+-->
+
+</style>
+<script>
+<!--
+function xgoto(xlocation) {
+    mylocation=xlocation;
+    top.window.frames['message'].location=mylocation;
+}
+//-->
+</script>
+
+</head>
+
+<body bgcolor=white>
+<font face=arial>
+
+<?
+require("decode.php3");
+
+$mime_encoding = array (
+                        0 => "7bit", "7bit" => 0,
+                        1 => "8bit", "8bit" => 1,
+                        2 => "binary", "binary" => 2,
+                        3 => "base64", "base64" => 3,
+                        4 => "quoted-printable", "quoted-printable" => 4,
+                        5 => "unknown", "unknown" => 5
+                        );
+
+
+function process($body)  {
+
+if ( strlen($body) <= 0 ) { $body= "Empty Message body"; }
+
+$xbody=imap_qprint($body);
+$mylen=strlen($xbody);
+if ( $mylen > 10 )  {
+	$body=$xbody;
+}
+
+
+#$htmlbody	=fill_paragraphs($body);
+$htmlbody	=($body);
+$htmlbody	=htmlspecialchars($htmlbody);
+$htmlbody=ereg_replace("([A-Za-z0-9]+\@[[:alnum:].]+[a-zA-Z]+)",
+        		"<a href=\"inreply.html?\\1\">\\1</a>",$htmlbody);
+$htmlbody = eregi_replace(
+	"(http|https|ftp)://([[:alnum:]/\n+-=%:_.~?]+[#[:alnum:]+]*)", 
+	"<a href=\"\\1://\\2\" target=\"_blank\">\\1://\\2</a>", 
+	$htmlbody);
+
+return "<font face=terminal><pre>\n$htmlbody\n</pre>\n";;
+}
+
+$msg_number=implode($argv," ");
+$mbox = imap_open("{$server:143}INBOX",$account,$password);
+
+$status=imap_check($mbox);
+$num_msg=$status->Nmsgs;
+
+
+array ($headers);
+$headers=imap_headers($mbox);
+$smallheaders=trim(substr($headers[$msg_number-1],0,6));
+if ( ereg("D",$smallheaders) ) {
+                $deleted="<font color=red face=arial>Deleted</font>";
+} 	else {
+		$deleted="&nbsp;";
+}
+
+
+include('header.html');
+
+
+
+$header		=imap_header($mbox,$msg_number,1);
+
+if ( empty($header) ) {
+	echo("<br><br>
+		<center><font color=red size=+1>
+		<h3>No Message # $msg_number / Δεν υπάρχει μήνυμα # $msg_number</h3>		</font>
+		</center>
+		</body>
+		</html>
+	");
+	exit;
+}
+
+
+$from		=$header->fromaddress;
+$subject	=$header->subject;
+$to		=$header->toaddress;
+
+
+$replyto	=$header->reply_toaddress;
+$cc		=$header->ccaddress;
+
+$htmlfrom	=htmlspecialchars(decode_mime_string($header->fromaddress));
+$htmlsubject	=htmlspecialchars(decode_mime_string($subject));
+$htmlto		=htmlspecialchars(decode_mime_string($to));
+$htmlto		=ereg_replace(",([^ ])",",\n          \\1",$htmlto);
+$htmlreplyto	=htmlspecialchars(decode_mime_string($replyto));
+$htmlcc		=htmlspecialchars(decode_mime_string($cc));
+$htmlcc		=ereg_replace(",([^ ])",",\n          \\1",$htmlcc);
+
+echo ("
+<br>
+
+
+<font face=terminal color=\"#006699\">
+<pre>
+ Subject: <b>$htmlsubject</b>
+    From: <b>$htmlfrom</b>
+    Date: $header->Date
+      To: $htmlto
+");
+
+if (strcmp($htmlreplyto,$htmlto) > 0 ){
+	echo("Reply-To: $htmlreplyto\n");
+}
+
+if (strlen($htmlcc) > 0) {
+      echo("      cc: $htmlcc\n");
+}
+
+echo ("
+</pre>
+</font>
+");
+
+$start=0;
+
+$htmlbody="Empty Message Body";
+$structure=imap_fetchstructure($mbox,$msg_number);
+if ( eregi("MIXED",$structure->subtype) )  {
+	$body   =imap_fetchbody($mbox,$msg_number,1.1,FTUID);
+
+	$fullheader	=imap_fetchheader($mbox,$msg_number,1.1);
+	if ( eregi("Content-Type: text/html",$fullheader) ) {
+		$showhtml=1;
+	} else {
+		$showhtml=0;
+	}
+
+	if ( $showhtml==0 ) {
+		$htmlbody=process($body);
+	} else {
+		$htmlbody=$body;
+	}
+	$start=1;
+}
+
+if ( eregi("Empty Message",$htmlbody) ) {
+$fullheader	=imap_fetchheader($mbox,$msg_number);
+if ( eregi("Content-Type: text/html",$fullheader) ) {
+	$showhtml=1;
+} else {
+	$showhtml=0;
+}
+	$body	=imap_fetchbody($mbox,$msg_number,1);
+	if ( $showhtml==0 ) {
+		$htmlbody=process($body);
+	} else {
+		$htmlbody=$body;
+	}
+	$start=0;
+}
+
+
+print		$htmlbody;
+
+echo ("
+	</font>
+<br><br>
+
+ 
+<center>
+
+");
+
+if (! eregi("MIXED",$structure->subtype) ) {
+	exit;
+} else {
+	print "<hr size=4><br><br>";
+}
+
+
+$c=count($structure->parts);
+if ($c<=1 ) { exit; }
+for ($i=$start; $i<$c; $i++) {
+
+	$part0=$structure->parts[$i];
+    if ( ! empty($part0->type) ) {
+	$part=$i+1;
+	
+
+	$parameters=$part0->parameters;
+
+	$attach_type=$part0->subtype;
+	$mytype=$part0->type;
+
+	$encoding=$part0->encoding;
+	$text_encoding=$mime_encoding[$encoding];
+	if (empty($text_encoding)) {
+		$text_encoding="unknown";
+	}
+	
+	$description=$part0->description;
+
+	if (eregi("RFC822",$attach_type)) {
+		$att="RFC822 Message";
+		$val="message.txt";
+  	} else {
+		$att=$parameters[0]->attribute;
+		$val=$parameters[0]->value;
+	}
+	$val=eregi_replace(" ","_",$val);
+	$size=sprintf("%0.2f",$part0->bytes / 1024);
+
+echo ("
+<table width=100% border=3 bgcolor=#006699 cellpadding=5>
+<tr>
+	<td align=center>	<font face=arial size=2 color=white>
+		Attachment Type: <b>$part0->subtype</b>
+		</font>
+	</td>
+	<td align=center>	<font face=arial size=2 color=white>
+		Size: <b>$size K</b>
+		</font>
+	</td>
+
+	<td align=center><font face=arial size=2 color=white>
+                Encoding: <b>$text_encoding</b>
+                </font>
+	</td>
+
+	<td align=center><font face=arial size=2 color=white>
+                Name: <b>$val</b>
+                </font>
+	</td>
+</tr>
+<tr>
+	<td colspan=4 bgcolor=white>
+	<center>
+	<br>
+");
+
+
+if ( 	eregi("GIF",$part0->subtype) 	||
+ 	eregi("JPEG",$part0->subtype) 	||
+	eregi("PNG",$part0->subtype) 
+   ) {
+	$imagetype=strtolower($part0->subtype);
+ print"<img src=\"view.html?$msg_number,$part,$imagetype,$encoding,/$val\">";
+ }
+
+if (eregi("RFC822",$attach_type)  )     {
+	$rfcbody=imap_fetchbody($mbox,$msg_number,$part);
+
+	print "</center><pre>$rfcbody</pre>\n";
+#	$mypid=getmypid();
+#	$tempfile="/tmp/dogmsg." . getmypid();
+#	$tmp=fopen($tempfile,"w");
+#	fwrite($tmp,$rfcbody);
+#	fclose($tmp);
+
+#	print "</center>\n";
+#	$MIME=popen("/usr/local/apache/yes/html/maildog/dogmime.pl < $tempfile","r");
+#	fpassthru($MIME);
+#	unlink("$tempfile");
+ }
+
+if ( 
+	(! eregi("GIF",$attach_type)) && 
+	(! eregi("JPEG",$attach_type))  &&
+	(! eregi("PNG",$attach_type))  &&
+	(! eregi("RFC822",$attach_type))  
+   ) {
+
+ echo ("
+	<br><p>
+	<font face=arial size=+1 color=Green>
+	<a href=\"down_attach.html?$msg_number,$part,$part0->subtype,$encoding,$val\">
+	Download Attachment</a>
+	</font>
+	<br><br>
+");
+
+}
+
+print "	</center></td>
+</tr>
+</table>
+<br><p><br>
+";
+
+}
+}
+imap_close($mbox);
+?>
+
+
+</body>
+</html>
+
+<? exit; ?>

@@ -1,0 +1,12 @@
+#!/bin/sh
+query=$QUERY_STRING;
+
+type=`echo $query | cut -f1 -d,`
+pid=`echo $query | cut -f2 -d,`
+filename="/tmp/swellfile.$pid";
+
+trap "/bin/rm $filename" 1 2 3 4 5 6 7 8 9 11 12 13 14 15 16 17 18 19
+echo "Content-Type: $type";
+echo "";
+/bin/cat $filename;
+/bin/rm $filename;

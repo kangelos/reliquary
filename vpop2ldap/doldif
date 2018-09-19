@@ -1,0 +1,13 @@
+#!/bin/sh
+
+#find vpopmail domains
+vdominfo > /opt/scriptdir/domains.txt
+cp /opt/scriptdir/domains.txt /opt/scriptdir/doms.txt
+
+# gather all accounts
+perl Ldify.all > /tmp/all.ldif
+
+#gather all lists
+FindLists > /tmp/lists.ldif
+FindAliases >> /tmp/lists.ldif
+FindCatchall >> /tmp/lists.ldif

@@ -1,0 +1,11 @@
+#!/usr/bin/perl
+
+$query=$ENV{'QUERY_STRING'};
+
+$location="http://www.yes.gr/maildog/view.html?$query";
+
+printf("Status: 302 Moved Temporarily,%c",10,10);
+printf("Location: %s%c",$location,10,10);
+printf("This page has moved <a href=\"%s\">here</a>%c",$location,10,10);
+
+exit(0);

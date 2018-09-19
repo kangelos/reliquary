@@ -1,0 +1,31 @@
+#!/bin/sh
+
+#	Angelos Karageorgiou  angelos@unix.gr
+#
+# This little script traverses the clients web site and indexes all the html
+# files in the file $cilentdir/htdocs/words.db
+#
+# Every 1st of the month it rebuilds the index from scratch
+# the other days it simply rescans new and changed files
+# this is not 100% correct since you might get false positives but
+#  the speed-up in processing time is immense.
+#
+# If accuracy is your thing remove the words.db file daily
+#
+
+for $dir in /home/unix /home/other
+do
+	cd $dir/htdocs
+	thisday=`date +"%d"`
+	if [ $thisday -eq 1 ]
+	then
+		rm -f words.db
+	fi
+
+	traverse.pl $dir/htdocs 
+
+	if [ $thisday -eq 1 ]
+	then
+		chown $site.web words.db
+	fi
+done

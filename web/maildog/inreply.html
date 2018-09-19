@@ -1,0 +1,73 @@
+<?
+include('defaults.php3');
+if ( empty($domain) || empty($account) || empty($password) ) {
+        Header("Location: $MAILDOG");
+        exit;
+}
+?>
+<meta charset="iso-8859-7">
+<body bgcolor="#eeeeee">
+<font face=arial>
+<center>
+<table bgcolor="#cccccc" width=100% border=0>
+<tr>
+	<td><font face=arial color="#00008F">
+		New Message / Νέο  μηνύμα
+	</td>
+	<td align=right><font face=arial color="#0000FF">
+		 MailDog by Angelos Karageorgiou
+	</td>
+</tr>
+</table>
+<center>
+<form action="sendmail.html" method=post>
+<table border=0 cellpadding=7 cellspacing=7 bgcolor="#eeeeee">
+ <tr>
+        <td align=right><font Face=arial>
+		From:
+	</td>
+	<td> <font Face=arial>
+<? 
+$toaddress=implode($argv," "); 
+	print "		<input type=hidden name=\"email\" value=\"$email\" size=60>"; 
+	print "$email"; 
+?>
+	</td>
+</tr>
+ <tr>
+        <td align=right>
+		<font Face=arial> To:
+	</td>
+	<td> <font Face=arial>
+<?		echo ("
+		<input name=\"to\" size=60 value=\"$toaddress\">
+		");
+ 		
+?>
+	</td>
+</tr>
+ <tr>
+        <td align=right>
+		<font Face=arial> Subject:
+	</td>
+	<td>  <font Face=arial>
+		<input name="subject" size=60>
+	</td>
+</tr>
+<!--
+<tr>
+	<td></td>
+	<td></td>
+</tr>
+-->
+<tr>
+ 	<td valign=top>
+		<font Face=arial>Message:
+	</td> 
+	<td>
+	<textarea name="message" rows=10 cols=78></textarea>
+	</td>
+</tr>
+</table>
+<input type="Submit" value="                Send it                ">
+</form>
